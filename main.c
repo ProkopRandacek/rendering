@@ -1,6 +1,5 @@
 #include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#include <stdio.h> #include <string.h>
 #include <pthread.h>
 #include <math.h>
 
@@ -65,7 +64,7 @@ int main() {
 	orange = clr(255, 165, 0);
 	yellow = clr(255, 255, 0);
 
-	cam = cmr(v3(0.0f, 5.0f, -5.0f), vNorm(v3(0.0f, -1.0f, 5.0f)), 5.0f, 5.0f);
+	cam = cmr(v3(0.0f, 5.0f, -5.0f), vNorm(v3(0.0f, -1.0f, 5.0f)), v3(1.0f, 0.0f, 1.0f), 5.0f, 5.0f);
 
 	ls1 = v3(10.0, 10.0f, 10.0f); // Define points to animate stuff between
 	ls2 = v3(10.0, 10.0f, -10.0f);
@@ -300,7 +299,7 @@ Sphere sph(Vector3 pos, Color c, float r) {
 	return s;
 }
 
-Camera cmr(Vector3 pos, Vector3 dir, float h, float w) {
+Camera cmr(Vector3 pos, Vector3 dir, Vector3 left, float h, float w) {
 	Camera c;
 	c.pos = pos;
 
@@ -315,14 +314,14 @@ Camera cmr(Vector3 pos, Vector3 dir, float h, float w) {
 	//         ```...      |
 	//               ```...b <- bottom points
 
-	Vector3 left = vMultf(vNorm(v3(1.0f, 0.0f, 0.0f)), w);
+	left = vMultf(vNorm(left), w);
 	// CAMERA VIEW
 	// tl---------tr // top left, top right
 	// |           | // SC = Screen center point
 	// |           |
-	// <----SC     | // left is always horizontal; Camera cant be sideways; Can be only tilted up and down;
-	// |           |
-	// |           |
+	// <----SC     | // Left vector defines if the camera is tilted sideways TODO input angle and calculate vector from that
+	// |           | // Set it to -1, 0, 0 for horizontall camera
+	// |           | // modify x, y to modify rotation. Modifying z makes things weird
 	// bl---------br // bottom left, bottom right
 
 	Vector3 up = vMultf(vNorm(vCross(left, dir)), h);
