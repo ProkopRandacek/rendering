@@ -48,3 +48,4 @@ Color cDarker(Color a, float b);
 Color cCombine(Color a, Color b);
 Color clr(int r, int g, int b);
 Sphere sph(Vector3 pos, Color c, float r);
+Camera cmr(Vector3 pos, Vector3 dir, float h, float w);

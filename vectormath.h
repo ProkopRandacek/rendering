@@ -9,6 +9,7 @@ float vMag(Vector3 a);
 Vector3 vNorm(Vector3 v);
 Vector3 float2Vector3(float a);
 float vDot(Vector3 a, Vector3 b);
+Vector3 vCross(Vector3 a, Vector3 b);
 Vector3 vAdd(Vector3 a, Vector3 b);
 Vector3 vMult(Vector3 a, Vector3 b);
 Vector3 vMultf(Vector3 a, float b);

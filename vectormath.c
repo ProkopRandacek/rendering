@@ -38,6 +38,14 @@ float vDot(Vector3 a, Vector3 b) {
 	return a.x * b.x + a.y * b.y;
 }
 
+Vector3 vCross(Vector3 a, Vector3 b) {
+	Vector3 c;
+	c.x = a.y * b.z - a.z * b.y;
+	c.y = a.z * b.x - a.x * b.z;
+	c.z = a.x * b.y - a.y * b.x;
+	return c;
+}
+
 Vector3 vMult(Vector3 a, Vector3 b) {
 	return v3(a.x * b.x, a.y * b.y, a.z * b.z);
 }

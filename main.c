@@ -14,7 +14,7 @@
 #define COLLISION_THRESHOLD 0.0001f
 #define RAY_MAX_LEN 50.0f
 #define GLOW_PER_MOVE 0
-#define FRAMES 120
+#define FRAMES 2
 // how many threads to use to parallel animation rendering
 #define IMG_THREADS 1 // for >1 its glitching idk FIXME scene is changing while rays are being cast
 // how many threads to use to parallel image rendering
@@ -65,12 +65,7 @@ int main() {
 	orange = clr(255, 165, 0);
 	yellow = clr(255, 255, 0);
 
-	cam.pos = v3(0.0f, 10.0f, 0.0f); // Camera is static for now
-
-	cam.tl = v3(-5.0f, 0.0f,  5.0f);
-	cam.tr = v3( 5.0f, 0.0f,  5.0f);
-	cam.bl = v3(-5.0f, 0.0f, -5.0f);
-	cam.br = v3( 5.0f, 0.0f, -5.0f);
+	cam = cmr(v3(0.0f, 5.0f, -5.0f), vNorm(v3(0.0f, -1.0f, 5.0f)), 5.0f, 5.0f);
 
 	ls1 = v3(10.0, 10.0f, 10.0f); // Define points to animate stuff between
 	ls2 = v3(10.0, 10.0f, -10.0f);
@@ -303,4 +298,49 @@ Sphere sph(Vector3 pos, Color c, float r) {
 	s.color = c;
 	s.radius = r;
 	return s;
+}
+
+Camera cmr(Vector3 pos, Vector3 dir, float h, float w) {
+	Camera c;
+	c.pos = pos;
+
+	Vector3 sc = vAdd(pos, dir); // Screen center
+	// SIDE VIEW
+	//
+	// Camera        ...```t <- top points
+	// |       ...```      |
+	// V ...```            |
+	// C- - - dir vec - ->SC <- Screen center point
+	//   ```...            |
+	//         ```...      |
+	//               ```...b <- bottom points
+
+	Vector3 left = vMultf(vNorm(v3(1.0f, 0.0f, 0.0f)), w);
+	// CAMERA VIEW
+	// tl---------tr // top left, top right
+	// |           | // SC = Screen center point
+	// |           |
+	// <----SC     | // left is always horizontal; Camera cant be sideways; Can be only tilted up and down;
+	// |           |
+	// |           |
+	// bl---------br // bottom left, bottom right
+
+	Vector3 up = vMultf(vNorm(vCross(left, dir)), h);
+	// tl----^----tr picture in camera space
+	// |     |     | // SC = Screen center point
+	// |     |     |
+	// |    SC     |
+	// |           |
+	// |           |
+	// bl---------br
+
+	Vector3 right = vMultf(left, -1.0f);
+	Vector3 down = vMultf(up, -1.0f);
+
+	c.tl = vAdd(up, left);
+	c.tr = vAdd(up, right);
+	c.bl = vAdd(down, left);
+	c.br = vAdd(down, right);
+
+	return c;
 }
