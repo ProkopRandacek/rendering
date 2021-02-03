@@ -16,3 +16,4 @@ Vector3 vMultf(Vector3 a, float b);
 Vector3 vDir(Vector3 a, Vector3 b);
 Vector3 vLerp(Vector3 a, Vector3 b, float t);
 float vDist(Vector3 a, Vector3 b);
+Vector3 vReflect(Vector3 v, Vector3 n);

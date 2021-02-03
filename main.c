@@ -4,38 +4,22 @@
 #include <pthread.h>
 #include <math.h>
 
+#include "camera.h"
 #include "render.h"
-#include "vectormath.h"
 #include "main.h"
 
-#define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
-#define MAX(X, Y) (((X) < (Y)) ? (X) : (Y))
-
-#define COLLISION_THRESHOLD 0.0001f
 #define RAY_MAX_LEN 50.0f
-#define GLOW_PER_MOVE 0
-#define FRAMES 30
+#define FRAMES 2
 // how many threads to use to parallel animation rendering
 #define IMG_THREADS 1 // for >1 its glitching idk FIXME scene is changing while rays are being cast
 // how many threads to use to parallel image rendering
-#define LINE_THREADS 2
-// LINE_THREADS * IMG_THREADS should be equal to cpu core count
+#define LINE_THREADS 12
 
 Camera cam;
 
-Color shadow;
-Color sky;
-Color ground1;
-Color ground2;
+extern Color shadow, sky, ground1, ground2, black, green, cyan, orange, yellow; // Colors from color.c
 
-Color black;
-Color green;
-Color cyan;
-Color orange;
-Color yellow;
-
-// Animation stuff needs to be accessible for image threads to read
-Vector3 ls1, ls2, p1, p2, q1, q2, r1, r2, d1, d2;
+Vector3 ls1, ls2; // Animation stuff needs to be accessible for image threads to read
 
 int lineBlockSize = (H / LINE_THREADS) + 1;
 int frameBlockSize = (FRAMES / IMG_THREADS) + 1;
@@ -43,37 +27,15 @@ int frameBlockSize = (FRAMES / IMG_THREADS) + 1;
 char progress[FRAMES] = {'.'};
 
 int main() {
-	init();
+	cInit(); // fill colors with values
 
-	shadow = clr(128, 128, 128);
-	sky = clr(0, 48, 78);
-	ground1 = clr(40, 40, 40);
-	ground2 = clr(80, 80, 80);
-
-	green = clr(50, 200, 50);
-	cyan = clr(0, 255, 200);
-	orange = clr(255, 165, 0);
-	yellow = clr(255, 255, 0);
-
-	cam = cmr(v3(0.0f, 5.0f, -5.0f), v3(5.0f, -1.0f, -5.0f), 0.0f, 5.0f, 5.0f);
+	cam = cmr(v3(0.0f, 5.0f, -10.0f), v3(0.0f, -2.0f, 5.0f), 0.0f, 0.2f, 0.2f);
 
 	ls1 = v3(10.0, 10.0f, 10.0f); // Define points to animate stuff between
 	ls2 = v3(10.0, 10.0f, -10.0f);
 
-	p1 = v3(1.5f, 5.0f, -2.0f);
-	p2 = v3(-1.5f, 5.0f, -2.0f);
-
-	q1 = v3(-1.0f, 2.0f, -1.0f);
-	q2 = v3(1.5f, 1.5f, 2.0f);
-
-	r1 = v3(1.5f, 1.5f, 2.0f);
-	r2 = v3(4.5f, 1.5f, 2.0f);
-
-	d1 = v3(5.0f, -1.0f, -5.0f);
-	d2 = v3(5.0f, -1.0f, 5.0f);
-
 	memset(progress, '.', FRAMES);
-	printf("%s\r", progress);
+	printf("%s\n", progress);
 
 	// Start threads
 	pthread_t threads[IMG_THREADS];
@@ -87,14 +49,12 @@ int main() {
 	}
 
 	printf("\ndone\n");
-	pthread_exit(NULL);
-
 	return 0;
 }
 
 void updateProgress(int i) {
 	progress[i] = '#';
-	printf("%s\r", progress);
+	printf("%s\n", progress);
 }
 
 void *renderImage(void *param) {
@@ -118,17 +78,9 @@ void *renderImage(void *param) {
 		s->s[2] = sph(v3(-1.0f, 2.0f, -1.0f), cyan, 0.7f);
 
 		// Update animated objects
-		Vector3 ls = vLerp(ls1, ls2, f/(float)FRAMES);
-		//s->s[0].pos = vLerp(p1, p2, f/(float)FRAMES);
-		//s->s[1].pos = vLerp(q1, q2, f/(float)FRAMES);
-		//s->s[2].pos = vLerp(r1, r2, f/(float)FRAMES);
-		cam = cmr(v3(0.0f, 5.0f, -5.0f), vMultf(vNorm(vLerp(d1, d2, f/(float)FRAMES)), 7.0f), 0.0f, 5.0f, 5.0f);
+		s->light = vLerp(ls1, ls2, f/(float)FRAMES);
 
-		//s->s[2].radius = f/(float)FRAMES;
-
-		s->light = ls;
-
-		// Start thread
+		// Start threads
 		pthread_t threads[LINE_THREADS];
 		void* rs[LINE_THREADS]; // need to have these pointers to free them later
 		for (int i = 0; i < LINE_THREADS; i++) {
@@ -173,7 +125,7 @@ void *renderLine(void *param) {
 			ray.pos = cam.pos;
 			ray.dir = vNorm(vDir(cam.pos, point));
 
-			struct castRayData hit = castRay(ray, 50.0f, d->s);
+			rayHit hit = castRay(ray, RAY_MAX_LEN, d->s);
 
 			if (!hit.hit) { //hit nothing
 				putpixel(x, y, sky);
@@ -186,7 +138,7 @@ void *renderLine(void *param) {
 
 				ray.pos = moveRay(ray, COLLISION_THRESHOLD * 1000); // move the ray outside the collision threshold
 
-				struct castRayData shad = castRay(ray, len, d->s); // cast ray towards the light to see if the point is in shadow;
+				rayHit shad = castRay(ray, len, d->s); // cast ray towards the light to see if the point is in shadow;
 
 				Color surfaceColor;
 
@@ -202,6 +154,17 @@ void *renderLine(void *param) {
 					}
 				}
 				else { // hit a ball
+					// Reflect the ray
+					ray.pos = hit.pos;
+					ray.pos = moveRay(ray, COLLISION_THRESHOLD * 1000); // move the ray outside the collision threshold
+					Vector3 reflectionPlane = vDir(d->s->s[hit.index].pos, hit.pos);
+					ray.dir = vReflect(ray.dir, reflectionPlane);
+					struct castRayData ref = castRay(ray, RAY_MAX_LEN, d->s);
+
+					if (!ref.hit) {
+						//surfaceColor = TODO reflection
+					}
+
 					surfaceColor = d->s->s[hit.index].color;
 				}
 
@@ -213,125 +176,4 @@ void *renderLine(void *param) {
 		}
 	}
 	return NULL;
-}
-
-struct castRayData castRay(Ray ray, float limit, Scene *s) {
-	float traveled = 0.0f;
-	char glow = 0;
-	while (1) {
-		float safeDist = 999999.0f;
-		int sphIndex = 0;
-		for (int i = 0; i < SPHERE_COUNT; i++) { // Nearest sphere
-			float newDist = dist2Sphere(ray.pos, s->s[i]);
-			if (safeDist > newDist) {
-				safeDist = newDist;
-				sphIndex = i;
-			}
-		}
-
-		float dist2Floor = ray.pos.y; // floor is on y = 0 for now
-
-		if (safeDist > dist2Floor) {
-			safeDist = dist2Floor;
-			sphIndex = -1;
-		}
-
-
-		if (safeDist > COLLISION_THRESHOLD) { // far enough -> move
-			glow += GLOW_PER_MOVE;
-			traveled += safeDist;
-			ray.pos = moveRay(ray, safeDist);
-		}
-		else { // hit!
-			struct castRayData crd;
-			crd.hit = 1;
-			crd.pos = ray.pos;
-			crd.index = sphIndex;
-			return crd;
-		}
-		if (traveled > limit) { // too far
-			struct castRayData crd;
-			crd.hit = 0;
-			crd.pos = ray.pos;
-			return crd;
-		}
-	}
-}
-
-Vector3 moveRay(Ray ray, float distance) {
-	return vAdd(ray.pos, vMultf(ray.dir, distance));
-}
-
-float dist2Sphere(Vector3 v, Sphere s) {
-	return vDist(v, s.pos) - s.radius;
-}
-
-Color cDarker(Color a, float b) { // Stop using Color and use Vector3 to describe color
-	return clr(a.r * b, a.g * b, a.b * b);
-}
-
-Color clr(int r, int g, int b) {
-	Color c;
-	c.r = r;
-	c.g = g;
-	c.b = b;
-	return c;
-}
-
-Sphere sph(Vector3 pos, Color c, float r) {
-	Sphere s;
-	s.pos = pos;
-	s.color = c;
-	s.radius = r;
-	return s;
-}
-
-Camera cmr(Vector3 pos, Vector3 dir, float angle, float h, float w) {
-	Camera c;
-	c.pos = pos;
-
-	Vector3 sc = vAdd(pos, dir); // Screen center
-	// SIDE VIEW
-	//
-	// Camera        ...```t <- top points
-	// |       ...```      |
-	// V ...```            |
-	// C- - - dir vec - ->SC <- Screen center point
-	//   ```...            |
-	//         ```...      |
-	//               ```...b <- bottom points
-	
-	//float y = 1.0f / tan(angle); calculate angle TODO
-
-	Vector3 left = vMultf(vNorm(v3(-dir.z, angle, dir.x)), w);
-	// CAMERA VIEW
-	// tl---------tr // top left, top right
-	// |           | // SC = Screen center point
-	// |           |
-	// <----SC     |
-	// |           |
-	// |           |
-	// bl---------br // bottom left, bottom right
-
-	Vector3 up = vMultf(vNorm(vCross(left, dir)), h);
-	// tl----^----tr picture in camera space
-	// |     |     | // SC = Screen center point
-	// |     |     |
-	// |    SC     |
-	// |           |
-	// |           |
-	// bl---------br
-	
-	up.y *= -1.0f; // There is a bug that the screen is for some reason upside down
-	// I could find the place where I flip it or just flip it once more here... TODO
-
-	Vector3 right = vMultf(left, -1.0f);
-	Vector3 down = vMultf(up, -1.0f);
-
-	c.tl = vAdd(vAdd(up, left), sc);
-	c.tr = vAdd(vAdd(up, right), sc);
-	c.bl = vAdd(vAdd(down, left), sc);
-	c.br = vAdd(vAdd(down, right), sc);
-
-	return c;
 }

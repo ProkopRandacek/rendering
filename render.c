@@ -1,12 +1,10 @@
-#include<stdio.h>
-#include<string.h>
-#include"render.h"
+#include <stdio.h>
+#include <string.h>
+
+#include "color.h"
+#include "render.h"
 
 Color screen[W][H];
-
-void init() {
-	memset(screen, 255, W * H * sizeof(Color));
-}
 
 void putpixel(int x, int y, Color color) {
 	screen[x][y] = color;
