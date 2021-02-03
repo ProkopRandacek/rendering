@@ -9,27 +9,23 @@
 #include "main.h"
 
 #define RAY_MAX_LEN 50.0f
-#define FRAMES 2
+#define FRAMES 120
 // how many threads to use to parallel animation rendering
 #define IMG_THREADS 1 // for >1 its glitching idk FIXME scene is changing while rays are being cast
 // how many threads to use to parallel image rendering
 #define LINE_THREADS 12
 
-Camera cam;
-
 extern Color shadow, sky, ground1, ground2, black, green, cyan, orange, yellow; // Colors from color.c
 
 Vector3 ls1, ls2; // Animation stuff needs to be accessible for image threads to read
 
-int lineBlockSize = (H / LINE_THREADS) + 1;
+int lineBlockSize = (H / LINE_THREADS) + 1; // the amounts of work to do by a thread
 int frameBlockSize = (FRAMES / IMG_THREADS) + 1;
 
-char progress[FRAMES] = {'.'};
+char progress[FRAMES] = {'.'}; // used to visually track progress
 
 int main() {
 	cInit(); // fill colors with values
-
-	cam = cmr(v3(0.0f, 5.0f, -10.0f), v3(0.0f, -2.0f, 5.0f), 0.0f, 0.2f, 0.2f);
 
 	ls1 = v3(10.0, 10.0f, 10.0f); // Define points to animate stuff between
 	ls2 = v3(10.0, 10.0f, -10.0f);
@@ -52,7 +48,7 @@ int main() {
 	return 0;
 }
 
-void updateProgress(int i) {
+void updateProgress(int i) { // updates the visual progress
 	progress[i] = '#';
 	printf("%s\n", progress);
 }
@@ -66,19 +62,7 @@ void *renderImage(void *param) {
 
 	// Render frames
 	for (int f = from; f <= to; f++) {
-		// Calculate scene
-		Scene *s = malloc(sizeof(Scene));
-		s->cam = cam;
-		s->sky = sky;
-		s->shadow = shadow;
-
-		// The spheres in the scene
-		s->s[0] = sph(v3(2.5f, 2.0f, 0.5f), green, 1.0f);
-		s->s[1] = sph(v3(0.0f, 0.5f, 0.0f), orange, 0.2f);
-		s->s[2] = sph(v3(-1.0f, 2.0f, -1.0f), cyan, 0.7f);
-
-		// Update animated objects
-		s->light = vLerp(ls1, ls2, f/(float)FRAMES);
+		Scene* s = createScene(f/(float)FRAMES);
 
 		// Start threads
 		pthread_t threads[LINE_THREADS];
@@ -108,6 +92,24 @@ void *renderImage(void *param) {
 	}
 }
 
+Scene* createScene(float time) {
+	Scene *s = malloc(sizeof(Scene));
+	Vector3 campos = vLerp(v3(2.0f, 4.0f, -10.0f), v3(-2.0f, 4.0f, -10.0), time);
+	s->cam = cmr(campos, v3(0.0f, -2.0f, 10.0f), 0.0f, 0.2f, 0.2f);
+	s->sky = sky;
+	s->shadow = shadow;
+
+	s->s[0] = sph(v3(0.0f, 2.0f, 0.0f), green, 1.0f);
+	//s->s[1] = sph(v3(0.0f, 0.5f, 0.0f), orange, 0.2f);
+	//s->s[2] = sph(v3(-1.0f, 2.0f, -1.0f), cyan, 0.7f);
+
+	s->light = v3(10.0, 10.0f, -10.0f);
+	// Update animated objects
+	//s->light = vLerp(ls1, ls2, time);
+
+	return s;
+}
+
 void *renderLine(void *param) {
 	rld* d = param;
 	int from = d->i * lineBlockSize;
@@ -116,64 +118,72 @@ void *renderLine(void *param) {
 
 	Vector3 lpoint, rpoint, point;
 	for (int y = from; y <= to; y++) {
-		lpoint = vLerp(cam.tl, cam.bl, y / (float)H);
-		rpoint = vLerp(cam.tr, cam.br, y / (float)H);
+		lpoint = vLerp(d->s->cam.tl, d->s->cam.bl, y / (float)H);
+		rpoint = vLerp(d->s->cam.tr, d->s->cam.br, y / (float)H);
 
 		for (int x = 0; x < W; x++) {
 			point = vLerp(lpoint, rpoint, (float)x / (float)W);
-			Ray ray;
-			ray.pos = cam.pos;
-			ray.dir = vNorm(vDir(cam.pos, point));
-
-			rayHit hit = castRay(ray, RAY_MAX_LEN, d->s);
-
-			if (!hit.hit) { //hit nothing
-				putpixel(x, y, sky);
-			}
-			else { //hit something
-				ray.pos = hit.pos;
-				ray.dir = vDir(hit.pos, d->s->light);
-				float len = vMag(ray.dir);
-				ray.dir = vNorm(ray.dir);
-
-				ray.pos = moveRay(ray, COLLISION_THRESHOLD * 1000); // move the ray outside the collision threshold
-
-				rayHit shad = castRay(ray, len, d->s); // cast ray towards the light to see if the point is in shadow;
-
-				Color surfaceColor;
-
-				if (hit.index == -1) { // if I hit the ground;
-					int sx = (int)hit.pos.x;
-					int sz = (int)hit.pos.z;
-
-					if (((sz + sx) % 2) == 0) {
-						surfaceColor = ground1;
-					}
-					else {
-						surfaceColor = ground2;
-					}
-				}
-				else { // hit a ball
-					// Reflect the ray
-					ray.pos = hit.pos;
-					ray.pos = moveRay(ray, COLLISION_THRESHOLD * 1000); // move the ray outside the collision threshold
-					Vector3 reflectionPlane = vDir(d->s->s[hit.index].pos, hit.pos);
-					ray.dir = vReflect(ray.dir, reflectionPlane);
-					struct castRayData ref = castRay(ray, RAY_MAX_LEN, d->s);
-
-					if (!ref.hit) {
-						//surfaceColor = TODO reflection
-					}
-
-					surfaceColor = d->s->s[hit.index].color;
-				}
-
-				if (shad.hit) { // the surface is in shadow
-					surfaceColor = cDarker(surfaceColor, 0.2f);
-				}
-				putpixel(x, y, surfaceColor);
-			}
+			Color pix = renderPixel(point, d->s);
+			putpixel(x, y, pix);
 		}
 	}
 	return NULL;
+}
+
+Color renderPixel(Vector3 point, Scene* s) {
+	Ray ray;
+	ray.pos = s->cam.pos;
+	ray.dir = vNorm(vDir(s->cam.pos, point));
+
+	rayHit hit = castRay(ray, RAY_MAX_LEN, -1, s);
+
+	if (!hit.hit) { //hit nothing
+		return sky;
+	} else { //hit something
+		Ray light;
+		light.pos = hit.pos;
+		light.dir = vDir(hit.pos, s->light);
+		float len = vMag(light.dir);
+		light.dir = vNorm(light.dir);
+		light.pos = moveRay(ray, COLLISION_THRESHOLD * 1000); // move the ray outside the collision threshold
+		rayHit shadow = castRay(light, len, -3, s); // cast ray towards the light to see if the point is in shadow
+
+		Color surfaceColor;
+
+		if (hit.index == -1) { // if I hit the ground;
+			surfaceColor = checkerboard(hit.pos);
+		} else { // hit a ball
+			surfaceColor = s->s[hit.index].color;
+
+			// Reflect the ray
+			Vector3 reflectionPlane = vDir(s->s[hit.index].pos, hit.pos);
+			ray.dir = vNorm(vReflect(reflectionPlane, ray.dir));
+			struct castRayData ref = castRay(ray, RAY_MAX_LEN, hit.index, s);
+
+			if (ref.hit) { // reflection hit something
+				Color rClr;
+				if (ref.index == -1) { // reflection hit ground
+					rClr = checkerboard(ref.pos);
+				} else { // reflection hit a sphere
+					rClr = s->s[ref.index].color;
+				}
+				surfaceColor = cBlend(surfaceColor, rClr, 0.4f);
+			} else { // reflection hit sky
+				surfaceColor = cBlend(surfaceColor, sky, 0.4f);
+			}
+		}
+		if (shadow.hit) { // the surface is in shadow
+			//printf("shadow\n");
+			surfaceColor = cDarker(surfaceColor, 0.7f); // shadow not working TODO
+		}// else { printf("%d\n", shadow.index); }
+		return surfaceColor;
+	}
+}
+
+Color checkerboard(Vector3 pos) {
+	if ((((int)pos.x + (int)pos.z) % 2) == 0) {
+		return ground1;
+	} else {
+		return ground2;
+	}
 }

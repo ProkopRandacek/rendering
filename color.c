@@ -15,14 +15,23 @@ void cInit() {
 	yellow = clr(255, 255, 0);
 }
 
-Color cDarker(Color a, float b) {
-	return clr(a.r * b, a.g * b, a.b * b);
-}
-
 Color clr(int r, int g, int b) {
 	Color c;
 	c.r = r;
 	c.g = g;
 	c.b = b;
+	return c;
+}
+
+Color cDarker(Color a, float b) {
+	return clr(a.r * b, a.g * b, a.b * b);
+}
+
+Color cBlend(Color a, Color b, float aw) {
+	Color c;
+	float bw = 1.0 - aw;
+	c.r = a.r * aw + b.r * bw;
+	c.g = a.g * aw + b.g * bw;
+	c.b = a.b * aw + b.b * bw;
 	return c;
 }

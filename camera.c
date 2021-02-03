@@ -51,13 +51,14 @@ Camera cmr(Vector3 pos, Vector3 dir, float angle, float h, float w) {
 	return c;
 }
 
-struct castRayData castRay(Ray ray, float limit, Scene *s) {
+struct castRayData castRay(Ray ray, float limit, int ignore, Scene *s) {
 	float traveled = 0.0f;
 	char glow = 0;
 	while (1) {
-		float safeDist = 999999.0f;
+		float safeDist = 999.0f;
 		int sphIndex = 0;
 		for (int i = 0; i < SPHERE_COUNT; i++) { // Nearest sphere
+			if (i == ignore) continue;
 			float newDist = d2Sphere(ray.pos, s->s[i]);
 			if (safeDist > newDist) {
 				safeDist = newDist;
@@ -65,20 +66,17 @@ struct castRayData castRay(Ray ray, float limit, Scene *s) {
 			}
 		}
 
-		float dist2Floor = ray.pos.y; // floor is on y = 0 for now
-
-		if (safeDist > dist2Floor) {
-			safeDist = dist2Floor;
+		float d2Floor = ray.pos.y; // floor is on y = 0 for now
+		if (safeDist > d2Floor) {
+			safeDist = d2Floor;
 			sphIndex = -1;
 		}
-
 
 		if (safeDist > COLLISION_THRESHOLD) { // far enough -> move
 			glow += GLOW_PER_MOVE;
 			traveled += safeDist;
 			ray.pos = moveRay(ray, safeDist);
-		}
-		else { // hit!
+		} else { // hit!
 			struct castRayData crd;
 			crd.hit = 1;
 			crd.pos = ray.pos;
@@ -89,6 +87,7 @@ struct castRayData castRay(Ray ray, float limit, Scene *s) {
 			struct castRayData crd;
 			crd.hit = 0;
 			crd.pos = ray.pos;
+			crd.index = -2;
 			return crd;
 		}
 	}

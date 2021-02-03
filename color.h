@@ -5,3 +5,4 @@ typedef struct Colors {
 void cInit();
 Color cDarker(Color a, float b);
 Color clr(int r, int g, int b);
+Color cBlend(Color a, Color b, float aw);

@@ -7,4 +7,7 @@ typedef struct RenderLineData { // is given to line rendering threads
 } rld;
 
 void *renderImage(void *param);
+Scene* createScene(float time);
 void *renderLine(void *param);
+Color renderPixel(Vector3 point, Scene* scene);
+Color checkerboard(Vector3 pos);

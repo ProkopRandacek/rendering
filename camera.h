@@ -1,8 +1,8 @@
 #include "shapes.h"
 
-#define COLLISION_THRESHOLD 0.0001f
+#define COLLISION_THRESHOLD 0.00001f
 #define GLOW_PER_MOVE 0
-#define SPHERE_COUNT 3
+#define SPHERE_COUNT 1
 
 typedef struct Cameras {
 	Vector3 pos;
@@ -32,5 +32,5 @@ typedef struct castRayData {
 } rayHit;
 
 Camera cmr(Vector3 pos, Vector3 dir, float angle, float h, float w);
-rayHit castRay(Ray ray, float limit, Scene *s);
+rayHit castRay(Ray ray, float limit, int ignore, Scene *s);
 Vector3 moveRay(Ray ray, float distance);

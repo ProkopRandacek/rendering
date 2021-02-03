@@ -73,5 +73,6 @@ float vDist(Vector3 a, Vector3 b) {
 // https://www.3dkingdoms.com/weekly/weekly.php?a=2
 Vector3 vReflect(Vector3 v, Vector3 n) {
 	n = vNorm(n);
-	return vAdd(vMultf(vMultf(n, vDot(v, n)), -2.0f), v);
+	v = vNorm(v);
+	return vNorm(vAdd(vMultf(vMultf(n, vDot(v, n)), -2.0f), v));
 }
