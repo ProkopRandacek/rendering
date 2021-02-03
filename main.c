@@ -1,5 +1,6 @@
 #include <stdlib.h>
-#include <stdio.h> #include <string.h>
+#include <stdio.h>
+#include <string.h>
 #include <pthread.h>
 #include <math.h>
 
@@ -13,11 +14,11 @@
 #define COLLISION_THRESHOLD 0.0001f
 #define RAY_MAX_LEN 50.0f
 #define GLOW_PER_MOVE 0
-#define FRAMES 2
+#define FRAMES 30
 // how many threads to use to parallel animation rendering
 #define IMG_THREADS 1 // for >1 its glitching idk FIXME scene is changing while rays are being cast
 // how many threads to use to parallel image rendering
-#define LINE_THREADS 12
+#define LINE_THREADS 2
 // LINE_THREADS * IMG_THREADS should be equal to cpu core count
 
 Camera cam;
@@ -34,17 +35,7 @@ Color orange;
 Color yellow;
 
 // Animation stuff needs to be accessible for image threads to read
-Vector3 ls1;
-Vector3 ls2;
-
-Vector3 p1;
-Vector3 p2;
-
-Vector3 q1;
-Vector3 q2;
-
-Vector3 r1;
-Vector3 r2;
+Vector3 ls1, ls2, p1, p2, q1, q2, r1, r2, d1, d2;
 
 int lineBlockSize = (H / LINE_THREADS) + 1;
 int frameBlockSize = (FRAMES / IMG_THREADS) + 1;
@@ -64,7 +55,7 @@ int main() {
 	orange = clr(255, 165, 0);
 	yellow = clr(255, 255, 0);
 
-	cam = cmr(v3(0.0f, 5.0f, -5.0f), vNorm(v3(0.0f, -1.0f, 5.0f)), v3(1.0f, 0.0f, 1.0f), 5.0f, 5.0f);
+	cam = cmr(v3(0.0f, 5.0f, -5.0f), v3(5.0f, -1.0f, -5.0f), 0.0f, 5.0f, 5.0f);
 
 	ls1 = v3(10.0, 10.0f, 10.0f); // Define points to animate stuff between
 	ls2 = v3(10.0, 10.0f, -10.0f);
@@ -77,6 +68,9 @@ int main() {
 
 	r1 = v3(1.5f, 1.5f, 2.0f);
 	r2 = v3(4.5f, 1.5f, 2.0f);
+
+	d1 = v3(5.0f, -1.0f, -5.0f);
+	d2 = v3(5.0f, -1.0f, 5.0f);
 
 	memset(progress, '.', FRAMES);
 	printf("%s\r", progress);
@@ -128,6 +122,7 @@ void *renderImage(void *param) {
 		//s->s[0].pos = vLerp(p1, p2, f/(float)FRAMES);
 		//s->s[1].pos = vLerp(q1, q2, f/(float)FRAMES);
 		//s->s[2].pos = vLerp(r1, r2, f/(float)FRAMES);
+		cam = cmr(v3(0.0f, 5.0f, -5.0f), vMultf(vNorm(vLerp(d1, d2, f/(float)FRAMES)), 7.0f), 0.0f, 5.0f, 5.0f);
 
 		//s->s[2].radius = f/(float)FRAMES;
 
@@ -271,14 +266,6 @@ float dist2Sphere(Vector3 v, Sphere s) {
 	return vDist(v, s.pos) - s.radius;
 }
 
-Color clampColor(Color c) {
-	Color o;
-	o.r = MAX(MIN(c.r, 255), 0);
-	o.g = MAX(MIN(c.g, 255), 0);
-	o.b = MAX(MIN(c.b, 255), 0);
-	return o;
-}
-
 Color cDarker(Color a, float b) { // Stop using Color and use Vector3 to describe color
 	return clr(a.r * b, a.g * b, a.b * b);
 }
@@ -299,7 +286,7 @@ Sphere sph(Vector3 pos, Color c, float r) {
 	return s;
 }
 
-Camera cmr(Vector3 pos, Vector3 dir, Vector3 left, float h, float w) {
+Camera cmr(Vector3 pos, Vector3 dir, float angle, float h, float w) {
 	Camera c;
 	c.pos = pos;
 
@@ -313,15 +300,17 @@ Camera cmr(Vector3 pos, Vector3 dir, Vector3 left, float h, float w) {
 	//   ```...            |
 	//         ```...      |
 	//               ```...b <- bottom points
+	
+	//float y = 1.0f / tan(angle); calculate angle TODO
 
-	left = vMultf(vNorm(left), w);
+	Vector3 left = vMultf(vNorm(v3(-dir.z, angle, dir.x)), w);
 	// CAMERA VIEW
 	// tl---------tr // top left, top right
 	// |           | // SC = Screen center point
 	// |           |
-	// <----SC     | // Left vector defines if the camera is tilted sideways TODO input angle and calculate vector from that
-	// |           | // Set it to -1, 0, 0 for horizontall camera
-	// |           | // modify x, y to modify rotation. Modifying z makes things weird
+	// <----SC     |
+	// |           |
+	// |           |
 	// bl---------br // bottom left, bottom right
 
 	Vector3 up = vMultf(vNorm(vCross(left, dir)), h);
@@ -332,14 +321,17 @@ Camera cmr(Vector3 pos, Vector3 dir, Vector3 left, float h, float w) {
 	// |           |
 	// |           |
 	// bl---------br
+	
+	up.y *= -1.0f; // There is a bug that the screen is for some reason upside down
+	// I could find the place where I flip it or just flip it once more here... TODO
 
 	Vector3 right = vMultf(left, -1.0f);
 	Vector3 down = vMultf(up, -1.0f);
 
-	c.tl = vAdd(up, left);
-	c.tr = vAdd(up, right);
-	c.bl = vAdd(down, left);
-	c.br = vAdd(down, right);
+	c.tl = vAdd(vAdd(up, left), sc);
+	c.tr = vAdd(vAdd(up, right), sc);
+	c.bl = vAdd(vAdd(down, left), sc);
+	c.br = vAdd(vAdd(down, right), sc);
 
 	return c;
 }
