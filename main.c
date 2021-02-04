@@ -98,7 +98,7 @@ Scene* createScene(float time) {
 	s->sky = sky;
 	s->shadow = shadow;
 
-	s->s[0] = sph(v3(0.0f, 2.0f, 0.0f), green, 1.0f);
+	s->s[0] = sph(v3(0.0f, 2.0f, 0.0f), green, 1.0f, 0.0f);
 	//s->s[1] = sph(v3(0.0f, 0.5f, 0.0f), orange, 0.2f);
 	//s->s[2] = sph(v3(-1.0f, 2.0f, -1.0f), cyan, 0.7f);
 
@@ -166,9 +166,9 @@ Color renderPixel(Vector3 point, Scene* s) {
 				} else { // reflection hit a sphere
 					rClr = s->s[ref.index].color;
 				}
-				surfaceColor = cBlend(surfaceColor, rClr, 0.4f);
+				surfaceColor = cBlend(surfaceColor, rClr, s->s[hit.index].refw);
 			} else { // reflection hit sky
-				surfaceColor = cBlend(surfaceColor, sky, 0.4f);
+				surfaceColor = cBlend(surfaceColor, sky, s->s[hit.index].refw);
 			}
 		}
 		if (shadow.hit) { // the surface is in shadow
