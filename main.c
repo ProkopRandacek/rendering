@@ -9,12 +9,11 @@
 #include "main.h"
 
 #define RAY_MAX_LEN 50.0f
-#define FRAMES 120
+#define FRAMES 2
 // how many threads to use to parallel animation rendering
 #define IMG_THREADS 1 // for >1 its glitching idk FIXME scene is changing while rays are being cast
 // how many threads to use to parallel image rendering
-#define LINE_THREADS 12
-
+#define LINE_THREADS 2 
 extern Color shadow, sky, ground1, ground2, black, green, cyan, orange, yellow; // Colors from color.c
 
 Vector3 ls1, ls2; // Animation stuff needs to be accessible for image threads to read
@@ -145,7 +144,7 @@ Color renderPixel(Vector3 point, Scene* s) {
 		light.dir = vDir(hit.pos, s->light);
 		float len = vMag(light.dir);
 		light.dir = vNorm(light.dir);
-		light.pos = moveRay(ray, COLLISION_THRESHOLD * 1000); // move the ray outside the collision threshold
+		light.pos = moveRay(light, COLLISION_THRESHOLD * 1000); // move the ray outside the collision threshold
 		rayHit shadow = castRay(light, len, -3, s); // cast ray towards the light to see if the point is in shadow
 
 		Color surfaceColor;
@@ -173,9 +172,8 @@ Color renderPixel(Vector3 point, Scene* s) {
 			}
 		}
 		if (shadow.hit) { // the surface is in shadow
-			//printf("shadow\n");
-			surfaceColor = cDarker(surfaceColor, 0.7f); // shadow not working TODO
-		}// else { printf("%d\n", shadow.index); }
+			surfaceColor = cDarker(surfaceColor, 0.7f);
+		}
 		return surfaceColor;
 	}
 }

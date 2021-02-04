@@ -1,5 +1,5 @@
-#define W 1000
-#define H 1000
+#define W 500
+#define H 500
 
 void init();
 void clearscreen();
