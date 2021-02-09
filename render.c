@@ -10,7 +10,7 @@ void putpixel(int x, int y, Color color) {
 	screen[x][y] = color;
 }
 
-void drawline(int x0, int y0, int x1, int y1, Color color) {
+/*void drawline(int x0, int y0, int x1, int y1, Color color) {
 	int dx, dy, p, x, y;
 	dx = x1 - x0;
 	dy = y1 - y0;
@@ -27,7 +27,7 @@ void drawline(int x0, int y0, int x1, int y1, Color color) {
 		}
 		x0 = x0 + 1;
 	}
-}
+}*/
 
 void writeBMP(const char* filename) {
 	unsigned int header[14];

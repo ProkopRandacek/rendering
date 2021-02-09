@@ -1,5 +1,7 @@
 #!/bin/sh
-gcc main.c camera.c vectormath.c render.c shapes.c color.c -obuild -pthread -lm && ./build
+gcc *.c -o build -l SDL2 -pthread -lm -Wall &&
+./build
+
 : '
 ffmpeg -r 20 -s 600x600 -i %04d.bmp anim.mp4
 gcc main.c vectormath.c render.c -pthread -lm -ggdb

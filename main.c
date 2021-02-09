@@ -4,6 +4,8 @@
 #include <pthread.h>
 #include <math.h>
 
+#include "SDL2/SDL.h"
+
 #include "camera.h"
 #include "render.h"
 #include "main.h"
@@ -13,7 +15,7 @@
 // how many threads to use to parallel animation rendering
 #define IMG_THREADS 1 // for >1 its glitching idk FIXME scene is changing while rays are being cast
 // how many threads to use to parallel image rendering
-#define LINE_THREADS 2 
+#define LINE_THREADS 2
 extern Color shadow, sky, ground1, ground2, black, green, cyan, orange, yellow; // Colors from color.c
 
 Vector3 ls1, ls2; // Animation stuff needs to be accessible for image threads to read
@@ -89,6 +91,8 @@ void *renderImage(void *param) {
 		updateProgress(f);
 		writeBMP(fname);
 	}
+
+	return NULL;
 }
 
 Scene* createScene(float time) {
