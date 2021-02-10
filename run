@@ -1,9 +1,10 @@
 #!/bin/sh
-gcc *.c -o build -l SDL2 -pthread -lm -Wall &&
-./build
 
-: '
-ffmpeg -r 20 -s 600x600 -i %04d.bmp anim.mp4
-gcc main.c vectormath.c render.c -pthread -lm -ggdb
-gdb a.out
-'
+if [! -d build ]
+then
+	mkdir build
+fi
+cd build
+cmake ../ &&
+make &&
+./rendering
