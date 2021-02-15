@@ -1,9 +1,11 @@
-# Ray tracing in C
+# Ray marching rendering
 
 ## Build:
-run the `build` script. Executable has been written to `./build/rendering`.
+Run the `run` script. The executable will start after the build is done.
 
 ### Deps:
+- cmake
 - glfw3
-- glew
-(`yay -S glew glfw-x11`)
+- glew  
+
+(`yay -S glew glfw-x11 cmake`)
