@@ -1,6 +1,6 @@
 # Ray tracing in C
 
-rn calculated on CPU. Compute shader is on the TODO list  
+Coputing rays on GPU is in development on the GL branch.
 
-[![demo render](https://res.cloudinary.com/marcomontalbano/image/upload/v1612180214/video_to_markdown/images/streamable--970q40-c05b58ac6eb4c4700831b2b3070cd403.jpg)](https://streamable.com/970q40 "demo render")  
+[![demo render](https://randacek.dev/dl/demo_render_ico.jpg)](https://randacek.dev/dl/render_demo.mp4 "demo render")  
 moving light source, 120 frames, 1000x1000, ~10 seconds per image per thread
