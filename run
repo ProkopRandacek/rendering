@@ -1,10 +1,11 @@
 #!/bin/sh
-
-if [! -d build ]
-then
-	mkdir build
-fi
-cd build
+./getdeps
+rm build -rf &&
+echo ========================== compiling the code =========================== &&
+mkdir -p ./build &&
+cd build &&
 cmake ../ &&
 make &&
-./rendering
+echo ========================== running the code ============================= &&
+./rendering &&
+cd ..

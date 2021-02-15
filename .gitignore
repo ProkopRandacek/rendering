@@ -1,8 +1,5 @@
-*.bmp
-*.mp4
 build
-libs/GLUS/
-lib/libGLUS.a
+src/thirdparty
 
 ### CMake ###
 CMakeLists.txt.user

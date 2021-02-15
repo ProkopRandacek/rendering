@@ -3,14 +3,15 @@ cmake_minimum_required (VERSION 3.12)
 get_filename_component(PROJECT_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 project(${PROJECT_NAME})
 
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -lm")
+
 # GLEW
 find_package(GLEW REQUIRED)
 include_directories(${GLEW_INCLUDE_DIRS})
 link_libraries(${GLEW_LIBRARIES})
 
-# GLUT
-find_package(GLUT REQUIRED)
-include_directories(${GLUT_INCLUDE_DIR})
+# GLFW
+find_package(glfw3 REQUIRED)
 
 # OPENGL
 find_package(OpenGL REQUIRED)
@@ -20,9 +21,16 @@ add_definitions(${OpenGL_DEFINITIONS})
 
 # MY CODE
 file(GLOB SOURCES "src/*.c")
-file(GLOB SHADERS "shader/*.glsl")
-source_group("Shaders" FILES ${SHADERS})
 
-add_executable(${PROJECT_NAME} ${SOURCES} ${SHADERS})
+add_executable(${PROJECT_NAME} ${SOURCES})
 
-target_link_libraries(${PROJECT_NAME} ${GLEW_LIBRARIES} ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES})
+# GLSL SOURCES
+add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
+                   COMMAND ${CMAKE_COMMAND} -E copy_directory
+                       ${CMAKE_SOURCE_DIR}/src/glsl/ $<TARGET_FILE_DIR:${PROJECT_NAME}>)
+# ASSETS
+add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
+                   COMMAND ${CMAKE_COMMAND} -E copy_directory
+                       ${CMAKE_SOURCE_DIR}/assets/ $<TARGET_FILE_DIR:${PROJECT_NAME}>/assets/)
+
+target_link_libraries(${PROJECT_NAME} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} glfw)
