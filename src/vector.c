@@ -22,3 +22,10 @@ Vector3	vMultf	(Vector3 a,   float b)		{ return v3(a.x * b, a.y * b, a.z * b);		
 Vector3	vDir	(Vector3 a, Vector3 b)		{ return vAdd(b, vMultf(a, -1.0f));			}
 Vector3	vLerp	(Vector3 a, Vector3 b, float c)	{ return vAdd(a, vMultf(vDir(a, b), c));		}
 
+Vector3 vCross(Vector3 a, Vector3 b) {
+	Vector3 c;
+	c.x = a.y * b.z - a.z * b.y;
+	c.y = a.z * b.x - a.x * b.z;
+	c.z = a.x * b.y - a.y * b.x;
+	return c;
+}

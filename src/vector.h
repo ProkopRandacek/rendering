@@ -18,6 +18,9 @@ float vDist(Vector3 a, Vector3 b);
 // Dot product of 2 vectors
 float vDot(Vector3 a, Vector3 b);
 
+// Cross product of 2 vectors
+Vector3 vCross(Vector3 a, Vector3 b);
+
 // Normalize vector
 Vector3 vNorm(Vector3 v);
 
@@ -35,3 +38,4 @@ Vector3 vDir(Vector3 a, Vector3 b);
 
 // Interpolate between a and b.
 Vector3 vLerp(Vector3 a, Vector3 b, float t);
+

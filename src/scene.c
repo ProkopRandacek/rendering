@@ -2,6 +2,7 @@
 
 #include "scene.h"
 #include "opengl.h"
+#include "camera.h"
 
 extern GL* gl;
 
