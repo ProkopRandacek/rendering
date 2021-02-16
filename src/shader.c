@@ -6,6 +6,8 @@
 
 #include "shader.h"
 
+#define FILE_READING_BUFFER_SIZE 2048
+
 shader shd(char* vertPath, char* fragPath) {
 	shader s;
 	int success;
@@ -82,7 +84,7 @@ char* readFile(char* filename) {
 		exit(1);
 	}
 
-        char c, buffer[4096];
+        char c, buffer[FILE_READING_BUFFER_SIZE];
         unsigned int len = 0;
 
         while((c = fgetc(fp)) != EOF) { // read file byte by byte until EOF

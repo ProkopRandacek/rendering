@@ -49,11 +49,11 @@ void main() {
 	vec2 uv = gl_FragCoord.xy / resolution.xy;
 
 	Camera cam = Camera(
-			vec3(0.0, 5.0, -10.0),  // cam pos
-			vec3(-5.0, 10.0, 0.0),  // top left
-			vec3( 5.0, 10.0, 0.0),  // top right
-			vec3(-5.0,  0.0, 0.0),  // bottom left
-			vec3( 5.0,  0.0, 0.0)); // botttom right
+			camVectors[0],  // cam pos
+			camVectors[1],  // top left
+			camVectors[2],  // top right
+			camVectors[3],  // bottom left
+			camVectors[4]); // botttom right
 
 	vec3 lPoint = Lerp(cam.tl, cam.bl, uv.y);
 	vec3 rPoint = Lerp(cam.tr, cam.br, uv.y);
