@@ -8,8 +8,8 @@
 #include "main.h"
 #include "shader.h"
 #include "init.h"
-#define STB_IMAGE_IMPLEMENTATION
-#include "thirdparty/stb_image.h"
+
+shader s;
 
 int main() {
 	// init
@@ -20,23 +20,20 @@ int main() {
 	glfwSetKeyCallback(window, onKey);
 	glfwSetFramebufferSizeCallback(window, resize);
 
-	shader s = shd("./vertexShader.glsl", "./fragmentShader.glsl");
+	// init gl objects
+	unsigned int VBO, VAO, EBO;
 
-	// rendering data
 	float vertices[] = {
-		// positions          // colors           // texture coords
-		 0.9f,  0.9f, 0.9f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-		 0.9f, -0.9f, 0.9f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-		-0.9f, -0.9f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-		-0.9f,  0.9f, 0.9f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left
+		1.0f,  1.0f, 0.0f,
+		1.0f, -1.0f, 0.0f,
+		-1.0f, -1.0f, 0.0f,
+		-1.0f,  1.0f, 0.0f
 	};
 	unsigned int indices[] = {
-		0, 1, 3, // first triangle
-		1, 2, 3  // second triangle
+		0, 1, 3,
+		1, 2, 3
 	};
 
-	// gl objects
-	unsigned int VBO, VAO, EBO;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 	glGenBuffers(1, &EBO);
@@ -49,56 +46,40 @@ int main() {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-	// position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	// color attribute
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-	// texture coord attribute
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-	glEnableVertexAttribArray(2);
 
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
 
-	// texture
-	unsigned int texture;
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
-	// set the texture wrapping parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	// set texture filtering parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// load image, create texture and generate mipmaps
-	stbi_set_flip_vertically_on_load(1);
-	int width, height, nrChannels;
-	unsigned char *data = stbi_load("./assets/tex.png", &width, &height, &nrChannels, 0);
-	if (data) {
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	} else {
-		printf("failed to load the texture\n");
-	}
-	stbi_image_free(data);
+	// create shader
+	s = shd("./vertexShader.glsl", "./fragmentShader.glsl");
+	shdUse(&s);
 
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	// FPS counting vars
+	double previousTime = glfwGetTime();
+	int frameCount = 0;
 
 	// main loop
 	while (!glfwWindowShouldClose(window)) {
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		glBindTexture(GL_TEXTURE_2D, texture);
-
-		shdUse(&s);
+		// update time uniform
+		shdSetFloat(s, "time", glfwGetTime());
 
 		glBindVertexArray(VAO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
+		// swap buffers
 		glfwSwapBuffers(window);
 		glfwPollEvents();
+
+		// count FPS
+		double currentTime = glfwGetTime();
+		frameCount++;
+		if (currentTime - previousTime >= 1.0) {
+			printf("FPS: %d\n", frameCount);
+			frameCount = 0;
+			previousTime = currentTime;
+		}
 	}
 
 	// exit
@@ -109,14 +90,19 @@ int main() {
 	return 0;
 }
 
+// glfw callback
 void onError(int error, const char* description) {
 	printf("Error %d: %s\n", error, description);
 }
 
+// glfw callback
 void onKey(GLFWwindow* window, int key, int scancode, int action, int mods) {
-	printf("%c, %d, %d, %d\n", key, scancode, action, mods);
+	//printf("%d, %d, %d, %d\n", key, scancode, action, mods);
+	if (scancode == 24 && action == 1) glfwDestroyWindow(window); // exit on `q` press
 }
 
+// glfw callback
 void resize(GLFWwindow* window, int width, int height) {
-    glViewport(0, 0, width, height);
+	glViewport(0, 0, width, height);
+	shdSetIVec2(s, "resolution", width, height);
 }

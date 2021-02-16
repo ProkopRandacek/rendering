@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 #include <GL/glew.h>
@@ -61,14 +62,16 @@ void shdUse(shader* s) {
 	glUseProgram(s->ID);
 }
 
-void setBool(shader s, const char* name, int value) {
+void shdSetInt(shader s, const char* name, int value) {
 	glUniform1i(glGetUniformLocation(s.ID, name), value);
 }
-void setInt(shader s, const char* name, int value) {
-	glUniform1i(glGetUniformLocation(s.ID, name), value);
+
+void shdSetFloat(shader s, const char* name, float value) {
+	glUniform1f(glGetUniformLocation(s.ID, name), value);
 }
-void setFloat(shader s, const char* name, float value) {
-	glUniform1f(glGetUniformLocation(s.ID, name), (int)value);
+
+void shdSetIVec2(shader s, const char* name, int x, int y) {
+	glUniform2i(glGetUniformLocation(s.ID, name), x, y);
 }
 
 char* readFile(char* filename) {
@@ -79,7 +82,7 @@ char* readFile(char* filename) {
 		exit(1);
 	}
 
-        char c, buffer[2048];
+        char c, buffer[4096];
         unsigned int len = 0;
 
         while((c = fgetc(fp)) != EOF) { // read file byte by byte until EOF
