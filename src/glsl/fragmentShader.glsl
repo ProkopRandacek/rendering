@@ -13,10 +13,6 @@ const int sphNum = 3;
 uniform vec4 sphPos[sphNum];
 uniform vec4 sphCol[sphNum];
 
-struct floatint {
-	float f; int i;
-};
-
 // linear vector interpolation
 vec3 Lerp(in vec3 a, in vec3 b, float t) {
 	return a + ((b - a) * t);
@@ -31,16 +27,12 @@ float d2Sphere(in vec3 pos, in vec3 sPos, float r) {
 vec4 mapWorld(in vec3 pos) {
 	vec4 nearest = vec2(99999.9, 0.0).yyyx;
 	for (int i = 0; i < sphNum; i++) {
-		vec3 spherePos = sphPos[i].xyz;
-		float sphereRadius = sphPos[i].w;
-
-		float sphereDist = d2Sphere(pos, spherePos, sphereRadius);
+		float sphereDist = d2Sphere(pos, sphPos[i].xyz, sphPos[i].w);
 		if (sphereDist < nearest.w) {
 			nearest = vec4(sphCol[i].xyz, sphereDist);
 		}
 	}
 
-	//return vec4(0.5, 0.5, 0.5, d2Sphere(pos, vec3(0.0, 5.0, 0.0), 1.0));
 	return nearest;
 }
 
@@ -84,9 +76,7 @@ void main() {
 	vec3 lPoint = Lerp(cam[4], cam[2], uv.y);
 	vec3 rPoint = Lerp(cam[3], cam[1], uv.y);
 	vec3 point  = Lerp(rPoint, lPoint, uv.x);
-
 	vec3 dir = normalize(point - cam[0]);
 
 	outColor = vec4(rayMarch(cam[0], dir), 1.0);
 }
-
