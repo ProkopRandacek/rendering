@@ -35,7 +35,7 @@ int main() {
 			printf("FPS: %d\n", frameCount);
 			frameCount = 0;
 			previousTime = currentTime;
-		} // */
+		}
 	}
 
 	exitOGL();
