@@ -56,16 +56,21 @@ void initOGL() {
 	glEnableVertexAttribArray(0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(gl->VAO);
+	glBindVertexArray(0);
 
 	// create shader
 	gl->s = shd("./vertexShader.glsl", "./fragmentShader.glsl");
 	shdUse(&gl->s);
 
+	glBindVertexArray(gl->VAO);
 }
 
-void renderGL() {
+void renderOGL() {
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+	// swap buffers
+	glfwSwapBuffers(gl->window);
+	glfwPollEvents();
 }
 
 void exitOGL() {

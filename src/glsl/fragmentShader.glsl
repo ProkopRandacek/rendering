@@ -1,65 +1,92 @@
 #version 330 core
-out vec4 FragColor;
+out vec4 outColor;
 
 uniform ivec2 resolution;
-uniform float time;
-uniform vec3 camVectors[5];
+uniform vec3 cam[5];
+// cam[0] = Camera position
+// cam[1] = top    left 
+// cam[2] = top    right
+// cam[3] = bottom right
+// cam[4] = bottom left
 
-struct Camera {
-	vec3 pos; // position of the camera
-	vec3 tl; // The direction of most top left ray
-	vec3 tr; // top right
-	vec3 bl; // ...
-	vec3 br;
+const int sphNum = 3;
+uniform vec4 sphPos[sphNum];
+uniform vec4 sphCol[sphNum];
+
+struct floatint {
+	float f; int i;
 };
 
-// linera vector interpolation
+// linear vector interpolation
 vec3 Lerp(in vec3 a, in vec3 b, float t) {
 	return a + ((b - a) * t);
 }
 
-// disitance to sphere
-float d2Sphere(in vec3 p, in vec3 c, float r) {
-	return length(p - c) - r;
+// distance to sphere
+float d2Sphere(in vec3 pos, in vec3 sPos, float r) {
+	return length(pos - sPos) - r;
 }
 
+// distance to nearest object
+vec4 mapWorld(in vec3 pos) {
+	vec4 nearest = vec2(99999.9, 0.0).yyyx;
+	for (int i = 0; i < sphNum; i++) {
+		vec3 spherePos = sphPos[i].xyz;
+		float sphereRadius = sphPos[i].w;
+
+		float sphereDist = d2Sphere(pos, spherePos, sphereRadius);
+		if (sphereDist < nearest.w) {
+			nearest = vec4(sphCol[i].xyz, sphereDist);
+		}
+	}
+
+	//return vec4(0.5, 0.5, 0.5, d2Sphere(pos, vec3(0.0, 5.0, 0.0), 1.0));
+	return nearest;
+}
+
+vec3 calculateNormal(in vec3 p) {
+	const vec3 smol = vec3(0.001, 0.0, 0.0);
+
+	float x = (mapWorld(p + smol.xyy) - mapWorld(p - smol.xyy)).w;
+	float y = (mapWorld(p + smol.yxy) - mapWorld(p - smol.yxy)).w;
+	float z = (mapWorld(p + smol.yyx) - mapWorld(p - smol.yyx)).w;
+
+	return normalize(vec3(x, y, z));
+}
+
+// ray marching logic
 vec3 rayMarch(in vec3 rayOrigin, in vec3 rayDir) {
 	float distTraveled = 0.0;
 	const int STEPSNUM = 32;
-	const float COLLISION_THRESHOLD = 0.001;
+	const float COLLISION_THRESHOLD = 0.0001;
 	const float MAX_TRACE_DIST = 1000.0;
 
 	for (int i = 0; i < STEPSNUM; i++) {
 		vec3 currentPos = rayOrigin + (distTraveled * rayDir);
+		vec4 nearest = mapWorld(currentPos);
 
-		float safeDist = d2Sphere(currentPos, vec3(0.0, 5.0, 0.0), 1.0);
+		float safeDist = nearest.w;
 
 		if (safeDist < COLLISION_THRESHOLD) { // collision
-			return vec3(1.0, 0.0, 0.0);
+			return calculateNormal(currentPos) * 0.5 / 0.5;
 		}
 		distTraveled += safeDist;
 		if (safeDist > MAX_TRACE_DIST) { // too far
 			break;
 		}
 	}
-	return vec3(0.0); // run out of trace_dist or stepsnum
+	return vec3(0.2); // run out of trace_dist or stepsnum
 }
 
 void main() {
 	vec2 uv = gl_FragCoord.xy / resolution.xy;
 
-	Camera cam = Camera(
-			camVectors[0],  // cam pos
-			camVectors[1],  // top left
-			camVectors[2],  // top right
-			camVectors[3],  // bottom left
-			camVectors[4]); // botttom right
-
-	vec3 lPoint = Lerp(cam.tl, cam.bl, uv.y);
-	vec3 rPoint = Lerp(cam.tr, cam.br, uv.y);
+	vec3 lPoint = Lerp(cam[4], cam[2], uv.y);
+	vec3 rPoint = Lerp(cam[3], cam[1], uv.y);
 	vec3 point  = Lerp(rPoint, lPoint, uv.x);
 
-	vec3 dir = normalize(point - cam.pos);
+	vec3 dir = normalize(point - cam[0]);
 
-	FragColor = vec4(rayMarch(cam.pos, dir), 1.0);
+	outColor = vec4(rayMarch(cam[0], dir), 1.0);
 }
+

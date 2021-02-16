@@ -6,7 +6,7 @@
 
 #include "shader.h"
 
-#define FILE_READING_BUFFER_SIZE 2048
+#define FILE_READING_BUFFER_SIZE 4096
 
 shader shd(char* vertPath, char* fragPath) {
 	shader s;
@@ -24,6 +24,7 @@ shader shd(char* vertPath, char* fragPath) {
 	if (!success) {
 		glGetShaderInfoLog(vertShd, 512, NULL, infoLog);
 		printf("Error while compiling vertex shader\n%s\n", infoLog);
+		exit(1);
 	}
 
 
@@ -37,6 +38,7 @@ shader shd(char* vertPath, char* fragPath) {
 	if (!success) {
 		glGetShaderInfoLog(fragShd, 512, NULL, infoLog);
 		printf("Error while compiling fragmen shader\n%s\n", infoLog);
+		exit(1);
 	}
 
 
@@ -50,6 +52,7 @@ shader shd(char* vertPath, char* fragPath) {
 	if (!success) {
 		glGetProgramInfoLog(s.ID, 512, NULL, infoLog);
 		printf("Error while linking shaders\n%s\n", infoLog);
+		exit(1);
 	}
 
 
@@ -64,17 +67,12 @@ void shdUse(shader* s) {
 	glUseProgram(s->ID);
 }
 
-void shdSetInt(shader s, const char* name, int value) {
-	glUniform1i(glGetUniformLocation(s.ID, name), value);
-}
+void shdSetInt(shader s, const char* name, int value) {      glUniform1i(glGetUniformLocation(s.ID, name), value); }
+void shdSetFloat(shader s, const char* name, float value) {  glUniform1f(glGetUniformLocation(s.ID, name), value); }
+void shdSetIVec2(shader s, const char* name, int x, int y) { glUniform2i(glGetUniformLocation(s.ID, name), x, y ); }
 
-void shdSetFloat(shader s, const char* name, float value) {
-	glUniform1f(glGetUniformLocation(s.ID, name), value);
-}
-
-void shdSetIVec2(shader s, const char* name, int x, int y) {
-	glUniform2i(glGetUniformLocation(s.ID, name), x, y);
-}
+void shdSetVec3Array(shader s, const char* name, unsigned int count, float* values) { glUniform3fv(glGetUniformLocation(s.ID, name), count, values); }
+void shdSetVec4Array(shader s, const char* name, unsigned int count, float* values) { glUniform4fv(glGetUniformLocation(s.ID, name), count, values); }
 
 char* readFile(char* filename) {
         FILE* fp = fopen(filename, "r");

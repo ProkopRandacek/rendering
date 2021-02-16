@@ -9,5 +9,9 @@ typedef struct GLs {
 	shader s;
 } GL;
 
+// init GL stuff
 void initOGL();
+// render fragment shader basically
+void renderOGL();
+// exit GL stuff
 void exitOGL();
