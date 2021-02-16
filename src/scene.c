@@ -18,6 +18,10 @@ void createScene() {
 	printf("camera size: %ld bytes\n", sizeof(cam));
 	shdSetVec3Array(gl->s, "cam", 5 * 3, cam);
 
+	// == Light source
+	float lsPos[] = { 2.0, 10.0, -2.0 };
+	shdSetVec3Array(gl->s, "lightPos", 1, lsPos);
+
 	// == Spheres
 	float sphPos[] = {
 		 3.0f, 3.0f, 0.0f, 2.0f,  // x, y, z, radius

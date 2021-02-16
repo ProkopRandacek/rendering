@@ -12,6 +12,12 @@ uniform vec3 cam[5];
 const int sphNum = 3;
 uniform vec4 sphPos[sphNum];
 uniform vec4 sphCol[sphNum];
+uniform vec3 lightPos;
+
+struct flnt { // fl(oat and i)nt
+    float d;
+    int i;
+};
 
 // linear vector interpolation
 vec3 Lerp(in vec3 a, in vec3 b, float t) {
@@ -20,28 +26,31 @@ vec3 Lerp(in vec3 a, in vec3 b, float t) {
 
 // distance to sphere
 float d2Sphere(in vec3 pos, in vec3 sPos, float r) {
-	return length(pos - sPos) - r;
+	float displacement = sin(5.0 * pos.x) * sin(5.0 * pos.y) * sin(5.0 * pos.z) * 0.25;
+	return length(pos - sPos) - r + displacement;
 }
 
 // distance to nearest object
-vec4 mapWorld(in vec3 pos) {
-	vec4 nearest = vec2(99999.9, 0.0).yyyx;
+flnt mapWorld(in vec3 pos) {
+	flnt nearest = flnt(99999.9, -1);
 	for (int i = 0; i < sphNum; i++) {
 		float sphereDist = d2Sphere(pos, sphPos[i].xyz, sphPos[i].w);
-		if (sphereDist < nearest.w) {
-			nearest = vec4(sphCol[i].xyz, sphereDist);
+		if (sphereDist < nearest.d) {
+			nearest.d = sphereDist;
+			nearest.i = i;
 		}
 	}
 
 	return nearest;
 }
 
+// calculate normal from given point on a surface
 vec3 calculateNormal(in vec3 p) {
-	const vec3 smol = vec3(0.001, 0.0, 0.0);
+	const vec3 smol = vec3(0.01, 0.0, 0.0);
 
-	float x = (mapWorld(p + smol.xyy) - mapWorld(p - smol.xyy)).w;
-	float y = (mapWorld(p + smol.yxy) - mapWorld(p - smol.yxy)).w;
-	float z = (mapWorld(p + smol.yyx) - mapWorld(p - smol.yyx)).w;
+	float x = mapWorld(p + smol.xyy).d - mapWorld(p - smol.xyy).d;
+    float y = mapWorld(p + smol.yxy).d - mapWorld(p - smol.yxy).d;
+    float z = mapWorld(p + smol.yyx).d - mapWorld(p - smol.yyx).d;
 
 	return normalize(vec3(x, y, z));
 }
@@ -49,18 +58,25 @@ vec3 calculateNormal(in vec3 p) {
 // ray marching logic
 vec3 rayMarch(in vec3 rayOrigin, in vec3 rayDir) {
 	float distTraveled = 0.0;
-	const int STEPSNUM = 32;
-	const float COLLISION_THRESHOLD = 0.0001;
+	const int STEPSNUM = 256;
+	const float COLLISION_THRESHOLD = 0.001;
 	const float MAX_TRACE_DIST = 1000.0;
 
-	for (int i = 0; i < STEPSNUM; i++) {
+	for (int i = 0; i < STEPSNUM; ++i) {
 		vec3 currentPos = rayOrigin + (distTraveled * rayDir);
-		vec4 nearest = mapWorld(currentPos);
+		flnt nearest = mapWorld(currentPos);
 
-		float safeDist = nearest.w;
+		float safeDist = nearest.d;
 
 		if (safeDist < COLLISION_THRESHOLD) { // collision
-			return calculateNormal(currentPos) * 0.5 / 0.5;
+			vec3 surfaceClr = sphCol[nearest.i].rgb;
+
+			vec3 normal = calculateNormal(currentPos);
+			vec3 dir2ls = normalize(lightPos - currentPos);
+
+			float lightIntensity = max(0.0, dot(normal, dir2ls));
+
+			return lightIntensity * surfaceClr;
 		}
 		distTraveled += safeDist;
 		if (safeDist > MAX_TRACE_DIST) { // too far

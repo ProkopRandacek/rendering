@@ -3,6 +3,9 @@
 
 #include "opengl.h"
 
+#define w 1000
+#define h 1000
+
 GL* gl;
 
 void initOGL() {
@@ -15,7 +18,7 @@ void initOGL() {
 	}
 
 	// create window
-	gl->window = glfwCreateWindow(800, 800, "Title", NULL, NULL);
+	gl->window = glfwCreateWindow(w, h, "Title", NULL, NULL);
 	if (!gl->window) {
 		glfwTerminate();
 		printf("window creation failed\n");

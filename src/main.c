@@ -20,20 +20,19 @@ int main() {
 
 	createScene();
 
+	printf("Initialization successful\nStarting main loop\n");
+
 	double previousTime = glfwGetTime();
 	int frameCount = 0;
 
-	printf("Initialization successful\nStarting main loop\n");
-
 	while (!glfwWindowShouldClose(gl->window)) {
-		// render
 		renderOGL();
 
 		// count FPS
 		double currentTime = glfwGetTime();
 		frameCount++;
 		if (currentTime - previousTime >= 1.0) {
-			printf("FPS: %d\r\n", frameCount);
+			printf("FPS: %d\n", frameCount);
 			frameCount = 0;
 			previousTime = currentTime;
 		} // */
@@ -44,7 +43,6 @@ int main() {
 }
 
 // Callback funcs
-
 void onError(int error, const char* description) {
 	printf("Error %d: %s\n", error, description);
 }
