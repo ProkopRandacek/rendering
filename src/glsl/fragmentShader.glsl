@@ -6,7 +6,7 @@ uniform float time;
 uniform ivec2 resolution;
 uniform vec3 cam[5];
 // cam[0] = Camera position
-// cam[1] = top    left 
+// cam[1] = top    left
 // cam[2] = top    right
 // cam[3] = bottom right
 // cam[4] = bottom left
@@ -26,10 +26,32 @@ vec3 Lerp(in vec3 a, in vec3 b, float t) {
 	return a + ((b - a) * t);
 }
 
-// distance to sphere
-float d2Sphere(in vec3 pos, in vec3 sPos, float r) {
-	//float displacement = sin(5.0 * pos.x) * sin(5.0 * pos.y) * sin(5.0 * pos.z) * 0.25;
-	return length(pos - sPos) - r/* + displacement*/;
+// http://iquilezles.org/www/articles/distfunctions/distfunctions.htm
+float d2Sphere(in vec3 pos, in vec3 sphereCenter, float radius) {
+    //float displacement = sin(5.0 * pos.x) * sin(5.0 * pos.y) * sin(5.0 * pos.z) * 0.25;
+    return length(pos - sphereCenter) - radius/* + displacement*/;
+}
+
+float d2Cube(in vec3 pos, in vec3 cubeCenter, in vec3 scale) {
+    vec3 o = abs(pos - cubeCenter) - size;
+    float ud = length(max(o, 0));
+    float n = max(max(min(o.x, 0), min(o.y, 0)), min(o.z, 0));
+    return ud + n;
+}
+
+float d2Torus(vec3 eye, vec3 centre, float r1, float r2) {
+    vec2 q = vec2(length((eye-centre).xz)-r1,eye.y-centre.y);
+    return length(q)-r2;
+}
+
+float d2Prism(vec3 eye, vec3 centre, vec2 h) {
+    float3 q = abs(eye-centre);
+    return max(q.z-h.y,max(q.x*0.866025+eye.y*0.5,-eye.y)-h.x*0.5);
+}
+
+float CylinderDistance(vec3 eye, vec3 centre, vec2 h) {
+    vec2 d = abs(vec2(length((eye).xz), eye.y)) - h;
+    return length(max(d,0.0)) + max(min(d.x,0),min(d. y,0));
 }
 
 // distance to nearest object
