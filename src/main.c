@@ -32,7 +32,7 @@ int main() {
 		double currentTime = glfwGetTime();
 		frameCount++;
 		if (currentTime - previousTime >= 1.0) {
-			printf("FPS: %d\n", frameCount);
+			//printf("FPS: %d\n", frameCount);
 			frameCount = 0;
 			previousTime = currentTime;
 		}
