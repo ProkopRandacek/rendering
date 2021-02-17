@@ -1,0 +1,4 @@
+#!/bin/sh
+cd build/out/
+ffmpeg -r 30 -s 1000x1000 -i %04d.bmp ../../anim.mp4
+cd ../../

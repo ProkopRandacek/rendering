@@ -1,6 +1,13 @@
-# Ray tracing in C
+# Ray marching rendering
 
-Computing rays on GPU is in development on the GL branch.
+see `code` for explanation what every file does.  
 
-[![demo render](https://randacek.dev/dl/demo_render_ico.jpg)](https://randacek.dev/dl/render_demo.mp4 "demo render")  
-moving light source, 120 frames, 1000x1000, ~10 seconds per image per thread
+## Build:
+Run the `run` script. The executable will start after the build is done.
+
+### Deps:
+- cmake
+- glfw3
+- glew  
+
+(`yay -S glew glfw-x11 cmake --needed`)

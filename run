@@ -1,7 +1,12 @@
 #!/bin/sh
-gcc main.c camera.c vectormath.c render.c shapes.c color.c -obuild -pthread -lm && ./build
-: '
-ffmpeg -r 20 -s 600x600 -i %04d.bmp anim.mp4
-gcc main.c vectormath.c render.c -pthread -lm -ggdb
-gdb a.out
-'
+rm build -rf &&
+echo ========================== compiling the code =========================== &&
+mkdir -p ./build/out/ &&
+cd build &&
+cmake .. -DCMAKE_BUILD_TYPE=Debug &&
+make &&
+echo ========================== running the code =============================
+./rendering &
+sleep 0.5
+i3-msg "floating toggle"
+cd ..
