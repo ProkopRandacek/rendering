@@ -1,6 +1,8 @@
 #version 330 core
 out vec4 outColor;
 
+uniform float time;
+
 uniform ivec2 resolution;
 uniform vec3 cam[5];
 // cam[0] = Camera position
@@ -14,8 +16,8 @@ uniform vec4 sphPos[sphNum];
 uniform vec4 sphCol[sphNum];
 uniform vec3 lightPos;
 
-struct flnt { // fl(oat and i)nt
-    float d;
+struct hitData {
+    float dist;
     int i;
 };
 
@@ -26,50 +28,68 @@ vec3 Lerp(in vec3 a, in vec3 b, float t) {
 
 // distance to sphere
 float d2Sphere(in vec3 pos, in vec3 sPos, float r) {
-	float displacement = sin(5.0 * pos.x) * sin(5.0 * pos.y) * sin(5.0 * pos.z) * 0.25;
-	return length(pos - sPos) - r + displacement;
+	//float displacement = sin(5.0 * pos.x) * sin(5.0 * pos.y) * sin(5.0 * pos.z) * 0.25;
+	return length(pos - sPos) - r/* + displacement*/;
 }
 
 // distance to nearest object
-flnt mapWorld(in vec3 pos) {
-	flnt nearest = flnt(99999.9, -1);
+hitData mapWorld(in vec3 pos) {
+	hitData hit = hitData(99999.9, -1);
 	for (int i = 0; i < sphNum; i++) {
 		float sphereDist = d2Sphere(pos, sphPos[i].xyz, sphPos[i].w);
-		if (sphereDist < nearest.d) {
-			nearest.d = sphereDist;
-			nearest.i = i;
+		if (sphereDist < hit.dist) {
+			hit.dist = sphereDist;
+			hit.i = i;
 		}
 	}
+	float d2Floor = pos.y; // floor is on y = 0 for now
+	if (hit.dist > d2Floor) { // if floor is closest
+		hit.dist = d2Floor;
+		hit.i = -1;
+	}
 
-	return nearest;
+	return hit;
 }
 
 // calculate normal from given point on a surface
 vec3 calculateNormal(in vec3 p) {
 	const vec3 smol = vec3(0.01, 0.0, 0.0);
 
-	float x = mapWorld(p + smol.xyy).d - mapWorld(p - smol.xyy).d;
-    float y = mapWorld(p + smol.yxy).d - mapWorld(p - smol.yxy).d;
-    float z = mapWorld(p + smol.yyx).d - mapWorld(p - smol.yyx).d;
+	float x = mapWorld(p + smol.xyy).dist - mapWorld(p - smol.xyy).dist;
+    float y = mapWorld(p + smol.yxy).dist - mapWorld(p - smol.yxy).dist;
+    float z = mapWorld(p + smol.yyx).dist - mapWorld(p - smol.yyx).dist;
 
 	return normalize(vec3(x, y, z));
+}
+
+vec3 checkerboard(in vec3 pos) {
+	if (((int(pos.x) + int(pos.z)) % 2) == 0) {
+		return vec3(0.5);
+	} else {
+		return vec3(0.7);
+	}
 }
 
 // ray marching logic
 vec3 rayMarch(in vec3 rayOrigin, in vec3 rayDir) {
 	float distTraveled = 0.0;
-	const int STEPSNUM = 256;
-	const float COLLISION_THRESHOLD = 0.001;
-	const float MAX_TRACE_DIST = 1000.0;
+	const int STEPSNUM = 512;
+	const float COLLISION_THRESHOLD = 0.01;
+	const float MAX_TRACE_DIST = 10000.0;
 
 	for (int i = 0; i < STEPSNUM; ++i) {
 		vec3 currentPos = rayOrigin + (distTraveled * rayDir);
-		flnt nearest = mapWorld(currentPos);
+		hitData hit = mapWorld(currentPos);
 
-		float safeDist = nearest.d;
+		float safeDist = hit.dist;
 
 		if (safeDist < COLLISION_THRESHOLD) { // collision
-			vec3 surfaceClr = sphCol[nearest.i].rgb;
+			vec3 surfaceClr;
+			if (hit.i != -1) {
+				surfaceClr = sphCol[hit.i].rgb; // sphere color
+			} else {
+				surfaceClr = checkerboard(currentPos);
+			}
 
 			vec3 normal = calculateNormal(currentPos);
 			vec3 dir2ls = normalize(lightPos - currentPos);
@@ -83,6 +103,7 @@ vec3 rayMarch(in vec3 rayOrigin, in vec3 rayDir) {
 			break;
 		}
 	}
+
 	return vec3(0.2); // run out of trace_dist or stepsnum
 }
 
@@ -96,3 +117,4 @@ void main() {
 
 	outColor = vec4(rayMarch(cam[0], dir), 1.0);
 }
+

@@ -13,7 +13,6 @@ shader shd(char* vertPath, char* fragPath) {
 	int success;
 	char infoLog[512];
 
-
 	// vertex shader
 	const char* vertShdSource = readFile("./vertexShader.glsl");
 	unsigned int vertShd = glCreateShader(GL_VERTEX_SHADER);
@@ -26,7 +25,6 @@ shader shd(char* vertPath, char* fragPath) {
 		printf("Error while compiling vertex shader\n%s\n", infoLog);
 		exit(1);
 	}
-
 
 	// fragment shader
 	const char* fragShdSource = readFile("./fragmentShader.glsl");
@@ -41,7 +39,6 @@ shader shd(char* vertPath, char* fragPath) {
 		exit(1);
 	}
 
-
 	// shader program
 	s.ID = glCreateProgram();
 	glAttachShader(s.ID, vertShd);
@@ -55,10 +52,8 @@ shader shd(char* vertPath, char* fragPath) {
 		exit(1);
 	}
 
-
 	glDeleteShader(vertShd);
 	glDeleteShader(fragShd);
-
 
 	return s;
 }

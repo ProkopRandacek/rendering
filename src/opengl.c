@@ -1,15 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "opengl.h"
+#include "fileio.h"
 
 #define w 1000
 #define h 1000
 
 GL* gl;
+char* pixels;
 
 void initOGL() {
 	gl = malloc(sizeof(GL));
+	pixels = malloc(w * h * 3);
 
 	// glfw init
 	if (!glfwInit()) {
@@ -24,6 +28,9 @@ void initOGL() {
 		printf("window creation failed\n");
 		exit(1);
 	}
+	glViewport(10, 10, w, h);
+	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+
 	glfwMakeContextCurrent(gl->window);
 
 	glewExperimental = GL_TRUE;
@@ -72,6 +79,16 @@ void renderOGL() {
 	// swap buffers
 	glfwSwapBuffers(gl->window);
 	glfwPollEvents();
+}
+
+void screenshot(unsigned int f) {
+	glReadPixels(0, 0, w, h, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+
+	char fname[15];
+	sprintf(fname, "out/%04d", f);
+	strcat(fname, ".bmp");
+
+	writeBMP(fname, pixels, w, h);
 }
 
 void exitOGL() {

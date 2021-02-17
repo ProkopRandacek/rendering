@@ -1,5 +1,6 @@
 build
 src/thirdparty
+anim.mp4
 
 ### CMake ###
 CMakeLists.txt.user

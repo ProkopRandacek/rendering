@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <unistd.h>
 
 #include "main.h"
 #include "opengl.h"
@@ -22,20 +23,19 @@ int main() {
 
 	printf("Initialization successful\nStarting main loop\n");
 
-	double previousTime = glfwGetTime();
+	sleep(1); // Wait for being floated when using i3
+
 	int frameCount = 0;
 
 	while (!glfwWindowShouldClose(gl->window)) {
+		updateScene(glfwGetTime());
+
 		renderOGL();
 
-		// count FPS
-		double currentTime = glfwGetTime();
+		if (frameCount > 2) screenshot(frameCount);
+
+		if (frameCount > 100) exit(0);
 		frameCount++;
-		if (currentTime - previousTime >= 1.0) {
-			//printf("FPS: %d\n", frameCount);
-			frameCount = 0;
-			previousTime = currentTime;
-		}
 	}
 
 	exitOGL();

@@ -1,16 +1,18 @@
-main.c                                     - Code initialization, main render loop, glfw callbacks.
+main.c                                   - Code initialization, main render loop, glfw callbacks.
  |
- +-> opengl.c                              - All interactions with OpenGL are here. OpenGL should not be called outside this for simplicity.
- |   ^  |
- |   |  +-> shader.c                       - Shader reading, compiling, uniforms functions.
- |   |        |
- |   |        +-> glsl/fragmentShader.glsl - The fragment shader. Contains ray marching implementation.
- |   |        |
- |   |        +-> glsl/vertexShader.glsl   - The vertex shader.
- |   |
- +-> scene.c                               - Scene is defined and updated here.
+ +-> opengl.c                            - All interactions with OpenGL are here. OpenGL should not be called outside this for simplicity.
+ |    |
+ |    +-> shader.c                       - Shader reading, compiling, uniforms functions.
+ |    |     |
+ |    |     +-> glsl/fragmentShader.glsl - The fragment shader. Contains ray marching implementation.
+ |    |     |
+ |    |     +-> glsl/vertexShader.glsl   - The vertex shader.
+ |    |
+ |    +-> fileio.c                       - Takes pixel bytes from memory and dumps them into a bmp file
+ |
+ +-> scene.c                             - Scene is defined and updated here.
       |
-      +-> camera.c                         - Calculate edge rays from camera position and facing direction.
-            |                              - Edge rays are used to interpolate between, when calculating what direction to cast the rays in.
+      +-> camera.c                       - Calculate edge rays from camera position and facing direction.
+            |                            - Edge rays are used to interpolate between, when calculating what direction to cast the rays in.
             |
-            +-> vector.c                   - Definitions of Vectors and functions to calculate with them.
+            +-> vector.c                 - Definitions of Vectors and functions to calculate with them.
