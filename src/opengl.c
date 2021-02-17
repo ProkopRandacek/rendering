@@ -10,6 +10,7 @@
 
 GL* gl;
 char* pixels;
+unsigned int frameCount = 0;
 
 void initOGL() {
 	gl = malloc(sizeof(GL));
@@ -74,6 +75,7 @@ void initOGL() {
 }
 
 void renderOGL() {
+	shdSetFloat(gl->s, "time", glfwGetTime());
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 	// swap buffers
@@ -81,14 +83,23 @@ void renderOGL() {
 	glfwPollEvents();
 }
 
-void screenshot(unsigned int f) {
+void screenshot() {
+	frameCount++;
+
+	// get the pixels
 	glReadPixels(0, 0, w, h, GL_RGB, GL_UNSIGNED_BYTE, pixels);
 
+	if (frameCount < 2) return;
+	if (frameCount > 300) exit(0);
+
+	// generate the filename
 	char fname[15];
-	sprintf(fname, "out/%04d", f);
+	sprintf(fname, "out/%04d", frameCount);
 	strcat(fname, ".bmp");
 
+	// dump the data to disk
 	writeBMP(fname, pixels, w, h);
+
 }
 
 void exitOGL() {

@@ -25,17 +25,10 @@ int main() {
 
 	sleep(1); // Wait for being floated when using i3
 
-	int frameCount = 0;
-
 	while (!glfwWindowShouldClose(gl->window)) {
 		updateScene(glfwGetTime());
-
 		renderOGL();
-
-		if (frameCount > 2) screenshot(frameCount);
-
-		if (frameCount > 100) exit(0);
-		frameCount++;
+		screenshot();
 	}
 
 	exitOGL();

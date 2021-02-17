@@ -26,6 +26,11 @@ vec3 Lerp(in vec3 a, in vec3 b, float t) {
 	return a + ((b - a) * t);
 }
 
+float smoothMin(float a, float b, float k) {
+	float h = max(k - abs(a - b), 0) / k;
+	return min(a, b) - h * h * h * k * 1/6.0;
+}
+
 // http://iquilezles.org/www/articles/distfunctions/distfunctions.htm
 float d2Sphere(in vec3 pos, in vec3 sphereCenter, float radius) {
     //float displacement = sin(5.0 * pos.x) * sin(5.0 * pos.y) * sin(5.0 * pos.z) * 0.25;
@@ -33,7 +38,7 @@ float d2Sphere(in vec3 pos, in vec3 sphereCenter, float radius) {
 }
 
 float d2Cube(in vec3 pos, in vec3 cubeCenter, in vec3 scale) {
-    vec3 o = abs(pos - cubeCenter) - size;
+    vec3 o = abs(pos - cubeCenter) - scale;
     float ud = length(max(o, 0));
     float n = max(max(min(o.x, 0), min(o.y, 0)), min(o.z, 0));
     return ud + n;
@@ -45,7 +50,7 @@ float d2Torus(vec3 eye, vec3 centre, float r1, float r2) {
 }
 
 float d2Prism(vec3 eye, vec3 centre, vec2 h) {
-    float3 q = abs(eye-centre);
+    vec3 q = abs(eye-centre);
     return max(q.z-h.y,max(q.x*0.866025+eye.y*0.5,-eye.y)-h.x*0.5);
 }
 
@@ -58,7 +63,9 @@ float CylinderDistance(vec3 eye, vec3 centre, vec2 h) {
 hitData mapWorld(in vec3 pos) {
 	hitData hit = hitData(99999.9, -1);
 	for (int i = 0; i < sphNum; i++) {
-		float sphereDist = d2Sphere(pos, sphPos[i].xyz, sphPos[i].w);
+		float j = sin(time) * 0.5 + 0.5;
+		float sphereDist = d2Torus(pos, sphPos[i].xyz, sphPos[i].w, sphPos[i].w / 2.5f) * j +
+				                  d2Cube(pos, sphPos[i].xyz, vec3(sphPos[i].w)) * (1.0 - j);
 		if (sphereDist < hit.dist) {
 			hit.dist = sphereDist;
 			hit.i = i;

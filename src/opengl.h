@@ -18,4 +18,4 @@ void renderOGL();
 void exitOGL();
 
 // take a screenshot and write it to bmp file
-void screenshot(unsigned int f);
+void screenshot();

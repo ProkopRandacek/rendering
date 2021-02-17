@@ -21,10 +21,10 @@ void createScene() {
 
 void createCamera(float time) {
 	Vector3 campos = vLerp(
-			v3(-2.0f, 5.0f, -10.0f),
-			v3(2.0f, 5.0f, -10.0f),
+			v3(0.0f, 8.0f, -7.0f),
+			v3(0.0f, 8.0f, -7.0f),
 			sin(time) * 0.5f + 0.5f);
-	Camera cam = cmr(campos, v3(0.0f, 0.0f, 1.0f), 0.0f, 1.0f, 1.0f);
+	Camera cam = cmr(campos, v3(0.0f, -1.0f, 1.0f), 0.0f, 1.5f, 1.5f);
 	float camFloats[15];
 	cam2floats(cam, camFloats);
 
@@ -33,7 +33,7 @@ void createCamera(float time) {
 }
 
 void createLight(float time) {
-	float lsPos[] = { 2.0, 10.0, -2.0 };
+	float lsPos[] = { 0.0, 7.0, -5.0 };
 
 	//printf("light size: %ld bytes\n", sizeof(lsPos));
 	shdSetVec3Array(gl->s, "lightPos", 1, lsPos);
@@ -41,7 +41,7 @@ void createLight(float time) {
 
 void createSpheres(float time) {
 	float sphPos[] = {
-		 3.0f, 3.0f, 0.0f, 2.0f,  // x, y, z, radius
+		 3.0f, 2.5f, 0.0f, 2.0f,  // x, y, z, radius
 		-3.0f, 7.0f, 0.0f, 1.0f,
 		 3.0f, 6.0f, 0.0f, 0.5f
 	};
