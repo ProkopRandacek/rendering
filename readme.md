@@ -15,7 +15,6 @@ TODO:
 - Multiple *different* shapes
 - Shape transformation control from C (rn hardcoded in GLSL)
 - Maybe better animation control from C
-- Better rotation over time control from C
 
 see `docs` for explanation what every file does.  
 

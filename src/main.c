@@ -28,7 +28,7 @@ int main() {
 	while (!glfwWindowShouldClose(gl->window)) {
 		updateScene(glfwGetTime());
 		renderOGL();
-		screenshot();
+		//screenshot();
 	}
 
 	exitOGL();
