@@ -1,14 +1,14 @@
 # Ray marching rendering
 
 Current rendering capabilities:  
-[demo](https://randacek.dev/dl/render_demo.mp4)  
 - Sphere, Cube, Tourus, Prism and Cylinder rendering
 - Transforming between shapes over time
 - Multiple object in scene
 - Modify camera position, FOV, direction
 - Checkerboard round on y=0
 - Very simple soft shadows
-- render real-time or export each frame as image (not realtime, ~10 fps)  
+- render real-time (60 fps) or export each frame as image (~15 fps)  
+[demo](https://randacek.dev/dl/render_demo.mp4) - (Tourus to Cube transition, rendering to file, Multiple object in scene)
 
 TODO:
 - Shape rotating
@@ -17,7 +17,7 @@ TODO:
 - Maybe better animation control from C
 - Better rotation over time control from C
 
-see `code` for explanation what every file does.  
+see `docs` for explanation what every file does.  
 
 ## Build:
 Run the `run` script. The executable will start after the build is done.
