@@ -39,14 +39,14 @@ Has only position
 
 #### Sphere
 
-7 floats;
-1 2 3 = XYZ coordinates
-4 5 6 = RGB color
-7 = Radius
+7 floats;  
+1 2 3 = XYZ coordinates  
+4 5 6 = RGB color  
+7 = Radius  
 
 #### Cube
 
-9 floats;
-1 2 3 = XYZ coordinates
-4 5 6 = RGB color
-7 8 9 = XYZ scale
+9 floats;  
+1 2 3 = XYZ coordinates  
+4 5 6 = RGB color  
+7 8 9 = XYZ scale  
