@@ -23,7 +23,7 @@ int main() {
 
 	printf("Initialization successful\nStarting main loop\n");
 
-	sleep(1); // Wait for being floated when using i3
+	//sleep(1); // Wait for being floated when using i3
 
 	while (!glfwWindowShouldClose(gl->window)) {
 		updateScene(glfwGetTime());

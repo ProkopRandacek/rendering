@@ -86,18 +86,15 @@ void renderOGL() {
 void screenshot() {
 	frameCount++;
 
-	// get the pixels
 	glReadPixels(0, 0, w, h, GL_RGB, GL_UNSIGNED_BYTE, pixels);
 
 	if (frameCount < 2) return;
 	if (frameCount > 300) exit(0);
 
-	// generate the filename
 	char fname[15];
 	sprintf(fname, "out/%04d", frameCount);
 	strcat(fname, ".bmp");
 
-	// dump the data to disk
 	writeBMP(fname, pixels, w, h);
 }
 

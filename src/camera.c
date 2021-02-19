@@ -53,19 +53,9 @@ Camera cmr(Vector3 pos, Vector3 dir, float angle, float h, float w) {
 }
 
 void cam2floats(Camera cam, float* f) {
-	f[ 0] = cam.pos.x;
-	f[ 1] = cam.pos.y;
-	f[ 2] = cam.pos.z;
-	f[ 3] = cam.tr.x;
-	f[ 4] = cam.tr.y;
-	f[ 5] = cam.tr.z;
-	f[ 6] = cam.tl.x;
-	f[ 7] = cam.tl.y;
-	f[ 8] = cam.tl.z;
-	f[ 9] = cam.br.x;
-	f[10] = cam.br.y;
-	f[11] = cam.br.z;
-	f[12] = cam.bl.x;
-	f[13] = cam.bl.y;
-	f[14] = cam.bl.z;
+	f[ 0] = cam.pos.x; f[ 1] = cam.pos.y; f[ 2] = cam.pos.z;
+	f[ 3] = cam.tr.x;  f[ 4] = cam.tr.y;  f[ 5] = cam.tr.z;
+	f[ 6] = cam.tl.x;  f[ 7] = cam.tl.y;  f[ 8] = cam.tl.z;
+	f[ 9] = cam.br.x;  f[10] = cam.br.y;  f[11] = cam.br.z;
+	f[12] = cam.bl.x;  f[13] = cam.bl.y;  f[14] = cam.bl.z;
 }

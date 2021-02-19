@@ -16,6 +16,7 @@ TODO:
 - Maybe better animation control from C
 - `#import`s seems to be messy.
 - Maybe switch to make instead of cmake
+- Split fragment shader into multiple parts
 
 see `archtecture.md` for explanation what every file does.  
 
