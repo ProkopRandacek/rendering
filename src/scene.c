@@ -3,16 +3,13 @@
 #include <math.h>
 
 #include "opengl.h"
-#include "scene.h"
 #include "camera.h"
-
-const int sphereNum = 2;
-const int cubeNum = 1;
-
-const int floatPerSph = 7;
-const int floatPerCube = 9;
+#include "shapes.h"
+#include "scene.h"
 
 extern GL* gl;
+
+extern const int sphereNum, cubeNum, floatPerSph, floatPerCube;
 
 void createScene() {
 	// ==== Camera ====
@@ -52,25 +49,27 @@ void createLight(float time) {
 }
 
 void createSpheres(float time) {
-	float spheres[] = {
-		 // position         //color             // radius
-		 3.0f, 2.5f, 0.0f,   1.0f, 0.0f, 0.0f,   2.0f,
-	//	-3.0f, 7.0f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f,
-		 3.0f, 6.0f, 0.0f,   0.0f, 0.0f, 1.0f,   0.5f
-	};
+	Sphere spheres[sphereNum];
+	spheres[0] = sph(v3(3.0f, 2.5f, 0.0f), v3(1.0f, 0.0f, 0.0f), 2.0f);
+	//bachanaindex spheres[1] = sph(v3(-3.0f, 7.0f, 0.0f), v3(0.0f, 1.0f, 0.0f), 1.0f);
+	spheres[1] = sph(v3(3.0f, 6.0f, 0.0f), v3(0.0f, 0.0f, 1.0f), 0.5f);
 
-	shdSetFloatArray(gl->s, "rawSpheres", sphereNum * floatPerSph, spheres);
+	float f[sphereNum * floatPerSph];
+	spheres2floats(f, sphereNum, spheres);
+
+	shdSetFloatArray(gl->s, "rawSpheres", sphereNum * floatPerSph, f);
 }
 
 void createCubes(float time) {
-	float cubes[] = {
-		 // position         //color             // scale
-	//	 3.0f, 2.5f, 0.0f,   1.0f, 0.0f, 0.0f,   2.0f, 0.0f, 2.0f,
-		-3.0f, 7.0f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, 1.0f,
-	//	 3.0f, 6.0f, 0.0f,   0.0f, 0.0f, 1.0f,   0.5f, 1.0f, 0.5f
-	};
+	Cube cubes[cubeNum];
+	//cubes[0] = cube(v3( 3.0f, 2.5f, 0.0f), v3(1.0f, 0.0f, 0.0f), v3(2.0f, 0.0f, 2.0f));
+	cubes[0] = cube(v3(-3.0f, 7.0f, 0.0f), v3(0.0f, 1.0f, 0.0f), v3(1.0f, 0.0f, 1.0f));
+	//cubes[0] = cube(v3( 3.0f, 6.0f, 0.0f), v3(0.0f, 0.0f, 1.0f), v3(0.5f, 1.0f, 0.5f));
 
-	shdSetFloatArray(gl->s, "rawCubes", cubeNum * floatPerCube, cubes);
+	float f[cubeNum * floatPerCube];
+	cubes2floats(f, cubeNum, cubes);
+
+	shdSetFloatArray(gl->s, "rawCubes", cubeNum * floatPerCube, f);
 }
 
 void updateScene(float time) {

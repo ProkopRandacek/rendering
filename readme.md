@@ -3,7 +3,7 @@
 Current rendering capabilities:  
 - Sphere, Cube, Tourus, Prism and Cylinder rendering
 - Transforming between shapes over time
-- Multiple object in scene
+- Multiple different object in scene
 - Modify camera position, FOV, direction
 - Checkerboard round on y=0
 - Very simple soft shadows
@@ -14,6 +14,8 @@ TODO:
 - Shape rotating
 - Shape transformation control from C (rn hardcoded in GLSL)
 - Maybe better animation control from C
+- `#import`s seems to be messy.
+- Maybe switch to make instead of cmake
 
 see `archtecture.md` for explanation what every file does.  
 
