@@ -2,9 +2,15 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include "scene.h"
 #include "opengl.h"
+#include "scene.h"
 #include "camera.h"
+
+const int sphereNum = 2;
+const int cubeNum = 1;
+
+const int floatPerSph = 7;
+const int floatPerCube = 9;
 
 extern GL* gl;
 
@@ -17,11 +23,19 @@ void createScene() {
 
 	// ==== Spheres ====
 	createSpheres(0.0f);
+
+	// ==== Cubes ====
+	createCubes(0.0f);
+
+	/*shdSetInt(gl->s, "sphereNum", sphereNum);
+	shdSetInt(gl->s, "cubeNum", cubeNum);
+	shdSetInt(gl->s, "floatPerSph", floatPerSph);
+	shdSetInt(gl->s, "floatPerCube", floatPerCube);*/ // array size must be constant. Switch to SSBO TODO
+	// https://www.khronos.org/opengl/wiki/Shader_Storage_Buffer_Object
 }
 
 void createCamera(float time) {
-	//Vector3 campos = v3(sin(time) * 5.0f, 10.0f, cos(time) * 5.0f);
-	Vector3 campos = vRotate(v3(0.0f, 10.0f, 0.0f), v3(1.0f, 0.0f, 0.0f), v3(0.0f, 1.0f, 1.0f), time);
+	Vector3 campos = v3(0.0f, 5.0f, -10.0f);
 	Camera cam = cmr(campos, vNorm(vDir(campos, v3(0.0f, 5.0f, 0.0f))), 0.0f, 1.0f, 1.0f);
 	float camFloats[15];
 	cam2floats(cam, camFloats);
@@ -38,20 +52,25 @@ void createLight(float time) {
 }
 
 void createSpheres(float time) {
-	float sphPos[] = {
-		 3.0f, 2.5f, 0.0f, 2.0f,  // x, y, z, radius
-		-3.0f, 7.0f, 0.0f, 1.0f,
-		 3.0f, 6.0f, 0.0f, 0.5f
-	};
-	float sphCol[] = {
-		1.0f, 0.0f, 0.0f, 1.0f, // r, g, b, reflectiveness
-		0.0f, 1.0f, 0.0f, 1.0f,
-		0.0f, 0.0f, 1.0f, 1.0f
+	float spheres[] = {
+		 // position         //color             // radius
+		 3.0f, 2.5f, 0.0f,   1.0f, 0.0f, 0.0f,   2.0f,
+	//	-3.0f, 7.0f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f,
+		 3.0f, 6.0f, 0.0f,   0.0f, 0.0f, 1.0f,   0.5f
 	};
 
-	//printf("spheres size: %ld bytes\n", sizeof(sphPos) + sizeof(sphCol));
-	shdSetVec4Array(gl->s, "sphPos", 3 * 4, sphPos);
-	shdSetVec4Array(gl->s, "sphCol", 3 * 4, sphCol);
+	shdSetFloatArray(gl->s, "rawSpheres", sphereNum * floatPerSph, spheres);
+}
+
+void createCubes(float time) {
+	float cubes[] = {
+		 // position         //color             // scale
+	//	 3.0f, 2.5f, 0.0f,   1.0f, 0.0f, 0.0f,   2.0f, 0.0f, 2.0f,
+		-3.0f, 7.0f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, 1.0f,
+	//	 3.0f, 6.0f, 0.0f,   0.0f, 0.0f, 1.0f,   0.5f, 1.0f, 0.5f
+	};
+
+	shdSetFloatArray(gl->s, "rawCubes", cubeNum * floatPerCube, cubes);
 }
 
 void updateScene(float time) {

@@ -2,6 +2,7 @@
 out vec4 outColor;
 
 uniform float time;
+uniform vec3 lightPos;
 
 uniform ivec2 resolution;
 uniform vec3 cam[5];
@@ -11,20 +12,72 @@ uniform vec3 cam[5];
 // cam[3] = bottom right
 // cam[4] = bottom left
 
-const int sphNum = 3;
-uniform vec4 sphPos[sphNum];
-uniform vec4 sphCol[sphNum];
-uniform vec3 lightPos;
+// === SPHERES ===
+const int sphNum = 2;
+const int floatPerSph = 7;
+uniform float rawSpheres[sphNum * floatPerSph];
 
-struct hitData {
+vec3 sphPos(int i) {
+	return vec3(
+			rawSpheres[i * floatPerSph + 0],
+			rawSpheres[i * floatPerSph + 1],
+			rawSpheres[i * floatPerSph + 2]
+			);
+}
+
+vec3 sphClr(int i) {
+	return vec3(
+			rawSpheres[i * floatPerSph + 3],
+			rawSpheres[i * floatPerSph + 4],
+			rawSpheres[i * floatPerSph + 5]
+			);
+}
+
+float sphRad(int i) {
+	return rawSpheres[i * floatPerSph + 6];
+}
+
+// === CUBES ===
+const int cubeNum = 1;
+const int floatPerCube = 9;
+uniform float rawCubes[cubeNum * floatPerCube];
+
+vec3 cubePos(int i) {
+	return vec3(
+			rawCubes[i * floatPerCube + 0],
+			rawCubes[i * floatPerCube + 1],
+			rawCubes[i * floatPerCube + 2]
+			);
+}
+
+vec3 cubeClr(int i) {
+	return vec3(
+			rawCubes[i * floatPerCube + 3],
+			rawCubes[i * floatPerCube + 4],
+			rawCubes[i * floatPerCube + 5]
+			);
+}
+
+vec3 cubeScale(int i) {
+	return vec3(
+			rawCubes[i * floatPerCube + 6],
+			rawCubes[i * floatPerCube + 7],
+			rawCubes[i * floatPerCube + 8]
+			);
+}
+
+struct objData {
     float dist;
     int i;
+	int shapeType; // 0 = floor; 1 = sphere; 2 = cube
+	// maybe reserve ranges of i for different shapes and spare one int for optimalization TODO
 };
 
-// linear vector interpolation
-vec3 Lerp(in vec3 a, in vec3 b, float t) {
-	return a + ((b - a) * t);
-}
+struct rayHit {
+	vec3 hitPos;
+	vec3 surfaceClr;
+	int steps;
+};
 
 float smoothMin(float a, float b, float k) {
 	float h = max(k - abs(a - b), 0) / k;
@@ -44,37 +97,37 @@ float d2Cube(in vec3 pos, in vec3 cubeCenter, in vec3 scale) {
     return ud + n;
 }
 
-float d2Torus(vec3 eye, vec3 centre, float r1, float r2) {
-    vec2 q = vec2(length((eye-centre).xz)-r1,eye.y-centre.y);
-    return length(q)-r2;
-}
-
-float d2Prism(vec3 eye, vec3 centre, vec2 h) {
-    vec3 q = abs(eye-centre);
-    return max(q.z-h.y,max(q.x*0.866025+eye.y*0.5,-eye.y)-h.x*0.5);
-}
-
-float CylinderDistance(vec3 eye, vec3 centre, vec2 h) {
-    vec2 d = abs(vec2(length((eye).xz), eye.y)) - h;
-    return length(max(d,0.0)) + max(min(d.x,0),min(d. y,0));
-}
-
 // distance to nearest object
-hitData mapWorld(in vec3 pos) {
-	hitData hit = hitData(99999.9, -1);
+objData mapWorld(in vec3 pos) {
+	objData hit = objData(99999.9, -1, -1);
+	float dist;
+
+	// Check spheres
 	for (int i = 0; i < sphNum; i++) {
-		float j = sin(time) * 0.5 + 0.5;
-		float sphereDist = d2Torus(pos, sphPos[i].xyz, sphPos[i].w, sphPos[i].w / 2.5f) * j +
-				                  d2Cube(pos, sphPos[i].xyz, vec3(sphPos[i].w)) * (1.0 - j);
-		if (sphereDist < hit.dist) {
-			hit.dist = sphereDist;
+		dist = d2Sphere(pos, sphPos(i), sphRad(i));
+		if (dist < hit.dist) {
+			hit.dist = dist;
 			hit.i = i;
+			hit.shapeType = 1;
 		}
 	}
-	float d2Floor = pos.y; // floor is on y = 0 for now
-	if (hit.dist > d2Floor) { // if floor is closest
-		hit.dist = d2Floor;
+
+	// Check cubes
+	for (int i = 0; i < cubeNum; i++) {
+		dist = d2Cube(pos, cubePos(i), vec3(1.0f));
+		if (dist < hit.dist) {
+			hit.dist = dist;
+			hit.i = i;
+			hit.shapeType = 2;
+		}
+	}
+
+	// Check floor
+	dist = pos.y; // floor is on y = 0 for now
+	if (dist < hit.dist) { // if floor is closest
+		hit.dist = dist;
 		hit.i = -1;
+		hit.shapeType = 0;
 	}
 
 	return hit;
@@ -100,7 +153,7 @@ vec3 checkerboard(in vec3 pos) {
 }
 
 // ray marching logic
-vec3 rayMarch(in vec3 rayOrigin, in vec3 rayDir) {
+rayHit rayMarch(in vec3 rayOrigin, in vec3 rayDir) {
 	float distTraveled = 0.0;
 	const int STEPSNUM = 512;
 	const float COLLISION_THRESHOLD = 0.01;
@@ -108,24 +161,26 @@ vec3 rayMarch(in vec3 rayOrigin, in vec3 rayDir) {
 
 	for (int i = 0; i < STEPSNUM; ++i) {
 		vec3 currentPos = rayOrigin + (distTraveled * rayDir);
-		hitData hit = mapWorld(currentPos);
+		objData hit = mapWorld(currentPos);
 
 		float safeDist = hit.dist;
 
 		if (safeDist < COLLISION_THRESHOLD) { // collision
 			vec3 surfaceClr;
-			if (hit.i != -1) {
-				surfaceClr = sphCol[hit.i].rgb; // sphere color
-			} else {
+			if (hit.shapeType == 0) {
 				surfaceClr = checkerboard(currentPos);
+			} else if (hit.shapeType == 1) {
+				surfaceClr = sphClr(hit.i);
+			} else if (hit.shapeType == 2) {
+				surfaceClr = cubeClr(hit.i);
 			}
 
 			vec3 normal = calculateNormal(currentPos);
 			vec3 dir2ls = normalize(lightPos - currentPos);
 
-			float lightIntensity = max(0.0, dot(normal, dir2ls));
+			float shadow = max(0.0, dot(normal, dir2ls));
 
-			return lightIntensity * surfaceClr;
+			return rayHit(currentPos, shadow * surfaceClr, i);
 		}
 		distTraveled += safeDist;
 		if (safeDist > MAX_TRACE_DIST) { // too far
@@ -133,17 +188,24 @@ vec3 rayMarch(in vec3 rayOrigin, in vec3 rayDir) {
 		}
 	}
 
-	return vec3(0.2); // run out of trace_dist or stepsnum
+	return rayHit(vec3(0.0), vec3(0.2), 0); // run out of trace_dist or stepsnum
 }
 
 void main() {
 	vec2 uv = gl_FragCoord.xy / resolution.xy;
 
-	vec3 lPoint = Lerp(cam[4], cam[2], uv.y);
-	vec3 rPoint = Lerp(cam[3], cam[1], uv.y);
-	vec3 point  = Lerp(rPoint, lPoint, uv.x);
+	vec3 lPoint = mix(cam[4], cam[2], uv.y);
+	vec3 rPoint = mix(cam[3], cam[1], uv.y);
+	vec3 point  = mix(rPoint, lPoint, uv.x);
 	vec3 dir = normalize(point - cam[0]);
 
-	outColor = vec4(rayMarch(cam[0], dir), 1.0);
-}
+	rayHit hit = rayMarch(cam[0], dir);
+	vec3 clr = hit.surfaceClr;
 
+	for (int i = 0; i < 1; i++) {
+		vec3 normal = calculateNormal(hit.hitPos);
+		hit = rayMarch(hit.hitPos, reflect(hit.hitPos, normal));
+		clr = mix(hit.surfaceClr, clr.xyz, 0.5);
+	}
+	outColor = vec4(clr, 1.0);
+}

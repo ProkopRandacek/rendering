@@ -12,11 +12,10 @@ Current rendering capabilities:
 
 TODO:
 - Shape rotating
-- Multiple *different* shapes
 - Shape transformation control from C (rn hardcoded in GLSL)
 - Maybe better animation control from C
 
-see `archtecture` for explanation what every file does.  
+see `archtecture.md` for explanation what every file does.  
 
 ## Build:
 Run the `run` script. The executable will start after the build is done.

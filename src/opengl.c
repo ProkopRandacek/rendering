@@ -99,7 +99,6 @@ void screenshot() {
 
 	// dump the data to disk
 	writeBMP(fname, pixels, w, h);
-
 }
 
 void exitOGL() {
