@@ -5,16 +5,16 @@ Current rendering capabilities:
 - Transforming between shapes over time
 - Multiple different object in scene
 - Modify camera position, FOV, direction
-- Checkerboard round on y=0
+- Checkerboard floor on y=0
 - Very simple soft shadows
-- render real-time (60 fps) or export each frame as image (~15 fps)  
+- Render real-time (60 fps) or export each frame as image (~15 fps)  
 [demo](https://randacek.dev/dl/render_demo.mp4) - (Tourus to Cube transition, rendering to file, Multiple object in scene)
 
 TODO:
 - Shape rotating
 - Shape transformation control from C (rn hardcoded in GLSL)
 - Maybe better animation control from C
-- `#import`s seems to be messy.
+- `#import`s seems to be messy
 - Maybe switch to make instead of cmake
 - Split fragment shader into multiple parts
 
