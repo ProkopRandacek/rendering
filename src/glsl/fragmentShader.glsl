@@ -11,7 +11,7 @@ uniform vec3 cam[5]; // cam[0] = Camera position
 // cam[3] = bottom right
 // cam[4] = bottom left
 
-const int STEPSNUM = 512;
+const int STEPSNUM = 64;
 const float COLLISION_THRESHOLD = 0.001;
 const float MAX_TRACE_DIST = 30.0;
 
@@ -68,13 +68,6 @@ vec3 cubeScale(int i) {
 			rawCubes[i * floatPerCube + 8]
 			);
 }
-
-struct objData {
-	float dist;
-	vec3 clr;
-	//int shapeType; // 0 = floor; 1 = sphere; 2 = cube
-	// maybe reserve ranges of i for different shapes and spare one int for optimalization TODO
-};
 
 struct rayHit {
 	vec3 hitPos;
@@ -149,7 +142,7 @@ vec3 checkerboard(in vec3 pos) {
 }
 
 // distance to nearest object
-objData mapWorld(in vec3 pos) {
+vec4 mapWorld(in vec3 pos) {
 	float k = sin(time) + 1.0;
 	const int operation = 1;
 
@@ -179,17 +172,16 @@ objData mapWorld(in vec3 pos) {
 	localClr = combined.xyz;
 	localDist = combined.w;
 
-	objData hit = objData(localDist, localClr);
-	return hit;
+	return vec4(localClr, localDist);
 }
 
 // calculate normal from given point on a surface
 vec3 calculateNormal(in vec3 p) {
 	const vec3 smol = vec3(0.0001, 0.0, 0.0);
 
-	float x = mapWorld(p + smol.xyy).dist - mapWorld(p - smol.xyy).dist;
-	float y = mapWorld(p + smol.yxy).dist - mapWorld(p - smol.yxy).dist;
-	float z = mapWorld(p + smol.yyx).dist - mapWorld(p - smol.yyx).dist;
+	float x = mapWorld(p + smol.xyy).w - mapWorld(p - smol.xyy).w;
+	float y = mapWorld(p + smol.yxy).w - mapWorld(p - smol.yxy).w;
+	float z = mapWorld(p + smol.yyx).w - mapWorld(p - smol.yyx).w;
 
 	return normalize(vec3(x, y, z));
 }
@@ -200,12 +192,12 @@ rayHit rayMarch(in vec3 rayOrigin, in vec3 rayDir) {
 
 	for (int i = 0; i < STEPSNUM; ++i) {
 		vec3 currentPos = rayOrigin + (distTraveled * rayDir);
-		objData hit = mapWorld(currentPos);
+		vec4 hit = mapWorld(currentPos);
 
-		float safeDist = hit.dist;
+		float safeDist = hit.w;
 
 		if (safeDist < COLLISION_THRESHOLD) { // collision
-			vec3 surfaceClr = hit.clr;
+			vec3 surfaceClr = hit.rgb;
 
 			vec3 normal = calculateNormal(currentPos);
 			vec3 dir2ls = normalize(lightPos - currentPos);
@@ -216,11 +208,11 @@ rayHit rayMarch(in vec3 rayOrigin, in vec3 rayDir) {
 		}
 		distTraveled += safeDist;
 		if (safeDist > MAX_TRACE_DIST) { // too far
-			return rayHit(vec3(0.0), vec3(0.2), i); // run out of trace_dist or stepsnum
+			return rayHit(vec3(0.0), vec3(1.0), i); // run out of trace_dist or stepsnum
 		}
 	}
 
-	return rayHit(vec3(0.0), vec3(0.2), 0); // run out of trace_dist or stepsnum
+	return rayHit(vec3(0.0), vec3(1.0), STEPSNUM); // run out of trace_dist or stepsnum
 }
 
 void main() {
@@ -234,7 +226,6 @@ void main() {
 	rayHit hit = rayMarch(cam[0], dir);
 	vec3 clr = hit.surfaceClr;
 
-	outColor = vec4(clr, 1.0);
-	//outColor = vec4(vec3(hit.steps / float(STEPSNUM)), 1.0);
+	//outColor = vec4(clr, 1.0);
+	outColor = vec4(vec3(hit.steps / float(STEPSNUM)), 1.0);
 }
-
