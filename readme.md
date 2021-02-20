@@ -1,6 +1,8 @@
 # Ray marching rendering
 
-![demo](https://randacek.dev/dl/rendering/demo.png)
+![normal demo](https://randacek.dev/dl/rendering/demo.png)  
+![blending demo](https://randacek.dev/dl/rendering/blending.png)  
+![Cool glow](https://randacek.dev/dl/rendering/glow.png)  
 
 Current rendering capabilities:  
 - Sphere, Cube, Tourus, Prism and Cylinder rendering
@@ -23,7 +25,6 @@ see `archtecture.md` for explanation what every file does.
 ## Demos
 [Transform demo](https://randacek.dev/dl/rendering/transform_demo.mp4) - (Tourus to Cube transition, rendering to file, Multiple object in scene)  
 [Move demo](https://randacek.dev/dl/rendering/move_demo.mp4) - (WASD & Mouse movement, Multiple object in scene)  
-[Cool glow](https://randacek.dev/dl/rendering/glow.png) - (Cool glow, Multiple object in scene)  
 
 ## Build:
 `make run`
