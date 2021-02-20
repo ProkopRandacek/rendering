@@ -1,8 +1,7 @@
 #include "vector.h"
 #include "shapes.h"
 
-const int sphereNum = 2;
-const int cubeNum = 1;
+extern const int sphereNum, cubeNum;
 
 const int floatPerSph = 7;
 const int floatPerCube = 9;

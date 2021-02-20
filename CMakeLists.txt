@@ -29,4 +29,6 @@ add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy_directory
                        ${CMAKE_SOURCE_DIR}/src/glsl/ $<TARGET_FILE_DIR:${PROJECT_NAME}>)
 
+set_property(TARGET ${PROJECT_NAME} PROPERTY C_STANDARD 11)
+
 target_link_libraries(${PROJECT_NAME} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} glfw)

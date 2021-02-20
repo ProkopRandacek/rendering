@@ -52,6 +52,14 @@ Camera cmr(Vector3 pos, Vector3 dir, float angle, float h, float w) {
 	return cam;
 }
 
+void updateCamPos(Camera* cam, Vector3 offset) {
+	cam->pos = vAdd(cam->pos, offset);
+	cam->tr = vAdd(cam->tr, offset);
+	cam->tl = vAdd(cam->tl, offset);
+	cam->br = vAdd(cam->br, offset);
+	cam->bl = vAdd(cam->bl, offset);
+}
+
 void cam2floats(Camera cam, float* f) {
 	f[ 0] = cam.pos.x; f[ 1] = cam.pos.y; f[ 2] = cam.pos.z;
 	f[ 3] = cam.tr.x;  f[ 4] = cam.tr.y;  f[ 5] = cam.tr.z;

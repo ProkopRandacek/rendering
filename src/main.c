@@ -9,10 +9,21 @@
 #include "main.h"
 #include "opengl.h"
 #include "scene.h"
+#include "camera.h"
 
 extern GL* gl;
+extern Camera cam;
+
+float deltaTime = 0.0f;
+
+char wDown = 0;
+char aDown = 0;
+char sDown = 0;
+char dDown = 0;
 
 int main() {
+	const float moveSpeed = 5.0f;
+
 	initOGL();
 
 	glfwSetErrorCallback(onError);
@@ -23,12 +34,23 @@ int main() {
 
 	printf("Initialization successful\nStarting main loop\n");
 
-	//sleep(1); // Wait for being floated when using i3
+	float lastTime = 0.0f;
 
 	while (!glfwWindowShouldClose(gl->window)) {
 		updateScene(glfwGetTime());
 		renderOGL();
-		//screenshot();
+		deltaTime = glfwGetTime() - lastTime;
+		lastTime = glfwGetTime();
+
+		Vector3 moveDir = v3(0.0f, 0.0f, 0.0f);
+		if (wDown) moveDir.z += 1.0f;
+		if (aDown) moveDir.x += 1.0f;
+		if (sDown) moveDir.z -= 1.0f;
+		if (dDown) moveDir.x -= 1.0f;
+		if (vMag(moveDir) > 0.0f) {
+			moveDir = vMultf(vNorm(moveDir), moveSpeed * deltaTime);
+			updateCamPos(&cam, moveDir);
+		}
 	}
 
 	exitOGL();
@@ -41,8 +63,17 @@ void onError(int error, const char* description) {
 }
 
 void onKey(GLFWwindow* window, int key, int scancode, int action, int mods) {
-	//printf("%d, %d, %d, %d\n", key, scancode, action, mods);
 	if (scancode == 24 && action == 1) exit(0); // exit on `q` press
+
+	if (scancode == 25 && action == 1) { wDown = 1; }
+	if (scancode == 38 && action == 1) { aDown = 1; }
+	if (scancode == 39 && action == 1) { sDown = 1; }
+	if (scancode == 40 && action == 1) { dDown = 1; }
+
+	if (scancode == 25 && action == 0) { wDown = 0; }
+	if (scancode == 38 && action == 0) { aDown = 0; }
+	if (scancode == 39 && action == 0) { sDown = 0; }
+	if (scancode == 40 && action == 0) { dDown = 0; }
 }
 
 void resize(GLFWwindow* window, int width, int height) {

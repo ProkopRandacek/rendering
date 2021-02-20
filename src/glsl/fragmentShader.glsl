@@ -13,7 +13,7 @@ uniform vec3 cam[5];
 // cam[4] = bottom left
 
 // === SPHERES ===
-const int sphNum = 2;
+const int sphNum = 1;
 const int floatPerSph = 7;
 uniform float rawSpheres[sphNum * floatPerSph];
 
@@ -114,7 +114,7 @@ objData mapWorld(in vec3 pos) {
 
 	// Check cubes
 	for (int i = 0; i < cubeNum; i++) {
-		dist = d2Cube(pos, cubePos(i), vec3(1.0f));
+		dist = d2Cube(pos, cubePos(i), cubeScale(i));
 		if (dist < hit.dist) {
 			hit.dist = dist;
 			hit.i = i;
@@ -155,7 +155,7 @@ vec3 checkerboard(in vec3 pos) {
 // ray marching logic
 rayHit rayMarch(in vec3 rayOrigin, in vec3 rayDir) {
 	float distTraveled = 0.0;
-	const int STEPSNUM = 512;
+	const int STEPSNUM = 256;
 	const float COLLISION_THRESHOLD = 0.01;
 	const float MAX_TRACE_DIST = 10000.0;
 
