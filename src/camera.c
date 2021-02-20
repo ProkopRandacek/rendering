@@ -66,6 +66,7 @@ void updateCamPos(Camera* cam, Vector3 offset) {
 	Vector3 left = v3(cam->left.x, 0, cam->left.z);
 	cam->pos = vAdd(cam->pos, vMultf(foward, offset.z));
 	cam->pos = vAdd(cam->pos, vMultf(left, -offset.x));
+	cam->pos.y += offset.y;
 }
 
 Camera updateCamDir(Vector3 pos, Vector3 dir) {

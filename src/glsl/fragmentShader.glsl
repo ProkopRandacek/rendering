@@ -38,7 +38,7 @@ float sphRad(int i) {
 }
 
 // === CUBES ===
-const int cubeNum = 1;
+const int cubeNum = 3;
 const int floatPerCube = 9;
 uniform float rawCubes[cubeNum * floatPerCube];
 
@@ -135,7 +135,7 @@ objData mapWorld(in vec3 pos) {
 
 // calculate normal from given point on a surface
 vec3 calculateNormal(in vec3 p) {
-	const vec3 smol = vec3(0.01, 0.0, 0.0);
+	const vec3 smol = vec3(0.001, 0.0, 0.0);
 
 	float x = mapWorld(p + smol.xyy).dist - mapWorld(p - smol.xyy).dist;
     float y = mapWorld(p + smol.yxy).dist - mapWorld(p - smol.yxy).dist;
@@ -156,7 +156,7 @@ vec3 checkerboard(in vec3 pos) {
 rayHit rayMarch(in vec3 rayOrigin, in vec3 rayDir) {
 	float distTraveled = 0.0;
 	const int STEPSNUM = 256;
-	const float COLLISION_THRESHOLD = 0.01;
+	const float COLLISION_THRESHOLD = 0.001;
 	const float MAX_TRACE_DIST = 10000.0;
 
 	for (int i = 0; i < STEPSNUM; ++i) {

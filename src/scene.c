@@ -11,7 +11,7 @@ extern GL* gl;
 extern const int floatPerSph, floatPerCube;
 
 const int sphereNum = 0;
-const int cubeNum = 1;
+const int cubeNum = 3;
 
 // these are global so other object can be created relative to them
 Camera cam;
@@ -55,7 +55,9 @@ void createSpheres(float time) {
 
 void createCubes(float time) {
 	Cube cubes[cubeNum];
-	cubes[0] = cube(v3(-3.0f, 7.0f, 0.0f), v3(0.0f, 1.0f, 0.0f), v3(1.0f, 3.0f, 1.0f));
+	cubes[0] = cube(v3( 0.0f, 2.0f, 1.0f), v3(1.0f, 0.0f, 0.0f), v3(1.0f, 2.0f, 0.01f));
+	cubes[1] = cube(v3( 1.0f, 2.0f, 0.0f), v3(0.0f, 1.0f, 0.0f), v3(0.01f, 2.0f, 1.0f));
+	cubes[2] = cube(v3(-1.0f, 2.0f, 0.0f), v3(0.0f, 0.0f, 1.0f), v3(0.01f, 2.0f, 1.0f));
 
 	float f[cubeNum * floatPerCube];
 	cubes2floats(f, cubeNum, cubes);
