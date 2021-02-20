@@ -5,12 +5,15 @@ uniform float time;
 uniform vec3 lightPos;
 
 uniform ivec2 resolution;
-uniform vec3 cam[5];
-// cam[0] = Camera position
+uniform vec3 cam[5]; // cam[0] = Camera position
 // cam[1] = top    left
 // cam[2] = top    right
 // cam[3] = bottom right
 // cam[4] = bottom left
+
+const int STEPSNUM = 512;
+const float COLLISION_THRESHOLD = 0.001;
+const float MAX_TRACE_DIST = 30.0;
 
 // === SPHERES ===
 const int sphNum = 2;
@@ -68,8 +71,8 @@ vec3 cubeScale(int i) {
 
 struct objData {
 	float dist;
-	int i;
-	int shapeType; // 0 = floor; 1 = sphere; 2 = cube
+	vec3 clr;
+	//int shapeType; // 0 = floor; 1 = sphere; 2 = cube
 	// maybe reserve ranges of i for different shapes and spare one int for optimalization TODO
 };
 
@@ -78,11 +81,6 @@ struct rayHit {
 	vec3 surfaceClr;
 	int steps;
 };
-
-float smoothMin(float a, float b, float k) {
-	float h = max(k - abs(a - b), 0) / k;
-	return min(a, b) - h * h * h * k * 1/6.0;
-}
 
 // http://iquilezles.org/www/articles/distfunctions/distfunctions.htm
 float d2Sphere(in vec3 pos, in vec3 sphereCenter, float radius) {
@@ -97,51 +95,49 @@ float d2Cube(in vec3 pos, in vec3 cubeCenter, in vec3 scale) {
 	return ud + n;
 }
 
-// distance to nearest object
-objData mapWorld(in vec3 pos) {
-	objData hit = objData(99999.9, -1, -1);
-	float dist;
+vec4 Blend(float a, float b, vec3 colA, vec3 colB, float k )
+{
+    float h = clamp( 0.5+0.5*(b-a)/k, 0.0, 1.0 );
+    float blendDst = mix( b, a, h ) - k*h*(1.0-h);
+    vec3 blendCol = mix(colB,colA,h);
 
-	// Check spheres
-	for (int i = 0; i < sphNum; i++) {
-		dist = d2Sphere(pos, sphPos(i), sphRad(i));
-		if (dist < hit.dist) {
-			hit.dist = dist;
-			hit.i = i;
-			hit.shapeType = 1;
-		}
-	}
-
-	// Check cubes
-	for (int i = 0; i < cubeNum; i++) {
-		dist = d2Cube(pos, cubePos(i), cubeScale(i));
-		if (dist < hit.dist) {
-			hit.dist = dist;
-			hit.i = i;
-			hit.shapeType = 2;
-		}
-	}
-
-	// Check floor
-	dist = d2Cube(pos, vec3(0.0), vec3(10.0, 0.1, 10.0));
-	if (dist < hit.dist) { // if floor is closest
-		hit.dist = dist;
-		hit.i = -1;
-		hit.shapeType = 0;
-	}
-
-	return hit;
+    return vec4(blendCol, blendDst);
 }
 
-// calculate normal from given point on a surface
-vec3 calculateNormal(in vec3 p) {
-	const vec3 smol = vec3(0.001, 0.0, 0.0);
+vec4 Combine(float dstA, float dstB, vec3 colourA, vec3 colourB, int operation, float blendStrength) {
+    float dst = dstA;
+    vec3 colour = colourA;
 
-	float x = mapWorld(p + smol.xyy).dist - mapWorld(p - smol.xyy).dist;
-	float y = mapWorld(p + smol.yxy).dist - mapWorld(p - smol.yxy).dist;
-	float z = mapWorld(p + smol.yyx).dist - mapWorld(p - smol.yyx).dist;
+    if (operation == 0) {
+        if (dstB < dstA) {
+            dst = dstB;
+            colour = colourB;
+        }
+    }
+    // Blend
+    else if (operation == 1) {
+        vec4 blend = Blend(dstA, dstB, colourA, colourB, blendStrength);
+        dst = blend.w;
+        colour = blend.xyz;
+    }
+    // Cut
+    else if (operation == 2) {
+        // max(a,-b)
+        if (-dstB > dst) {
+            dst = -dstB;
+            colour = colourB;
+        }
+    }
+    // Mask
+    else if (operation == 3) {
+        // max(a,b)
+        if (dstB > dst) {
+            dst = dstB;
+            colour = colourB;
+        }
+    }
 
-	return normalize(vec3(x, y, z));
+    return vec4(colour,dst);
 }
 
 vec3 checkerboard(in vec3 pos) {
@@ -152,12 +148,55 @@ vec3 checkerboard(in vec3 pos) {
 	}
 }
 
+// distance to nearest object
+objData mapWorld(in vec3 pos) {
+	const float k = 1.9;
+	const int operation = 1;
+
+	float localDist = 200.0;
+	vec3  localClr = vec3(0.0);
+	float dist;
+
+	// Check spheres
+	for (int i = 0; i < sphNum; i++) {
+		dist = d2Sphere(pos, sphPos(i), sphRad(i));
+		vec4 combined = Combine(localDist, dist, localClr, sphClr(i), operation, k);
+		localClr = combined.xyz;
+		localDist = combined.w;
+	}
+
+	// Check cubes
+	for (int i = 0; i < cubeNum; i++) {
+		dist = d2Cube(pos, cubePos(i), cubeScale(i));
+		vec4 combined = Combine(localDist, dist, localClr, cubeClr(i), operation, k);
+		localClr = combined.xyz;
+		localDist = combined.w;
+	}
+
+	// Check floor
+	dist = d2Cube(pos, vec3(0.0), vec3(10.0, 0.1, 10.0));
+	vec4 combined = Combine(localDist, dist, localClr, checkerboard(pos), operation, k);
+	localClr = combined.xyz;
+	localDist = combined.w;
+
+	objData hit = objData(localDist, localClr);
+	return hit;
+}
+
+// calculate normal from given point on a surface
+vec3 calculateNormal(in vec3 p) {
+	const vec3 smol = vec3(0.0001, 0.0, 0.0);
+
+	float x = mapWorld(p + smol.xyy).dist - mapWorld(p - smol.xyy).dist;
+	float y = mapWorld(p + smol.yxy).dist - mapWorld(p - smol.yxy).dist;
+	float z = mapWorld(p + smol.yyx).dist - mapWorld(p - smol.yyx).dist;
+
+	return normalize(vec3(x, y, z));
+}
+
 // ray marching logic
 rayHit rayMarch(in vec3 rayOrigin, in vec3 rayDir) {
 	float distTraveled = 0.0;
-	const int STEPSNUM = 512;
-	const float COLLISION_THRESHOLD = 0.001;
-	const float MAX_TRACE_DIST = 30.0;
 
 	for (int i = 0; i < STEPSNUM; ++i) {
 		vec3 currentPos = rayOrigin + (distTraveled * rayDir);
@@ -166,14 +205,7 @@ rayHit rayMarch(in vec3 rayOrigin, in vec3 rayDir) {
 		float safeDist = hit.dist;
 
 		if (safeDist < COLLISION_THRESHOLD) { // collision
-			vec3 surfaceClr;
-			if (hit.shapeType == 0) {
-				surfaceClr = checkerboard(currentPos);
-			} else if (hit.shapeType == 1) {
-				surfaceClr = sphClr(hit.i);
-			} else if (hit.shapeType == 2) {
-				surfaceClr = cubeClr(hit.i);
-			}
+			vec3 surfaceClr = hit.clr;
 
 			vec3 normal = calculateNormal(currentPos);
 			vec3 dir2ls = normalize(lightPos - currentPos);
@@ -203,5 +235,6 @@ void main() {
 	vec3 clr = hit.surfaceClr;
 
 	outColor = vec4(clr, 1.0);
-	//outColor = vec4(vec3(hit.steps / 512.0), 1.0);
+	//outColor = vec4(vec3(hit.steps / float(STEPSNUM)), 1.0);
 }
+
