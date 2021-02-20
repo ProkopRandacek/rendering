@@ -1,5 +1,7 @@
 # Ray marching rendering
 
+![demo](https://randacek.dev/dl/rendering/demo.png)
+
 Current rendering capabilities:  
 - Sphere, Cube, Tourus, Prism and Cylinder rendering
 - Transforming between shapes over time
@@ -8,7 +10,6 @@ Current rendering capabilities:
 - Checkerboard floor on y=0
 - Very simple soft shadows
 - Render real-time (60 fps) or export each frame as image (~15 fps)  
-[demo](https://randacek.dev/dl/render_demo.mp4) - (Tourus to Cube transition, rendering to file, Multiple object in scene)
 
 TODO:
 - Shape rotating
@@ -19,6 +20,11 @@ TODO:
 - Split fragment shader into multiple parts
 
 see `archtecture.md` for explanation what every file does.  
+
+## Demos
+[Transform demo](https://randacek.dev/dl/rendering/transform_demo.mp4) - (Tourus to Cube transition, rendering to file, Multiple object in scene)  
+[Move demo](https://randacek.dev/dl/rendering/move_demo.mp4) - (WASD & Mouse movement, Multiple object in scene)  
+[Cool glow](https://randacek.dev/dl/rendering/glow.png) - (Cool glow, Multiple object in scene)  
 
 ## Build:
 Run the `run` script. The executable will start after the build is done.
