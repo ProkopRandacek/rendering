@@ -53,4 +53,6 @@ void onError(int error, const char* description) {
 void resize(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 	shdSetIVec2(gl->s, "resolution", width, height);
+	float k = 1000.0f;
+	setWH(width / k, height / k);
 }

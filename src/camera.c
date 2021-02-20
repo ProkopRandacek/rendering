@@ -73,6 +73,11 @@ Camera updateCamDir(Vector3 pos, Vector3 dir) {
 	return cmr(pos, dir, lastAngle, lastH, lastW);
 }
 
+void setWH(float w, float h) {
+	lastH = h;
+	lastW = w;
+}
+
 void cam2floats(Camera cam, float* f) {
 	f[ 0] = cam.pos.x; f[ 1] = cam.pos.y; f[ 2] = cam.pos.z;
 	f[ 3] = cam.tr.x;  f[ 4] = cam.tr.y;  f[ 5] = cam.tr.z;

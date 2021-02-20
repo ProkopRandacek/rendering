@@ -15,3 +15,4 @@ Camera cmr(Vector3 pos, Vector3 dir, float angle, float h, float w);
 void cam2floats(Camera cam, float* f);
 void updateCamPos(Camera* cam, Vector3 offset);
 Camera updateCamDir(Vector3 pos, Vector3 dir);
+void setWH(float w, float h);

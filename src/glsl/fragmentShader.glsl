@@ -13,7 +13,7 @@ uniform vec3 cam[5];
 // cam[4] = bottom left
 
 // === SPHERES ===
-const int sphNum = 1;
+const int sphNum = 2;
 const int floatPerSph = 7;
 uniform float rawSpheres[sphNum * floatPerSph];
 
@@ -38,7 +38,7 @@ float sphRad(int i) {
 }
 
 // === CUBES ===
-const int cubeNum = 3;
+const int cubeNum = 4;
 const int floatPerCube = 9;
 uniform float rawCubes[cubeNum * floatPerCube];
 
@@ -67,8 +67,8 @@ vec3 cubeScale(int i) {
 }
 
 struct objData {
-    float dist;
-    int i;
+	float dist;
+	int i;
 	int shapeType; // 0 = floor; 1 = sphere; 2 = cube
 	// maybe reserve ranges of i for different shapes and spare one int for optimalization TODO
 };
@@ -86,15 +86,15 @@ float smoothMin(float a, float b, float k) {
 
 // http://iquilezles.org/www/articles/distfunctions/distfunctions.htm
 float d2Sphere(in vec3 pos, in vec3 sphereCenter, float radius) {
-    //float displacement = sin(5.0 * pos.x) * sin(5.0 * pos.y) * sin(5.0 * pos.z) * 0.25;
-    return length(pos - sphereCenter) - radius/* + displacement*/;
+	//float displacement = sin(5.0 * pos.x) * sin(5.0 * pos.y) * sin(5.0 * pos.z) * 0.25;
+	return length(pos - sphereCenter) - radius/* + displacement*/;
 }
 
 float d2Cube(in vec3 pos, in vec3 cubeCenter, in vec3 scale) {
-    vec3 o = abs(pos - cubeCenter) - scale;
-    float ud = length(max(o, 0));
-    float n = max(max(min(o.x, 0), min(o.y, 0)), min(o.z, 0));
-    return ud + n;
+	vec3 o = abs(pos - cubeCenter) - scale;
+	float ud = length(max(o, 0));
+	float n = max(max(min(o.x, 0), min(o.y, 0)), min(o.z, 0));
+	return ud + n;
 }
 
 // distance to nearest object
@@ -123,7 +123,7 @@ objData mapWorld(in vec3 pos) {
 	}
 
 	// Check floor
-	dist = pos.y; // floor is on y = 0 for now
+	dist = d2Cube(pos, vec3(0.0), vec3(10.0, 0.1, 10.0));
 	if (dist < hit.dist) { // if floor is closest
 		hit.dist = dist;
 		hit.i = -1;
@@ -138,8 +138,8 @@ vec3 calculateNormal(in vec3 p) {
 	const vec3 smol = vec3(0.001, 0.0, 0.0);
 
 	float x = mapWorld(p + smol.xyy).dist - mapWorld(p - smol.xyy).dist;
-    float y = mapWorld(p + smol.yxy).dist - mapWorld(p - smol.yxy).dist;
-    float z = mapWorld(p + smol.yyx).dist - mapWorld(p - smol.yyx).dist;
+	float y = mapWorld(p + smol.yxy).dist - mapWorld(p - smol.yxy).dist;
+	float z = mapWorld(p + smol.yyx).dist - mapWorld(p - smol.yyx).dist;
 
 	return normalize(vec3(x, y, z));
 }
@@ -155,9 +155,9 @@ vec3 checkerboard(in vec3 pos) {
 // ray marching logic
 rayHit rayMarch(in vec3 rayOrigin, in vec3 rayDir) {
 	float distTraveled = 0.0;
-	const int STEPSNUM = 256;
+	const int STEPSNUM = 512;
 	const float COLLISION_THRESHOLD = 0.001;
-	const float MAX_TRACE_DIST = 10000.0;
+	const float MAX_TRACE_DIST = 30.0;
 
 	for (int i = 0; i < STEPSNUM; ++i) {
 		vec3 currentPos = rayOrigin + (distTraveled * rayDir);
@@ -184,7 +184,7 @@ rayHit rayMarch(in vec3 rayOrigin, in vec3 rayDir) {
 		}
 		distTraveled += safeDist;
 		if (safeDist > MAX_TRACE_DIST) { // too far
-			break;
+			return rayHit(vec3(0.0), vec3(0.2), i); // run out of trace_dist or stepsnum
 		}
 	}
 
@@ -202,10 +202,6 @@ void main() {
 	rayHit hit = rayMarch(cam[0], dir);
 	vec3 clr = hit.surfaceClr;
 
-	for (int i = 0; i < 1; i++) {
-		vec3 normal = calculateNormal(hit.hitPos);
-		hit = rayMarch(hit.hitPos, reflect(hit.hitPos, normal));
-		clr = mix(hit.surfaceClr, clr.xyz, 0.5);
-	}
 	outColor = vec4(clr, 1.0);
+	//outColor = vec4(vec3(hit.steps / 512.0), 1.0);
 }

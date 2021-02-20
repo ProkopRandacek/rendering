@@ -10,8 +10,8 @@
 extern GL* gl;
 extern const int floatPerSph, floatPerCube;
 
-const int sphereNum = 0;
-const int cubeNum = 3;
+const int sphereNum = 2;
+const int cubeNum = 4;
 
 // these are global so other object can be created relative to them
 Camera cam;
@@ -26,7 +26,7 @@ void createScene() {
 
 void createCamera(float time) {
 	Vector3 campos = v3(0.0f, 5.0f, -10.0f);
-	cam = cmr(campos, vNorm(vDir(campos, v3(0.0f, 5.0f, 0.0f))), 0.0f, 1.0f, 1.0f);
+	cam = cmr(campos, vNorm(vDir(campos, v3(0.0f, 5.0f, 0.0f))), 0.0f, 0.01f, 0.01f);
 }
 
 void sendCamera() {
@@ -44,8 +44,8 @@ void createLight(float time) {
 
 void createSpheres(float time) {
 	Sphere spheres[sphereNum];
-	//spheres[0] = sph(v3(3.0f, 2.5f, 0.0f), v3(1.0f, 0.0f, 0.0f), 2.0f);
-	//spheres[1] = sph(v3(3.0f, 6.0f, 0.0f), v3(0.0f, 0.0f, 1.0f), 0.5f);
+	spheres[0] = sph(v3(3.0f, 2.5f, 0.0f), v3(1.0f, 0.0f, 0.0f), 1.0f);
+	spheres[1] = sph(v3(5.0f, 1.0f, 0.0f), v3(0.0f, 0.0f, 1.0f), 0.5f);
 
 	float f[sphereNum * floatPerSph];
 	spheres2floats(f, sphereNum, spheres);
@@ -58,6 +58,7 @@ void createCubes(float time) {
 	cubes[0] = cube(v3( 0.0f, 2.0f, 1.0f), v3(1.0f, 0.0f, 0.0f), v3(1.0f, 2.0f, 0.01f));
 	cubes[1] = cube(v3( 1.0f, 2.0f, 0.0f), v3(0.0f, 1.0f, 0.0f), v3(0.01f, 2.0f, 1.0f));
 	cubes[2] = cube(v3(-1.0f, 2.0f, 0.0f), v3(0.0f, 0.0f, 1.0f), v3(0.01f, 2.0f, 1.0f));
+	cubes[3] = cube(v3(-3.0f, 1.5f, 0.0f), v3(0.0f, 0.5f, 1.0f), v3(1.0f, 1.0f, 1.0f));
 
 	float f[cubeNum * floatPerCube];
 	cubes2floats(f, cubeNum, cubes);
