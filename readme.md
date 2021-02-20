@@ -20,7 +20,7 @@ TODO:
 - `#import`s seems to be messy
 - Split fragment shader into multiple parts
 
-see `archtecture.md` for explanation what every file does.  
+see [`archtecture.md`](architecture.md) for explanation what every file does.  
 
 ## Demos
 [Transform demo](https://randacek.dev/dl/rendering/transform_demo.mp4) - (Tourus to Cube transition, rendering to file, Multiple object in scene)  
