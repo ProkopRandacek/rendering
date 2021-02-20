@@ -13,7 +13,7 @@
 
 extern GL* gl;
 extern Camera cam;
-
+extern int w, h;
 float deltaTime = 0.0f;
 
 char wDown = 0;
@@ -23,6 +23,7 @@ char dDown = 0;
 
 int main() {
 	const float moveSpeed = 5.0f;
+	const float mouseSens = 0.12f;
 
 	initOGL();
 
@@ -32,9 +33,15 @@ int main() {
 
 	createScene();
 
+	glfwSetInputMode(gl->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
 	printf("Initialization successful\nStarting main loop\n");
 
 	float lastTime = 0.0f;
+
+	double xpos, ypos;
+	float horizontalAngle = 0.0f;
+	float verticalAngle = 0.0f;
 
 	while (!glfwWindowShouldClose(gl->window)) {
 		updateScene(glfwGetTime());
@@ -42,6 +49,7 @@ int main() {
 		deltaTime = glfwGetTime() - lastTime;
 		lastTime = glfwGetTime();
 
+		// wasd
 		Vector3 moveDir = v3(0.0f, 0.0f, 0.0f);
 		if (wDown) moveDir.z += 1.0f;
 		if (aDown) moveDir.x += 1.0f;
@@ -51,6 +59,21 @@ int main() {
 			moveDir = vMultf(vNorm(moveDir), moveSpeed * deltaTime);
 			updateCamPos(&cam, moveDir);
 		}
+
+		// mouse
+		glfwGetCursorPos(gl->window, &xpos, &ypos);
+		float x = (2.0f * xpos) / w - 1.0f;
+		float y = 1.0f - (2.0f * ypos) / h;
+
+		horizontalAngle = mouseSens * -x;
+		verticalAngle   = mouseSens * y;
+
+		Vector3 dir = vNorm(v3(
+				cos(verticalAngle) * sin(horizontalAngle),
+				sin(verticalAngle),
+				cos(verticalAngle) * cos(horizontalAngle)
+				));
+		cam = updateCamDir(cam.pos, dir);
 	}
 
 	exitOGL();

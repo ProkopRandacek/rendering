@@ -5,8 +5,8 @@
 #include "opengl.h"
 #include "fileio.h"
 
-#define w 1000
-#define h 1000
+const int w = 1000;
+const int h = 1000;
 
 GL* gl;
 char* pixels;

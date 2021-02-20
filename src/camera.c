@@ -3,7 +3,13 @@
 
 #include "camera.h"
 
+float lastAngle, lastH, lastW;
+
 Camera cmr(Vector3 pos, Vector3 dir, float angle, float h, float w) {
+	lastAngle = angle;
+	lastH = h;
+	lastW = w;
+
 	Camera cam;
 	cam.pos = pos;
 	if (dir.x == 0.0f && (dir.y == 1.0f || dir.y == -1.0f) && dir.z == 0.0f) {
@@ -45,6 +51,9 @@ Camera cmr(Vector3 pos, Vector3 dir, float angle, float h, float w) {
 	Vector3 right = vMultf(left, -1.0f);
 	Vector3 down = vMultf(up, -1.0f);
 
+	cam.left = vNorm(left);
+	cam.foward = vNorm(dir);
+
 	cam.tl = vAdd(vAdd(up, left), sc);
 	cam.tr = vAdd(vAdd(up, right), sc);
 	cam.bl = vAdd(vAdd(down, left), sc);
@@ -53,11 +62,14 @@ Camera cmr(Vector3 pos, Vector3 dir, float angle, float h, float w) {
 }
 
 void updateCamPos(Camera* cam, Vector3 offset) {
-	cam->pos = vAdd(cam->pos, offset);
-	cam->tr = vAdd(cam->tr, offset);
-	cam->tl = vAdd(cam->tl, offset);
-	cam->br = vAdd(cam->br, offset);
-	cam->bl = vAdd(cam->bl, offset);
+	Vector3 foward = v3(cam->foward.x, 0, cam->foward.z);
+	Vector3 left = v3(cam->left.x, 0, cam->left.z);
+	cam->pos = vAdd(cam->pos, vMultf(foward, offset.z));
+	cam->pos = vAdd(cam->pos, vMultf(left, -offset.x));
+}
+
+Camera updateCamDir(Vector3 pos, Vector3 dir) {
+	return cmr(pos, dir, lastAngle, lastH, lastW);
 }
 
 void cam2floats(Camera cam, float* f) {
