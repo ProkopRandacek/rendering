@@ -150,7 +150,7 @@ vec3 checkerboard(in vec3 pos) {
 
 // distance to nearest object
 objData mapWorld(in vec3 pos) {
-	const float k = 1.9;
+	float k = sin(time) + 1.0;
 	const int operation = 1;
 
 	float localDist = 200.0;

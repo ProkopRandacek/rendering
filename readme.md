@@ -16,7 +16,6 @@ TODO:
 - Shape transformation control from C (rn hardcoded in GLSL)
 - Maybe better animation control from C
 - `#import`s seems to be messy
-- Maybe switch to make instead of cmake
 - Split fragment shader into multiple parts
 
 see `archtecture.md` for explanation what every file does.  
@@ -27,11 +26,11 @@ see `archtecture.md` for explanation what every file does.
 [Cool glow](https://randacek.dev/dl/rendering/glow.png) - (Cool glow, Multiple object in scene)  
 
 ## Build:
-Run the `run` script. The executable will start after the build is done.
+`make run`
 
 ### Deps:
-- cmake
+- make
 - glfw3
 - glew  
 
-(`yay -S glew glfw-x11 cmake --needed`)
+(`yay -S glew glfw-x11 --needed`)
