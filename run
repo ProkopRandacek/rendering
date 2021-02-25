@@ -1,0 +1,6 @@
+#!/bin/sh
+rm build -rf
+mkdir build -p
+cd build
+cmake ..
+make
