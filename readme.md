@@ -5,13 +5,13 @@
 ![Cool glow](https://randacek.dev/dl/rendering/glow.png)  
 
 Current rendering capabilities:  
-- Sphere, Cube, Tourus, Prism and Cylinder rendering
+- Sphere and Cube rendering
 - Transforming between shapes over time
 - Multiple different object in scene
 - Modify camera position, FOV, direction
 - Checkerboard floor on y=0
 - Very simple soft shadows
-- Render real-time (60 fps) or export each frame as image (~15 fps)  
+- Render real-time (60 fps) or export each frame as image (~15 fps on my pc)  
 
 TODO:
 - Shape rotating
@@ -27,7 +27,7 @@ see [`archtecture.md`](architecture.md) for explanation what every file does.
 [Move demo](https://randacek.dev/dl/rendering/move_demo.mp4) - (WASD & Mouse movement, Multiple object in scene)  
 
 ## Build:
-`make run`
+`make run` or just `make` to build the binary (in `./build/`; `*.glsl` files from `./build/` need to be in the `$PWD` folder when executing the program for them to be found)
 
 ### Deps:
 - make
