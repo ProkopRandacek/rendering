@@ -5,13 +5,13 @@
 ![Cool glow](https://randacek.dev/p/glow.png)  
 
 Current rendering capabilities:  
-- Sphere and Cube rendering
+- Sphere, Cube, Tourus, Prism and Cylinder rendering
 - Transforming between shapes over time
 - Multiple different object in scene
 - Modify camera position, FOV, direction
 - Checkerboard floor (position hard coded in GLSL for now)
 - Very simple soft shadows
-- Render real-time (60 fps) or export each frame as image (~15 fps on my pc)  
+- Render real-time (60 fps) or export each frame as image (~15 fps)  
 
 TODO:
 - Sort shapes in scene into a btree instead of array.
@@ -30,7 +30,6 @@ See [`archtecture.md`](architecture.md) for explanation what every file does.
 ## Build:
 `make run` to (re)build and run the binary.  
 `make` to build the binary (in `./build/`; `*.glsl` files from `./build/` need to be in the `$PWD` folder when executing the program for them to be found)
-(experimental) `make winbuild` to (re)build .exe file in `./winbuild/` same rules apply for `*.glsl` files as when building for Linux.
 
 ### Deps:
 - make
