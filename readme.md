@@ -1,8 +1,8 @@
 # Ray marching rendering
 
-![normal demo](https://randacek.dev/dl/rendering/demo.png)  
-![blending demo](https://randacek.dev/dl/rendering/blending.png)  
-![Cool glow](https://randacek.dev/dl/rendering/glow.png)  
+![normal demo](https://randacek.dev/p/demo.png)  
+![blending demo](https://randacek.dev/p/blending.png)  
+![Cool glow](https://randacek.dev/p/glow.png)  
 
 Current rendering capabilities:  
 - Sphere and Cube rendering
@@ -23,8 +23,8 @@ TODO:
 see [`archtecture.md`](architecture.md) for explanation what every file does.  
 
 ## Demos
-[Transform demo](https://randacek.dev/dl/rendering/transform_demo.mp4) - (Tourus to Cube transition, rendering to file, Multiple object in scene)  
-[Move demo](https://randacek.dev/dl/rendering/move_demo.mp4) - (WASD & Mouse movement, Multiple object in scene)  
+[Transform demo](https://randacek.dev/p/transform_demo.mp4) - (Tourus to Cube transition, rendering to file, Multiple object in scene)  
+[Move demo](https://randacek.dev/p/move_demo.mp4) - (WASD & Mouse movement, Multiple object in scene)  
 
 ## Build:
 `make run` or just `make` to build the binary (in `./build/`; `*.glsl` files from `./build/` need to be in the `$PWD` folder when executing the program for them to be found)
