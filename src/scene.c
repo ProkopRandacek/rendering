@@ -3,8 +3,6 @@
 #include <math.h>
 
 #include "opengl.h"
-#include "camera.h"
-#include "shapes.h"
 #include "scene.h"
 
 extern GL* gl;

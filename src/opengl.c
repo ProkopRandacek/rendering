@@ -3,7 +3,6 @@
 #include <string.h>
 
 #include "opengl.h"
-#include "fileio.h"
 
 const int w = 1000;
 const int h = 1000;

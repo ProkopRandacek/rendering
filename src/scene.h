@@ -1,3 +1,6 @@
+#include "camera.h"
+#include "shapes.h"
+
 void createScene();
 void updateScene(float time);
 
