@@ -21,8 +21,10 @@ main.c                                      - Code initialization, main render l
  |    |     |
  |    |     +-> vector.c                    - Definitions of vectors and vector functions.
  |    |
- |    |
  |    +-> shapes.c                          - Definitions of shapes and shape functions.
+ |    |
+ |    +-> shapeSerialization.c              - Functions that export shape structures to float arrays.
+ |                                          - Is used to sending data over to the GPU.
  |
  +-> input.c                                - Input handling
 ```
