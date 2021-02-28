@@ -4,6 +4,7 @@
 
 #include "opengl.h"
 #include "scene.h"
+#include "shapeSerialization.h"
 
 extern GL* gl;
 extern const int floatPerSph, floatPerCube;

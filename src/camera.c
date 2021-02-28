@@ -13,8 +13,8 @@ Camera cmr(Vector3 pos, Vector3 dir, float angle, float h, float w) {
 	Camera cam;
 	cam.pos = pos;
 	if (dir.x == 0.0f && (dir.y == 1.0f || dir.y == -1.0f) && dir.z == 0.0f) {
-		printf("ERROR: Camera cant face straight up or down\n"); // causes division by zero FIXME
-		exit(1);
+		dir.y += 0.0001f;
+		// ugly fix for division by zero. probably works
 	}
 
 	Vector3 sc = vAdd(pos, dir); // Screen center
@@ -69,19 +69,5 @@ void updateCamPos(Camera* cam, Vector3 offset) {
 	cam->pos.y += offset.y;
 }
 
-Camera updateCamDir(Vector3 pos, Vector3 dir) {
-	return cmr(pos, dir, lastAngle, lastH, lastW);
-}
-
-void setWH(float w, float h) {
-	lastH = h;
-	lastW = w;
-}
-
-void cam2floats(Camera cam, float* f) {
-	f[ 0] = cam.pos.x; f[ 1] = cam.pos.y; f[ 2] = cam.pos.z;
-	f[ 3] = cam.tr.x;  f[ 4] = cam.tr.y;  f[ 5] = cam.tr.z;
-	f[ 6] = cam.tl.x;  f[ 7] = cam.tl.y;  f[ 8] = cam.tl.z;
-	f[ 9] = cam.br.x;  f[10] = cam.br.y;  f[11] = cam.br.z;
-	f[12] = cam.bl.x;  f[13] = cam.bl.y;  f[14] = cam.bl.z;
-}
+void setWH(float w, float h) { lastH = h; lastW = w; }
+Camera updateCamDir(Vector3 pos, Vector3 dir) { return cmr(pos, dir, lastAngle, lastH, lastW); }

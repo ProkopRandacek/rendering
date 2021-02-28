@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <math.h>
+
 #include "vector.h"
 
 Vector3 v3(float x, float y, float z) {
