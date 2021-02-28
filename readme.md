@@ -16,7 +16,6 @@ Current rendering capabilities:
 TODO:
 - Shape rotating
 - Shape transformation control from C (rn hardcoded in GLSL)
-- Maybe better animation control from C
 - `#import`s seems to be messy
 - Split fragment shader into multiple parts
 

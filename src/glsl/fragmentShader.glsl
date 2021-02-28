@@ -5,69 +5,68 @@ uniform float time;
 uniform vec3 lightPos;
 
 uniform ivec2 resolution;
-uniform vec3 cam[5]; // cam[0] = Camera position
-// cam[1] = top    left
-// cam[2] = top    right
-// cam[3] = bottom right
-// cam[4] = bottom left
+uniform vec3 cam[5];
 
-const int STEPSNUM = 64;
+const int STEPSNUM = 1024;
 const float COLLISION_THRESHOLD = 0.001;
 const float MAX_TRACE_DIST = 30.0;
 
-// === SPHERES ===
-const int sphNum = 2;
-const int floatPerSph = 7;
-uniform float rawSpheres[sphNum * floatPerSph];
+const int sphereSize = 7;
+const int cubeSize = 9;
 
-vec3 sphPos(int i) {
+// 2 shapes + 2 shapeTypes + operationType + k
+const int groupSize = (cubeSize * 2) + 4;
+const int groupNum = 2;
+
+// this uniform contains all shape data
+uniform float rawGroups[groupNum * groupSize];
+
+// The following functions are to find information in the rawGroups array
+// i is the requested group index
+int aShapeType(int i) { return int(rawGroups[groupSize * i + cubeSize * 2 + 0]); } // 0 = cube, 1 = sphere
+int bShapeType(int i) { return int(rawGroups[groupSize * i + cubeSize * 2 + 1]); } // -//-
+int grpOpType (int i) { return int(rawGroups[groupSize * i + cubeSize * 2 + 2]); } // 0 = normal, 1 = blending
+int grpK      (int i) { return int(rawGroups[groupSize * i + cubeSize * 2 + 3]); }
+
+vec3 aShapePos(int i) {
 	return vec3(
-			rawSpheres[i * floatPerSph + 0],
-			rawSpheres[i * floatPerSph + 1],
-			rawSpheres[i * floatPerSph + 2]
-			);
+			rawGroups[groupSize * i + 0],
+			rawGroups[groupSize * i + 1],
+			rawGroups[groupSize * i + 2]);
 }
 
-vec3 sphClr(int i) {
+vec3 aShapeClr(int i) {
 	return vec3(
-			rawSpheres[i * floatPerSph + 3],
-			rawSpheres[i * floatPerSph + 4],
-			rawSpheres[i * floatPerSph + 5]
-			);
+			rawGroups[groupSize * i + 3],
+			rawGroups[groupSize * i + 4],
+			rawGroups[groupSize * i + 5]);
 }
 
-float sphRad(int i) {
-	return rawSpheres[i * floatPerSph + 6];
-}
-
-// === CUBES ===
-const int cubeNum = 4;
-const int floatPerCube = 9;
-uniform float rawCubes[cubeNum * floatPerCube];
-
-vec3 cubePos(int i) {
+vec3 aShapeScale(int i) {
 	return vec3(
-			rawCubes[i * floatPerCube + 0],
-			rawCubes[i * floatPerCube + 1],
-			rawCubes[i * floatPerCube + 2]
-			);
+			rawGroups[groupSize * i + 6],
+			rawGroups[groupSize * i + 7],
+			rawGroups[groupSize * i + 8]);
 }
-
-vec3 cubeClr(int i) {
+vec3 bShapePos(int i) {
 	return vec3(
-			rawCubes[i * floatPerCube + 3],
-			rawCubes[i * floatPerCube + 4],
-			rawCubes[i * floatPerCube + 5]
-			);
+			rawGroups[groupSize * i + 0 + cubeSize],
+			rawGroups[groupSize * i + 1 + cubeSize],
+			rawGroups[groupSize * i + 2 + cubeSize]);
 }
-
-vec3 cubeScale(int i) {
+vec3 bShapeClr(int i) {
 	return vec3(
-			rawCubes[i * floatPerCube + 6],
-			rawCubes[i * floatPerCube + 7],
-			rawCubes[i * floatPerCube + 8]
-			);
+			rawGroups[groupSize * i + 3 + cubeSize],
+			rawGroups[groupSize * i + 4 + cubeSize],
+			rawGroups[groupSize * i + 5 + cubeSize]);
 }
+vec3 bShapeScale(int i) {
+	return vec3(
+			rawGroups[groupSize * i + 6 + cubeSize],
+			rawGroups[groupSize * i + 7 + cubeSize],
+			rawGroups[groupSize * i + 8 + cubeSize]);
+}
+// end of rawGroups functions
 
 struct rayHit {
 	vec3 hitPos;
@@ -90,47 +89,66 @@ float d2Cube(in vec3 pos, in vec3 cubeCenter, in vec3 scale) {
 
 vec4 Blend(float a, float b, vec3 colA, vec3 colB, float k )
 {
-    float h = clamp( 0.5+0.5*(b-a)/k, 0.0, 1.0 );
-    float blendDst = mix( b, a, h ) - k*h*(1.0-h);
-    vec3 blendCol = mix(colB,colA,h);
+	float h = clamp( 0.5+0.5*(b-a)/k, 0.0, 1.0 );
+	float blendDst = mix( b, a, h ) - k*h*(1.0-h);
+	vec3 blendCol = mix(colB,colA,h);
 
-    return vec4(blendCol, blendDst);
+	return vec4(blendCol, blendDst);
 }
 
 vec4 Combine(float dstA, float dstB, vec3 colourA, vec3 colourB, int operation, float blendStrength) {
-    float dst = dstA;
-    vec3 colour = colourA;
+	float dst = dstA;
+	vec3 colour = colourA;
 
-    if (operation == 0) {
-        if (dstB < dstA) {
-            dst = dstB;
-            colour = colourB;
-        }
-    }
-    // Blend
-    else if (operation == 1) {
-        vec4 blend = Blend(dstA, dstB, colourA, colourB, blendStrength);
-        dst = blend.w;
-        colour = blend.xyz;
-    }
-    // Cut
-    else if (operation == 2) {
-        // max(a,-b)
-        if (-dstB > dst) {
-            dst = -dstB;
-            colour = colourB;
-        }
-    }
-    // Mask
-    else if (operation == 3) {
-        // max(a,b)
-        if (dstB > dst) {
-            dst = dstB;
-            colour = colourB;
-        }
-    }
+	if (operation == 0) {
+		if (dstB < dstA) {
+			dst = dstB;
+			colour = colourB;
+		}
+	}
+	// Blend
+	else if (operation == 1) {
+		vec4 blend = Blend(dstA, dstB, colourA, colourB, blendStrength);
+		dst = blend.w;
+		colour = blend.xyz;
+	}
+	// Cut
+	else if (operation == 2) {
+		// max(a,-b)
+		if (-dstB > dst) {
+			dst = -dstB;
+			colour = colourB;
+		}
+	}
+	// Mask
+	else if (operation == 3) {
+		// max(a,b)
+		if (dstB > dst) {
+			dst = dstB;
+			colour = colourB;
+		}
+	}
 
-    return vec4(colour,dst);
+	return vec4(colour,dst);
+}
+
+vec4 d2Group(in vec3 pos, int i) {
+	float d2a, d2b;
+
+	// Shape A
+	if (aShapeType(i) == 0) {
+		d2a = d2Cube(pos, aShapePos(i), aShapeScale(i));
+	} else if (aShapeType(i) == 1) {
+		d2a = d2Sphere(pos, aShapePos(i), aShapeScale(i).x);
+	}
+	// Shape B
+	if (bShapeType(i) == 0) {
+		d2b = d2Cube(pos, bShapePos(i), bShapeScale(i));
+	} else if (bShapeType(i) == 1) {
+		d2b = d2Sphere(pos, bShapePos(i), bShapeScale(i).x);
+	}
+
+	return Combine(d2a, d2b, aShapeClr(i), bShapeClr(i), grpOpType(i), grpK(i));
 }
 
 vec3 checkerboard(in vec3 pos) {
@@ -143,32 +161,19 @@ vec3 checkerboard(in vec3 pos) {
 
 // distance to nearest object
 vec4 mapWorld(in vec3 pos) {
-	float k = sin(time) + 1.0;
-	const int operation = 1;
-
 	float localDist = 200.0;
 	vec3  localClr = vec3(0.0);
-	float dist;
 
-	// Check spheres
-	for (int i = 0; i < sphNum; i++) {
-		dist = d2Sphere(pos, sphPos(i), sphRad(i));
-		vec4 combined = Combine(localDist, dist, localClr, sphClr(i), operation, k);
-		localClr = combined.xyz;
-		localDist = combined.w;
-	}
-
-	// Check cubes
-	for (int i = 0; i < cubeNum; i++) {
-		dist = d2Cube(pos, cubePos(i), cubeScale(i));
-		vec4 combined = Combine(localDist, dist, localClr, cubeClr(i), operation, k);
+	for (int i = 0; i < groupNum; i++) {
+		vec4 grp = d2Group(pos, i);
+		vec4 combined = Combine(localDist, grp.w, localClr, grp.xyz, 0, 0.0);
 		localClr = combined.xyz;
 		localDist = combined.w;
 	}
 
 	// Check floor
-	dist = d2Cube(pos, vec3(0.0), vec3(10.0, 0.1, 10.0));
-	vec4 combined = Combine(localDist, dist, localClr, checkerboard(pos), operation, k);
+	float dist = d2Cube(pos, vec3(0.0), vec3(10.0, 0.1, 10.0));
+	vec4 combined = Combine(localDist, dist, localClr, checkerboard(pos), 0, 0.0);
 	localClr = combined.xyz;
 	localDist = combined.w;
 
@@ -226,6 +231,7 @@ void main() {
 	rayHit hit = rayMarch(cam[0], dir);
 	vec3 clr = hit.surfaceClr;
 
-	//outColor = vec4(clr, 1.0);
-	outColor = vec4(vec3(hit.steps / float(STEPSNUM)), 1.0);
+	outColor = vec4(clr, 1.0);
+	//outColor = vec4(vec3(hit.steps / float(STEPSNUM)), 1.0);
 }
+

@@ -11,6 +11,8 @@ extern const int floatPerSph, floatPerCube;
 const int sphereNum = 2;
 const int cubeNum = 4;
 
+extern const int sphereSize, cubeSize, groupSize;
+
 // these are global so other object can be created relative to them
 Camera cam;
 
@@ -18,8 +20,7 @@ void createScene() {
 	createCamera(0.0f);
 	sendCamera();
 	createLight(0.0f);
-	createSpheres(0.0f);
-	createCubes(0.0f);
+	createObjects();
 }
 
 void createCamera(float time) {
@@ -40,28 +41,25 @@ void createLight(float time) {
 	shdSetVec3Array(gl->s, "lightPos", 1, lsPos);
 }
 
-void createSpheres(float time) {
-	Sphere spheres[sphereNum];
-	spheres[0] = sph(v3(3.0f, 2.5f, 0.0f), v3(1.0f, 0.0f, 0.0f), 1.0f);
-	spheres[1] = sph(v3(5.0f, 1.0f, 0.0f), v3(0.0f, 0.0f, 1.0f), 0.5f);
+void createObjects() {
+	Primitive greenSph = prmv(SPHERE, (void*)sph(v3(3.0f, 2.5f, 0.0f), v3(0.0f, 1.0f, 0.0f), 1.0f));
+	Primitive blueSph  = prmv(SPHERE, (void*)sph(v3(0.0f, 2.5f, 0.0f), v3(0.0f, 0.0f, 1.0f), 1.5f));
 
-	float f[sphereNum * floatPerSph];
-	spheres2floats(f, sphereNum, spheres);
+	ShapeGroup sphsGroup = group(greenSph, blueSph, BLENDING, 2.0f);
 
-	shdSetFloatArray(gl->s, "rawSpheres", sphereNum * floatPerSph, f);
-}
+	Primitive greenCube = prmv(CUBE, (void*)cube(v3( 0.0f, 2.5f, 2.0f), v3(0.0f, 1.0f, 0.0f), v3(1.0f, 1.0f, 1.0f)));
+	Primitive blueCube  = prmv(CUBE, (void*)cube(v3(-3.0f, 2.5f, 2.0f), v3(0.0f, 0.0f, 1.0f), v3(1.0f, 1.0f, 1.0f)));
 
-void createCubes(float time) {
-	Cube cubes[cubeNum];
-	cubes[0] = cube(v3( 0.0f, 2.0f, 1.0f), v3(1.0f, 0.0f, 0.0f), v3(1.0f, 2.0f, 0.01f));
-	cubes[1] = cube(v3( 1.0f, 2.0f, 0.0f), v3(0.0f, 1.0f, 0.0f), v3(0.01f, 2.0f, 1.0f));
-	cubes[2] = cube(v3(-1.0f, 2.0f, 0.0f), v3(0.0f, 0.0f, 1.0f), v3(0.01f, 2.0f, 1.0f));
-	cubes[3] = cube(v3(-3.0f, 1.5f, 0.0f), v3(0.0f, 0.5f, 1.0f), v3(1.0f, 1.0f, 1.0f));
+	ShapeGroup cubeGroup = group(greenCube, blueCube, BLENDING, 2.0f);
 
-	float f[cubeNum * floatPerCube];
-	cubes2floats(f, cubeNum, cubes);
+	ShapeGroup groups[2];
+	groups[0] = sphsGroup;
+	groups[1] = cubeGroup;
 
-	shdSetFloatArray(gl->s, "rawCubes", cubeNum * floatPerCube, f);
+	float f[groupSize * 2];
+	groups2floats(f, 2, groups);
+
+	shdSetFloatArray(gl->s, "rawGroups", groupSize * 2, f);
 }
 
 void updateScene(float time) {
