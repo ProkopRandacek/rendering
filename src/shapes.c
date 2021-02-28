@@ -6,8 +6,9 @@ extern const int sphereNum, cubeNum;
 
 const int sphereSize = 7;
 const int cubeSize = 9;
+const int cylinderSize = 10;
 // group  = 2 shapes + 2 shapeTypes + operationType + k
-const int groupSize = (cubeSize * 2) + 2 + 1 + 1;
+const int groupSize = (cylinderSize * 2) + 2 + 1 + 1;
 
 Sphere* sph(Vector3 pos, Vector3 clr, float radius) {
 	Sphere* s = malloc(sizeof(Sphere));
@@ -22,6 +23,15 @@ Cube* cube(Vector3 pos, Vector3 clr, Vector3 scale) {
 	c->pos = pos;
 	c->clr = clr;
 	c->scale = scale;
+	return c;
+}
+
+Cylinder* cyl(Vector3 start, Vector3 end, Vector3 clr, float r) {
+	Cylinder* c = malloc(sizeof(Cylinder));
+	c->start = start;
+	c->end = end;
+	c->clr = clr;
+	c->radius = r;
 	return c;
 }
 
@@ -41,49 +51,67 @@ ShapeGroup group(Primitive a, Primitive b, OperationType op, float k) {
 	return sg;
 }
 
-void spheres2floats(float* f, int num, Sphere* spheres) {
-	for (int i = 0; i < num; i++) {
-		f[i * sphereSize + 0] = spheres[i].pos.x;
-		f[i * sphereSize + 1] = spheres[i].pos.y;
-		f[i * sphereSize + 2] = spheres[i].pos.z;
+void sphere2floats(float* f, Sphere* sphere) {
+	f[0] = sphere->pos.x;
+	f[1] = sphere->pos.y;
+	f[2] = sphere->pos.z;
 
-		f[i * sphereSize + 3] = spheres[i].clr.x;
-		f[i * sphereSize + 4] = spheres[i].clr.y;
-		f[i * sphereSize + 5] = spheres[i].clr.z;
+	f[3] = sphere->clr.x;
+	f[4] = sphere->clr.y;
+	f[5] = sphere->clr.z;
 
-		f[i * sphereSize + 6] = spheres[i].radius;
-		f[i * sphereSize + 6] = spheres[i].radius;
-		f[i * sphereSize + 6] = spheres[i].radius;
-	}
+	f[6] = 0.0f;
+	f[7] = 0.0f;
+	f[8] = 0.0f;
+
+	f[9] = sphere->radius;
 }
 
-void cubes2floats(float* f, int num, Cube* cubes) {
-	for (int i = 0; i < num; i++) {
-		f[i * cubeSize + 0] = cubes[i].pos.x;
-		f[i * cubeSize + 1] = cubes[i].pos.y;
-		f[i * cubeSize + 2] = cubes[i].pos.z;
+void cube2floats(float* f, Cube* cube) {
+	f[0] = cube->pos.x;
+	f[1] = cube->pos.y;
+	f[2] = cube->pos.z;
 
-		f[i * cubeSize + 3] = cubes[i].clr.x;
-		f[i * cubeSize + 4] = cubes[i].clr.y;
-		f[i * cubeSize + 5] = cubes[i].clr.z;
+	f[3] = cube->clr.x;
+	f[4] = cube->clr.y;
+	f[5] = cube->clr.z;
 
-		f[i * cubeSize + 6] = cubes[i].scale.x;
-		f[i * cubeSize + 7] = cubes[i].scale.y;
-		f[i * cubeSize + 8] = cubes[i].scale.z;
-	}
+	f[6] = cube->scale.x;
+	f[7] = cube->scale.y;
+	f[8] = cube->scale.z;
+
+	f[9] = 0.0f;
+}
+
+void cyl2floats(float* f, Cylinder* cyl) {
+	f[0] = cyl->start.x;
+	f[1] = cyl->start.y;
+	f[2] = cyl->start.z;
+
+	f[3] = cyl->clr.x;
+	f[4] = cyl->clr.y;
+	f[5] = cyl->clr.z;
+
+	f[6] = cyl->end.x;
+	f[7] = cyl->end.y;
+	f[8] = cyl->end.z;
+
+	f[9] = cyl->radius;
 }
 
 void groups2floats(float* f, int num, ShapeGroup* grps) {
 	for (int i = 0; i < num; i++) {
-		if      (grps[i].a.type == CUBE)   {   cubes2floats(&f[i * groupSize + 0], 1, (Cube*)  grps[i].a.shape); }
-		else if (grps[i].a.type == SPHERE) { spheres2floats(&f[i * groupSize + 0], 1, (Sphere*)grps[i].a.shape); }
+		if      (grps[i].a.type == CUBE)     {   cube2floats(&f[i * groupSize], (Cube*)    grps[i].a.shape); }
+		else if (grps[i].a.type == SPHERE)   { sphere2floats(&f[i * groupSize], (Sphere*)  grps[i].a.shape); }
+		else if (grps[i].a.type == CYLINDER) {    cyl2floats(&f[i * groupSize], (Cylinder*)grps[i].a.shape); }
 
-		if      (grps[i].b.type == CUBE)   {   cubes2floats(&f[i * groupSize + cubeSize], 1, (Cube*)  grps[i].b.shape); }
-		else if (grps[i].b.type == SPHERE) { spheres2floats(&f[i * groupSize + cubeSize], 1, (Sphere*)grps[i].b.shape); }
+		if      (grps[i].b.type == CUBE)     {   cube2floats(&f[i * groupSize + cylinderSize], (Cube*)    grps[i].b.shape); }
+		else if (grps[i].b.type == SPHERE)   { sphere2floats(&f[i * groupSize + cylinderSize], (Sphere*)  grps[i].b.shape); }
+		else if (grps[i].b.type == CYLINDER) {    cyl2floats(&f[i * groupSize + cylinderSize], (Cylinder*)grps[i].b.shape); }
 
-		f[i * groupSize + cubeSize * 2 + 0] = (float)grps[i].a.type;
-		f[i * groupSize + cubeSize * 2 + 1] = (float)grps[i].b.type;
-		f[i * groupSize + cubeSize * 2 + 2] = (float)grps[i].op;
-		f[i * groupSize + cubeSize * 2 + 3] = (float)grps[i].k;
+		f[i * groupSize + cylinderSize * 2 + 0] = (float)grps[i].a.type;
+		f[i * groupSize + cylinderSize * 2 + 1] = (float)grps[i].b.type;
+		f[i * groupSize + cylinderSize * 2 + 2] = (float)grps[i].op;
+		f[i * groupSize + cylinderSize * 2 + 3] = (float)grps[i].k;
 	}
 }

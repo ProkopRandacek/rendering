@@ -5,7 +5,7 @@
 ![Cool glow](https://randacek.dev/p/glow.png)  
 
 Current rendering capabilities:  
-- Sphere and Cube rendering
+- Sphere, Cube and Cylinder rendering
 - Transforming between shapes over time
 - Multiple different object in scene
 - Modify camera position, FOV, direction

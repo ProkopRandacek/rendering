@@ -42,24 +42,37 @@ void createLight(float time) {
 }
 
 void createObjects() {
-	Primitive greenSph = prmv(SPHERE, (void*)sph(v3(3.0f, 2.5f, 0.0f), v3(0.0f, 1.0f, 0.0f), 1.0f));
-	Primitive blueSph  = prmv(SPHERE, (void*)sph(v3(0.0f, 2.5f, 0.0f), v3(0.0f, 0.0f, 1.0f), 1.5f));
+	Primitive greenSph = prmv(SPHERE, (void*)sph(v3(3.0f, 1.0f, 0.0f), v3(0.0f, 1.0f, 0.0f), 2.0f));
+	Primitive blueSph  = prmv(SPHERE, (void*)sph(v3(2.0f, 2.5f, 0.0f), v3(0.0f, 0.0f, 1.0f), 1.5f));
 
-	ShapeGroup sphsGroup = group(greenSph, blueSph, BLENDING, 2.0f);
+	ShapeGroup sphsGroup = group(blueSph, greenSph, CUT, 1.5f);
 
 	Primitive greenCube = prmv(CUBE, (void*)cube(v3( 0.0f, 2.5f, 2.0f), v3(0.0f, 1.0f, 0.0f), v3(1.0f, 1.0f, 1.0f)));
-	Primitive blueCube  = prmv(CUBE, (void*)cube(v3(-3.0f, 2.5f, 2.0f), v3(0.0f, 0.0f, 1.0f), v3(1.0f, 1.0f, 1.0f)));
+	Primitive redCube   = prmv(CUBE, (void*)cube(v3(-3.0f, 2.5f, 2.0f), v3(1.0f, 0.0f, 0.0f), v3(1.0f, 1.0f, 1.0f)));
 
-	ShapeGroup cubeGroup = group(greenCube, blueCube, BLENDING, 2.0f);
+	ShapeGroup cubeGroup = group(greenCube, redCube, BLENDING, 3.0f);
 
-	ShapeGroup groups[2];
+	Primitive cylA = prmv(CYLINDER, (void*)cyl(v3( 5.0f, 1.0f, 5.0f), v3(5.0f, 3.0f, 5.0f), v3(1.0f, 0.0f, 1.0f), 0.5f));
+	Primitive cylB = prmv(CYLINDER, (void*)cyl(v3( 4.0f, 2.0f, 5.0f), v3(6.0f, 2.0f, 5.0f), v3(1.0f, 0.0f, 1.0f), 0.5f));
+
+	ShapeGroup cylGroup = group(cylA, cylB, NORMAL, 1.0f);
+
+	ShapeGroup groups[3];
 	groups[0] = sphsGroup;
 	groups[1] = cubeGroup;
+	groups[2] = cylGroup;
 
-	float f[groupSize * 2];
-	groups2floats(f, 2, groups);
+	float f[groupSize * 3];
+	groups2floats(f, 3, groups);
 
-	shdSetFloatArray(gl->s, "rawGroups", groupSize * 2, f);
+	shdSetFloatArray(gl->s, "rawGroups", groupSize * 3, f);
+
+	free(greenSph.shape);
+	free(blueSph.shape);
+	free(greenCube.shape);
+	free(redCube.shape);
+	free(cylA.shape);
+	free(cylB.shape);
 }
 
 void updateScene(float time) {

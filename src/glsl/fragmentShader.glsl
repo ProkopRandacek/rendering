@@ -13,20 +13,24 @@ const float MAX_TRACE_DIST = 30.0;
 
 const int sphereSize = 7;
 const int cubeSize = 9;
+const int cylinderSize = 10;
 
 // 2 shapes + 2 shapeTypes + operationType + k
-const int groupSize = (cubeSize * 2) + 4;
-const int groupNum = 2;
+const int groupSize = (cylinderSize * 2) + 4;
+const int groupNum = 3;
 
 // this uniform contains all shape data
 uniform float rawGroups[groupNum * groupSize];
 
 // The following functions are to find information in the rawGroups array
 // i is the requested group index
-int aShapeType(int i) { return int(rawGroups[groupSize * i + cubeSize * 2 + 0]); } // 0 = cube, 1 = sphere
-int bShapeType(int i) { return int(rawGroups[groupSize * i + cubeSize * 2 + 1]); } // -//-
-int grpOpType (int i) { return int(rawGroups[groupSize * i + cubeSize * 2 + 2]); } // 0 = normal, 1 = blending
-int grpK      (int i) { return int(rawGroups[groupSize * i + cubeSize * 2 + 3]); }
+int aShapeType(int i) { return int(rawGroups[groupSize * i + cylinderSize * 2 + 0]); } // 0 = cube, 1 = sphere
+int bShapeType(int i) { return int(rawGroups[groupSize * i + cylinderSize * 2 + 1]); } // -//-
+int grpOpType (int i) { return int(rawGroups[groupSize * i + cylinderSize * 2 + 2]); } // 0 = normal, 1 = blending
+int grpK      (int i) { return int(rawGroups[groupSize * i + cylinderSize * 2 + 3]); }
+
+float aShapeRadius(int i) { return rawGroups[groupSize * i + cylinderSize * 0 + 9]; }
+float bShapeRadius(int i) { return rawGroups[groupSize * i + cylinderSize * 1 + 9]; }
 
 vec3 aShapePos(int i) {
 	return vec3(
@@ -34,14 +38,12 @@ vec3 aShapePos(int i) {
 			rawGroups[groupSize * i + 1],
 			rawGroups[groupSize * i + 2]);
 }
-
 vec3 aShapeClr(int i) {
 	return vec3(
 			rawGroups[groupSize * i + 3],
 			rawGroups[groupSize * i + 4],
 			rawGroups[groupSize * i + 5]);
 }
-
 vec3 aShapeScale(int i) {
 	return vec3(
 			rawGroups[groupSize * i + 6],
@@ -50,21 +52,21 @@ vec3 aShapeScale(int i) {
 }
 vec3 bShapePos(int i) {
 	return vec3(
-			rawGroups[groupSize * i + 0 + cubeSize],
-			rawGroups[groupSize * i + 1 + cubeSize],
-			rawGroups[groupSize * i + 2 + cubeSize]);
+			rawGroups[groupSize * i + 0 + cylinderSize],
+			rawGroups[groupSize * i + 1 + cylinderSize],
+			rawGroups[groupSize * i + 2 + cylinderSize]);
 }
 vec3 bShapeClr(int i) {
 	return vec3(
-			rawGroups[groupSize * i + 3 + cubeSize],
-			rawGroups[groupSize * i + 4 + cubeSize],
-			rawGroups[groupSize * i + 5 + cubeSize]);
+			rawGroups[groupSize * i + 3 + cylinderSize],
+			rawGroups[groupSize * i + 4 + cylinderSize],
+			rawGroups[groupSize * i + 5 + cylinderSize]);
 }
 vec3 bShapeScale(int i) {
 	return vec3(
-			rawGroups[groupSize * i + 6 + cubeSize],
-			rawGroups[groupSize * i + 7 + cubeSize],
-			rawGroups[groupSize * i + 8 + cubeSize]);
+			rawGroups[groupSize * i + 6 + cylinderSize],
+			rawGroups[groupSize * i + 7 + cylinderSize],
+			rawGroups[groupSize * i + 8 + cylinderSize]);
 }
 // end of rawGroups functions
 
@@ -85,6 +87,21 @@ float d2Cube(in vec3 pos, in vec3 cubeCenter, in vec3 scale) {
 	float ud = length(max(o, 0));
 	float n = max(max(min(o.x, 0), min(o.y, 0)), min(o.z, 0));
 	return ud + n;
+}
+
+// Cylinder from a to b with radius r
+float d2Cylinder(in vec3 p, in vec3 a, in vec3 b, float r)
+{
+  vec3  ba = b - a;
+  vec3  pa = p - a;
+  float baba = dot(ba,ba);
+  float paba = dot(pa,ba);
+  float x = length(pa*baba-ba*paba) - r*baba;
+  float y = abs(paba-baba*0.5)-baba*0.5;
+  float x2 = x*x;
+  float y2 = y*y*baba;
+  float d = (max(x,y)<0.0)?-min(x2,y2):(((x>0.0)?x2:0.0)+((y>0.0)?y2:0.0));
+  return sign(d)*sqrt(abs(d))/baba;
 }
 
 vec4 Blend(float a, float b, vec3 colA, vec3 colB, float k )
@@ -136,17 +153,14 @@ vec4 d2Group(in vec3 pos, int i) {
 	float d2a, d2b;
 
 	// Shape A
-	if (aShapeType(i) == 0) {
-		d2a = d2Cube(pos, aShapePos(i), aShapeScale(i));
-	} else if (aShapeType(i) == 1) {
-		d2a = d2Sphere(pos, aShapePos(i), aShapeScale(i).x);
-	}
+	if      (aShapeType(i) == 0) { d2a = d2Cube    (pos, aShapePos(i), aShapeScale(i)); }
+	else if (aShapeType(i) == 1) { d2a = d2Sphere  (pos, aShapePos(i), aShapeRadius(i)); }
+	else if (aShapeType(i) == 2) { d2a = d2Cylinder(pos, aShapePos(i), aShapeScale(i), aShapeRadius(i)); }
 	// Shape B
-	if (bShapeType(i) == 0) {
-		d2b = d2Cube(pos, bShapePos(i), bShapeScale(i));
-	} else if (bShapeType(i) == 1) {
-		d2b = d2Sphere(pos, bShapePos(i), bShapeScale(i).x);
-	}
+	if      (bShapeType(i) == 0) { d2b = d2Cube    (pos, bShapePos(i), bShapeScale(i)); }
+	else if (bShapeType(i) == 1) { d2b = d2Sphere  (pos, bShapePos(i), bShapeRadius(i)); }
+	else if (bShapeType(i) == 2) { d2b = d2Cylinder(pos, bShapePos(i), bShapeScale(i), bShapeRadius(i)); }
+
 
 	return Combine(d2a, d2b, aShapeClr(i), bShapeClr(i), grpOpType(i), grpK(i));
 }
@@ -234,4 +248,3 @@ void main() {
 	outColor = vec4(clr, 1.0);
 	//outColor = vec4(vec3(hit.steps / float(STEPSNUM)), 1.0);
 }
-
