@@ -1,5 +1,6 @@
 #include "vector.h"
 
+
 typedef struct Cameras {
 	Vector3 pos;
 	Vector3 tl; // The direction of most top left ray
@@ -8,7 +9,7 @@ typedef struct Cameras {
 	Vector3 br; // ...
 
 	Vector3 left;
-	Vector3 foward;
+	Vector3 forward;
 } Camera;
 
 Camera cmr(Vector3 pos, Vector3 dir, float angle, float h, float w);

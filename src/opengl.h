@@ -4,6 +4,7 @@
 #include "shader.h"
 #include "fileio.h"
 
+
 typedef struct GLs {
 	unsigned int VBO;
 	unsigned int VAO;
@@ -14,8 +15,10 @@ typedef struct GLs {
 
 // init GL stuff
 void initOGL();
+
 // render fragment shader basically
 void renderOGL();
+
 // exit GL stuff
 void exitOGL();
 

@@ -54,3 +54,10 @@ Has only position
 1 2 3 = XYZ coordinates  
 4 5 6 = RGB color  
 7 8 9 = XYZ scale  
+
+#### Cylinder
+10 floats
+1 2 3 = XYZ center of the bottom of the cylinder
+4 5 6 = RGB color
+7 8 9 = XYZ center of the top of the cylinder
+10 = radius

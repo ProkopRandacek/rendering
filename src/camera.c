@@ -3,6 +3,7 @@
 
 #include "camera.h"
 
+
 float lastAngle, lastH, lastW;
 
 Camera cmr(Vector3 pos, Vector3 dir, float angle, float h, float w) {
@@ -52,7 +53,7 @@ Camera cmr(Vector3 pos, Vector3 dir, float angle, float h, float w) {
 	Vector3 down = vMultf(up, -1.0f);
 
 	cam.left = vNorm(left);
-	cam.foward = vNorm(dir);
+	cam.forward = vNorm(dir);
 
 	cam.tl = vAdd(vAdd(up, left), sc);
 	cam.tr = vAdd(vAdd(up, right), sc);
@@ -62,12 +63,16 @@ Camera cmr(Vector3 pos, Vector3 dir, float angle, float h, float w) {
 }
 
 void updateCamPos(Camera* cam, Vector3 offset) {
-	Vector3 foward = v3(cam->foward.x, 0, cam->foward.z);
+	Vector3 forward = v3(cam->forward.x, 0, cam->forward.z);
 	Vector3 left = v3(cam->left.x, 0, cam->left.z);
-	cam->pos = vAdd(cam->pos, vMultf(foward, offset.z));
+	cam->pos = vAdd(cam->pos, vMultf(forward, offset.z));
 	cam->pos = vAdd(cam->pos, vMultf(left, -offset.x));
 	cam->pos.y += offset.y;
 }
 
-void setWH(float w, float h) { lastH = h; lastW = w; }
+void setWH(float w, float h) {
+	lastH = h;
+	lastW = w;
+}
+
 Camera updateCamDir(Vector3 pos, Vector3 dir) { return cmr(pos, dir, lastAngle, lastH, lastW); }

@@ -3,6 +3,7 @@
 #include "vector.h"
 #include "shapes.h"
 
+
 extern const int sphereNum, cubeNum;
 
 const int sphereSize = 7;

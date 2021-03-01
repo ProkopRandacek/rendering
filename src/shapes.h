@@ -1,5 +1,5 @@
 typedef enum ShapeType {
-	CUBE, SPHERE, CYLINDER
+	GROUP, CUBE, SPHERE, CYLINDER
 } ShapeType;
 
 typedef enum OperationType {
@@ -43,6 +43,5 @@ typedef struct ShapeGroup {
 Sphere* sph(Vector3 pos, Vector3 clr, float radius);
 Cube* cube(Vector3 pos, Vector3 clr, Vector3 scale);
 Cylinder* cyl(Vector3 start, Vector3 stop, Vector3 clr, float r);
-
 Primitive prmv(ShapeType type, void* shape);
 ShapeGroup group(Primitive a, Primitive b, OperationType op, float k);

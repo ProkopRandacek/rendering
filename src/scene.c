@@ -6,6 +6,7 @@
 #include "scene.h"
 #include "shapeSerialization.h"
 
+
 extern GL* gl;
 extern const int floatPerSph, floatPerCube;
 
@@ -37,43 +38,37 @@ void sendCamera() {
 }
 
 void createLight(float time) {
-	float lsPos[] = { cam.pos.x, cam.pos.y, cam.pos.z };
+	float lsPos[] = {cam.pos.x, cam.pos.y, cam.pos.z};
 
 	shdSetVec3Array(gl->s, "lightPos", 1, lsPos);
 }
 
 void createObjects() {
-	Primitive greenSph = prmv(SPHERE, (void*)sph(v3(3.0f, 1.0f, 0.0f), v3(0.0f, 1.0f, 0.0f), 2.0f));
-	Primitive blueSph  = prmv(SPHERE, (void*)sph(v3(2.0f, 2.5f, 0.0f), v3(0.0f, 0.0f, 1.0f), 1.5f));
+	const int groupNum = 2;
 
-	ShapeGroup sphsGroup = group(blueSph, greenSph, CUT, 1.5f);
+	Primitive cylA = prmv(CYLINDER, (void*) cyl(v3(5.0f, 1.0f, 5.0f), v3(5.0f, 3.0f, 5.0f), v3(1.0f, 0.0f, 1.0f), 0.5f));
+	Primitive cylB = prmv(CYLINDER, (void*) cyl(v3(4.0f, 2.0f, 5.0f), v3(6.0f, 2.0f, 5.0f), v3(1.0f, 0.0f, 1.0f), 0.5f));
 
-	Primitive greenCube = prmv(CUBE, (void*)cube(v3( 0.0f, 2.5f, 2.0f), v3(0.0f, 1.0f, 0.0f), v3(1.0f, 1.0f, 1.0f)));
-	Primitive redCube   = prmv(CUBE, (void*)cube(v3(-3.0f, 2.5f, 2.0f), v3(1.0f, 0.0f, 0.0f), v3(1.0f, 1.0f, 1.0f)));
+	ShapeGroup sgAB = group(cylA, cylB, NORMAL, 1.0f);
+	ShapeGroup* ptr_sgAB = &sgAB;
 
-	ShapeGroup cubeGroup = group(greenCube, redCube, BLENDING, 3.0f);
+	Primitive AB   = prmv(GROUP,    (void*) ptr_sgAB);
+	Primitive cylC = prmv(CYLINDER, (void*) cyl(v3(5.0f, 2.0f, 4.0f), v3(5.0f, 2.0f, 6.0f), v3(1.0f, 0.0f, 1.0f), 0.5f));
 
-	Primitive cylA = prmv(CYLINDER, (void*)cyl(v3( 5.0f, 1.0f, 5.0f), v3(5.0f, 3.0f, 5.0f), v3(1.0f, 0.0f, 1.0f), 0.5f));
-	Primitive cylB = prmv(CYLINDER, (void*)cyl(v3( 4.0f, 2.0f, 5.0f), v3(6.0f, 2.0f, 5.0f), v3(1.0f, 0.0f, 1.0f), 0.5f));
+	ShapeGroup sgABC = group(AB, cylC, NORMAL, 1.0f);
 
-	ShapeGroup cylGroup = group(cylA, cylB, NORMAL, 1.0f);
+	ShapeGroup groups[groupNum];
+	groups[0] = sgAB;
+	groups[1] = sgABC;
 
-	ShapeGroup groups[3];
-	groups[0] = sphsGroup;
-	groups[1] = cubeGroup;
-	groups[2] = cylGroup;
+	float f[groupSize * groupNum];
+	groups2floats(f, groupNum, groups);
 
-	float f[groupSize * 3];
-	groups2floats(f, 3, groups);
+	shdSetFloatArray(gl->s, "rawGroups", groupSize * groupNum, f);
 
-	shdSetFloatArray(gl->s, "rawGroups", groupSize * 3, f);
-
-	free(greenSph.shape);
-	free(blueSph.shape);
-	free(greenCube.shape);
-	free(redCube.shape);
 	free(cylA.shape);
 	free(cylB.shape);
+	free(cylC.shape);
 }
 
 void updateScene(float time) {

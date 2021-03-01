@@ -6,6 +6,7 @@
 #include "shader.h"
 #include "fileio.h"
 
+
 shader shd(char* vertPath, char* fragPath) {
 	shader s;
 	int success;
@@ -50,11 +51,19 @@ void shdUse(shader* s) {
 }
 
 // single values
-void shdSetInt   (shader s, const char* name, int value) {      glUniform1i(glGetUniformLocation(s.ID, name), value); }
-void shdSetFloat (shader s, const char* name, float value) {  glUniform1f(glGetUniformLocation(s.ID, name), value); }
-void shdSetIVec2 (shader s, const char* name, int x, int y) { glUniform2i(glGetUniformLocation(s.ID, name), x, y ); }
+void shdSetInt(shader s, const char* name, int value) { glUniform1i(glGetUniformLocation(s.ID, name), value); }
+void shdSetFloat(shader s, const char* name, float value) { glUniform1f(glGetUniformLocation(s.ID, name), value); }
+void shdSetIVec2(shader s, const char* name, int x, int y) { glUniform2i(glGetUniformLocation(s.ID, name), x, y); }
 
 // arrays
-void shdSetFloatArray (shader s, const char* name, unsigned int count, float* values) { glUniform1fv(glGetUniformLocation(s.ID, name), count, values); }
-void shdSetVec3Array  (shader s, const char* name, unsigned int count, float* values) { glUniform3fv(glGetUniformLocation(s.ID, name), count, values); }
-void shdSetVec4Array  (shader s, const char* name, unsigned int count, float* values) { glUniform4fv(glGetUniformLocation(s.ID, name), count, values); }
+void shdSetFloatArray(shader s, const char* name, unsigned int count, float* values) {
+	glUniform1fv(glGetUniformLocation(s.ID, name), count, values);
+}
+
+void shdSetVec3Array(shader s, const char* name, unsigned int count, float* values) {
+	glUniform3fv(glGetUniformLocation(s.ID, name), count, values);
+}
+
+void shdSetVec4Array(shader s, const char* name, unsigned int count, float* values) {
+	glUniform4fv(glGetUniformLocation(s.ID, name), count, values);
+}

@@ -6,6 +6,7 @@
 #include "camera.h"
 #include "opengl.h"
 
+
 extern GL* gl;
 extern Camera cam;
 extern int w, h;
@@ -25,9 +26,9 @@ void updateInput() {
 
 	// wasd
 	Vector3 moveDir = v3(0.0f, 0.0f, 0.0f);
-	if (wDown) moveDir.z =  1.0f;
+	if (wDown) moveDir.z = 1.0f;
 	if (sDown) moveDir.z = -1.0f;
-	if (aDown) moveDir.x =  1.0f;
+	if (aDown) moveDir.x = 1.0f;
 	if (dDown) moveDir.x = -1.0f;
 	if (spaceDown) moveDir.y = 1.0f;
 	if (shiftDown) moveDir.y = -1.0f;
@@ -42,10 +43,10 @@ void updateInput() {
 	float y = (1.0f - (2.0f * ypos) / h) * mouseSens;
 
 	Vector3 dir = vNorm(v3(
-				cos(y) * sin(x),
-				sin(y),
-				cos(y) * cos(x)
-			      ));
+		cos(y) * sin(x),
+		sin(y),
+		cos(y) * cos(x)
+	));
 	cam = updateCamDir(cam.pos, dir);
 }
 

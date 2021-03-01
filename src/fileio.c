@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+
 #define FILE_READING_BUFFER_SIZE 8192
 
 void writeBMP(const char* filename, char* pixels, int w, int h) {
@@ -20,8 +21,7 @@ void writeBMP(const char* filename, char* pixels, int w, int h) {
 	header[8] = 0;
 	header[9] = 3 * w * h;
 	header[10] = header[11] = header[12] = header[13] = 0;
-	fwrite((char*)header + 2, 1, 54, fp);
-	//fflush(fp);
+	fwrite((char*) header + 2, 1, 54, fp);
 	for (i = 0; i < h; i++) {
 		for (j = 0; j < w; j++) {
 			int index = w * i + j;
@@ -38,25 +38,25 @@ void writeBMP(const char* filename, char* pixels, int w, int h) {
 }
 
 char* readFile(char* filename) {
-        FILE* fp = fopen(filename, "r");
+	FILE* fp = fopen(filename, "r");
 
 	if (fp == NULL) {
 		printf("Error opening file\n");
 		exit(1);
 	}
 
-        char c, buffer[FILE_READING_BUFFER_SIZE];
-        unsigned int len = 0;
+	char c, buffer[FILE_READING_BUFFER_SIZE];
+	unsigned int len = 0;
 
-        while((c = fgetc(fp)) != EOF) { // read file byte by byte until EOF
-                buffer[len] = c;
-                len++;
-        }
-        fclose(fp);
+	while ((c = fgetc(fp)) != EOF) { // read file byte by byte until EOF
+		buffer[len] = c;
+		len++;
+	}
+	fclose(fp);
 
-        char* data = malloc(sizeof(char) * len); // allocate right ammount of memory and copy the content there
-        memcpy(data, buffer, len);
+	char* data = malloc(sizeof(char) * len); // allocate right ammount of memory and copy the content there
+	memcpy(data, buffer, len);
 	data[len] = 0;
 
-        return data;
+	return data;
 }
