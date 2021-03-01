@@ -48,12 +48,11 @@ void createObjects() {
 
 	Primitive cylA = prmv(CYLINDER, (void*) cyl(v3(5.0f, 1.0f, 5.0f), v3(5.0f, 3.0f, 5.0f), v3(1.0f, 0.0f, 1.0f), 0.5f));
 	Primitive cylB = prmv(CYLINDER, (void*) cyl(v3(4.0f, 2.0f, 5.0f), v3(6.0f, 2.0f, 5.0f), v3(1.0f, 0.0f, 1.0f), 0.5f));
+	Primitive cylC = prmv(CYLINDER, (void*) cyl(v3(5.0f, 2.0f, 4.0f), v3(5.0f, 2.0f, 6.0f), v3(1.0f, 0.0f, 1.0f), 0.5f));
 
 	ShapeGroup sgAB = group(cylA, cylB, NORMAL, 1.0f);
-	ShapeGroup* ptr_sgAB = &sgAB;
 
-	Primitive AB   = prmv(GROUP,    (void*) ptr_sgAB);
-	Primitive cylC = prmv(CYLINDER, (void*) cyl(v3(5.0f, 2.0f, 4.0f), v3(5.0f, 2.0f, 6.0f), v3(1.0f, 0.0f, 1.0f), 0.5f));
+	Primitive AB = prmv(GROUP, (void*) (intptr_t) 0); // position of the shape group in the groups array
 
 	ShapeGroup sgABC = group(AB, cylC, NORMAL, 1.0f);
 
