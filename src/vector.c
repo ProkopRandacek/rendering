@@ -12,6 +12,8 @@ Vector3 v3(float x, float y, float z) {
 	return v;
 }
 
+Vector3 v3f(float a) { return v3(a, a, a); }
+
 void vPrint(Vector3 v) { printf("%.2f %.2f %.2f", v.x, v.y, v.z); }
 float vMag(Vector3 a) { return sqrtf((a.x * a.x) + (a.y * a.y) + (a.z * a.z)); }
 float vDot(Vector3 a, Vector3 b) { return a.x * b.x + a.y * b.y; }

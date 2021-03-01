@@ -6,6 +6,9 @@ typedef struct Vector3s {
 // Vector constructor
 Vector3 v3(float x, float y, float z);
 
+// Create vector from a single float
+Vector3 v3f(float a);
+
 // Print vector to console
 void vPrint(Vector3 a);
 

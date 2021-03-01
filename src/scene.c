@@ -44,30 +44,51 @@ void createLight(float time) {
 }
 
 void createObjects() {
-	const int groupNum = 2;
+	const int groupNum = 4;
 
-	Primitive cylA = prmv(CYLINDER, (void*) cyl(v3(5.0f, 1.0f, 5.0f), v3(5.0f, 3.0f, 5.0f), v3(1.0f, 0.0f, 1.0f), 0.5f));
-	Primitive cylB = prmv(CYLINDER, (void*) cyl(v3(4.0f, 2.0f, 5.0f), v3(6.0f, 2.0f, 5.0f), v3(1.0f, 0.0f, 1.0f), 0.5f));
-	Primitive cylC = prmv(CYLINDER, (void*) cyl(v3(5.0f, 2.0f, 4.0f), v3(5.0f, 2.0f, 6.0f), v3(1.0f, 0.0f, 1.0f), 0.5f));
+	// primitive shapes
+	Primitive cylA = prmv(CYLINDER, (void*) cyl(v3(5.0f, 1.0f, 5.0f), v3(5.0f, 3.0f, 5.0f), v3(0.0f, 1.0f, 0.0f), 0.5f));
+	Primitive cylB = prmv(CYLINDER, (void*) cyl(v3(4.0f, 2.0f, 5.0f), v3(6.0f, 2.0f, 5.0f), v3(0.0f, 1.0f, 0.0f), 0.5f));
+	Primitive cylC = prmv(CYLINDER, (void*) cyl(v3(5.0f, 2.0f, 4.0f), v3(5.0f, 2.0f, 6.0f), v3(0.0f, 1.0f, 0.0f), 0.5f));
 
-	ShapeGroup sgAB = group(cylA, cylB, NORMAL, 1.0f);
+	Primitive cubeA = prmv(CUBE,   (void*) cube(v3(5.0f, 2.0f, 5.0f), v3(1.0f, 0.0f, 1.0f), v3f(0.8f)));
+	Primitive sphA  = prmv(SPHERE, (void*)  sph(v3(5.0f, 2.0f, 5.0f), v3(0.0f, 0.0f, 1.0f), 1.1f));
 
-	Primitive AB = prmv(GROUP, (void*) (intptr_t) 0); // position of the shape group in the groups array
 
+	// group cylA and cylB together
+	ShapeGroup  sgAB = group(cylA, cylB, NORMAL, 1.0f);
+	// wrap the AB group into a primitive
+	Primitive     AB = prmv(GROUP, (void*) (intptr_t) 0); // 0 is the position of sgAB in groups array. Its a "pointer" for glsl.
+	// group AB group and cylC together
 	ShapeGroup sgABC = group(AB, cylC, NORMAL, 1.0f);
+	// wrap the ABC group into a primitive
+	Primitive    ABC = prmv(GROUP, (void*) (intptr_t) 1);
+
+
+	// group the cube and sphere together
+	ShapeGroup sgCS = group(sphA, cubeA, MASK, 1.0f);
+	// wrap the CS group into a primitive
+	Primitive    CS = prmv(GROUP, (void*) (intptr_t) 2);
+
+
+	ShapeGroup sgROOT = group(ABC, CS, CUT, 1.0f);
 
 	ShapeGroup groups[groupNum];
 	groups[0] = sgAB;
 	groups[1] = sgABC;
+	groups[2] = sgCS;
+	groups[3] = sgROOT;
 
 	float f[groupSize * groupNum];
 	groups2floats(f, groupNum, groups);
 
 	shdSetFloatArray(gl->s, "rawGroups", groupSize * groupNum, f);
 
-	free(cylA.shape);
-	free(cylB.shape);
-	free(cylC.shape);
+	free( cylA.shape);
+	free( cylB.shape);
+	free( cylC.shape);
+	free(cubeA.shape);
+	free( sphA.shape);
 }
 
 void updateScene(float time) {
