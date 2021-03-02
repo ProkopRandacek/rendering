@@ -15,7 +15,6 @@ Current rendering capabilities:
 
 TODO:
 - Add more shapes
-- Shape transformation control from C (add as a Operation)
 - Reflections
 - [Better lighting](https://en.wikipedia.org/wiki/Computer_graphics_lighting)
 - Read scene configuration from file

@@ -40,15 +40,18 @@ void createLight(float time) {
 }
 
 void createObjects() {
-	const int groupNum = 4;
+	const int groupNum = 6;
 
 	// primitive shapes
-	Primitive cylA = prmv(CYLINDER, (void*) cyl(v3(5.0f, 1.0f, 5.0f), v3(5.0f, 3.0f, 5.0f), v3(0.0f, 1.0f, 0.0f), 0.5f));
-	Primitive cylB = prmv(CYLINDER, (void*) cyl(v3(4.0f, 2.0f, 5.0f), v3(6.0f, 2.0f, 5.0f), v3(0.0f, 1.0f, 0.0f), 0.5f));
-	Primitive cylC = prmv(CYLINDER, (void*) cyl(v3(5.0f, 2.0f, 4.0f), v3(5.0f, 2.0f, 6.0f), v3(0.0f, 1.0f, 0.0f), 0.5f));
+	Primitive cylA = prmv(CYLINDER, (void*) cyl(v3(2.0f, 1.0f, 2.0f), v3(2.0f, 3.0f, 2.0f), v3(0.0f, 1.0f, 0.0f), 0.5f));
+	Primitive cylB = prmv(CYLINDER, (void*) cyl(v3(1.0f, 2.0f, 2.0f), v3(3.0f, 2.0f, 2.0f), v3(0.0f, 1.0f, 0.0f), 0.5f));
+	Primitive cylC = prmv(CYLINDER, (void*) cyl(v3(2.0f, 2.0f, 1.0f), v3(2.0f, 2.0f, 3.0f), v3(0.0f, 1.0f, 0.0f), 0.5f));
 
-	Primitive cubeA = prmv(CUBE,   (void*) cube(v3(5.0f, 2.0f, 5.0f), v3(1.0f, 0.0f, 1.0f), v3f(0.8f), 0.0f));
-	Primitive sphA  = prmv(SPHERE, (void*)  sph(v3(5.0f, 2.0f, 5.0f), v3(0.0f, 0.0f, 1.0f), 1.1f));
+	Primitive cubeA = prmv(CUBE,   (void*) cube(v3(2.0f, 2.0f, 2.0f), v3(1.0f, 0.0f, 1.0f), v3f(0.8f), 0.0f));
+	Primitive sphA  = prmv(SPHERE, (void*)  sph(v3(2.0f, 2.0f, 2.0f), v3(0.0f, 0.0f, 1.0f), 1.1f));
+
+	Primitive avg1  = prmv(SPHERE, (void*)  sph(v3(0.0f, 2.0f, 0.0f), v3(0.0f, 0.0f, 1.0f), 1.0f));
+	Primitive avg2  = prmv(CUBE,   (void*) cube(v3(0.0f, 2.0f, 0.0f), v3(0.0f, 0.0f, 1.0f), v3f(1.0f), 0.0f));
 
 
 	// group the cube and sphere together
@@ -67,13 +70,21 @@ void createObjects() {
 	Primitive    ABC = prmv(GROUP, (void*) (intptr_t) 2);
 
 
-	ShapeGroup sgROOT = group(CS, ABC, CUT, 1.0f);
+	ShapeGroup sgSHAPE = group(CS, ABC, CUT, 1.0f);
+	Primitive SHAPE = prmv(GROUP, (void*) (intptr_t) 3);
+
+	ShapeGroup sgAVG = group(avg1, avg2, AVERAGE, 0.5f);
+	Primitive AVG = prmv(GROUP, (void*) (intptr_t) 4);
+
+	ShapeGroup sgROOT = group(AVG, SHAPE, NORMAL, 1.0f);
 
 	ShapeGroup groups[groupNum];
 	groups[0] = sgCS;
 	groups[1] = sgAB;
 	groups[2] = sgABC;
-	groups[3] = sgROOT;
+	groups[3] = sgSHAPE;
+	groups[4] = sgAVG;
+	groups[5] = sgROOT;
 
 	float f[groupSize * groupNum];
 	groups2floats(f, groupNum, groups);
