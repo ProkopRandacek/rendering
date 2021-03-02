@@ -4,7 +4,6 @@ out vec4 outColor;
 
 uniform float time;
 uniform vec3 lightPos;
-
 uniform ivec2 resolution;
 uniform vec3 cam[5];
 
@@ -12,65 +11,33 @@ const int STEPSNUM = 1024;
 const float COLLISION_THRESHOLD = 0.001;
 const float MAX_TRACE_DIST = 30.0;
 
-const int sphereSize = 7;
-const int cubeSize = 9; const int cylinderSize = 10;
-
+const int shapeSize = 10;
 // 2 shapes + 2 shapeTypes + operationType + k
-const int groupSize = (cylinderSize * 2) + 4;
+const int groupSize = (shapeSize * 2) + 4;
 const int groupNum = 4;
 
 // this uniform contains all shape data
 uniform float rawGroups[groupNum * groupSize];
 vec4 d2Groups[groupNum * groupSize];
 
-// The following functions are to find information in the rawGroups array
+// The following functions are to find information in the rawGroups array ("the color of shape B in group number 2" = `bShapeClr(2)`)
 // i is the requested group's index
-int aShapeType(in int i) { return int(rawGroups[groupSize * i + cylinderSize * 2 + 0]); }// 0 = cube, 1 = sphere
-int bShapeType(in int i) { return int(rawGroups[groupSize * i + cylinderSize * 2 + 1]); }// -//-
-int aNodeIndex(in int i) { return int(rawGroups[groupSize * i + cylinderSize * 0 + 1]); }// where the node is pointing
-int bNodeIndex(in int i) { return int(rawGroups[groupSize * i + cylinderSize * 1 + 1]); }// -//-
-int grpOpType (in int i) { return int(rawGroups[groupSize * i + cylinderSize * 2 + 2]); }// 0 = normal, 1 = blending
-int grpK      (in int i) { return int(rawGroups[groupSize * i + cylinderSize * 2 + 3]); }
+int aShapeType(in int i) { return int(rawGroups[groupSize * i + shapeSize * 2 + 0]); } // 0 = cube, 1 = sphere, 2 = donut
+int bShapeType(in int i) { return int(rawGroups[groupSize * i + shapeSize * 2 + 1]); } // -//-
+int aNodeIndex(in int i) { return int(rawGroups[groupSize * i + shapeSize * 0 + 1]); } // where the node is pointing
+int bNodeIndex(in int i) { return int(rawGroups[groupSize * i + shapeSize * 1 + 1]); } // -//-
+int grpOpType (in int i) { return int(rawGroups[groupSize * i + shapeSize * 2 + 2]); } // 0 = normal, 1 = blending
+int grpK      (in int i) { return int(rawGroups[groupSize * i + shapeSize * 2 + 3]); }
 
-float aShapeRadius(in int i) { return rawGroups[groupSize * i + cylinderSize * 0 + 9]; }
-float bShapeRadius(in int i) { return rawGroups[groupSize * i + cylinderSize * 1 + 9]; }
+float aShapeRadius(in int i) { return rawGroups[groupSize * i + shapeSize * 0 + 9]; }
+float bShapeRadius(in int i) { return rawGroups[groupSize * i + shapeSize * 1 + 9]; }
 
-vec3 aShapePos(in int i) {
-	return vec3(
-			rawGroups[groupSize * i + 0],
-			rawGroups[groupSize * i + 1],
-			rawGroups[groupSize * i + 2]);
-}
-vec3 aShapeClr(in int i) {
-	return vec3(
-			rawGroups[groupSize * i + 3],
-			rawGroups[groupSize * i + 4],
-			rawGroups[groupSize * i + 5]);
-}
-vec3 aShapeScale(in int i) {
-	return vec3(
-			rawGroups[groupSize * i + 6],
-			rawGroups[groupSize * i + 7],
-			rawGroups[groupSize * i + 8]);
-}
-vec3 bShapePos(in int i) {
-	return vec3(
-			rawGroups[groupSize * i + 0 + cylinderSize],
-			rawGroups[groupSize * i + 1 + cylinderSize],
-			rawGroups[groupSize * i + 2 + cylinderSize]);
-}
-vec3 bShapeClr(in int i) {
-	return vec3(
-			rawGroups[groupSize * i + 3 + cylinderSize],
-			rawGroups[groupSize * i + 4 + cylinderSize],
-			rawGroups[groupSize * i + 5 + cylinderSize]);
-}
-vec3 bShapeScale(in int i) {
-	return vec3(
-			rawGroups[groupSize * i + 6 + cylinderSize],
-			rawGroups[groupSize * i + 7 + cylinderSize],
-			rawGroups[groupSize * i + 8 + cylinderSize]);
-}
+vec3 aShapePos(in int i)   { return vec3(rawGroups[groupSize * i + 0            ], rawGroups[groupSize * i + 1            ], rawGroups[groupSize * i + 2            ]); }
+vec3 aShapeClr(in int i)   { return vec3(rawGroups[groupSize * i + 3            ], rawGroups[groupSize * i + 4            ], rawGroups[groupSize * i + 5            ]); }
+vec3 aShapeScale(in int i) { return vec3(rawGroups[groupSize * i + 6            ], rawGroups[groupSize * i + 7            ], rawGroups[groupSize * i + 8            ]); }
+vec3 bShapePos(in int i)   { return vec3(rawGroups[groupSize * i + 0 + shapeSize], rawGroups[groupSize * i + 1 + shapeSize], rawGroups[groupSize * i + 2 + shapeSize]); }
+vec3 bShapeClr(in int i)   { return vec3(rawGroups[groupSize * i + 3 + shapeSize], rawGroups[groupSize * i + 4 + shapeSize], rawGroups[groupSize * i + 5 + shapeSize]); }
+vec3 bShapeScale(in int i) { return vec3(rawGroups[groupSize * i + 6 + shapeSize], rawGroups[groupSize * i + 7 + shapeSize], rawGroups[groupSize * i + 8 + shapeSize]); }
 // end of rawGroups functions
 
 struct rayHit {
@@ -81,7 +48,6 @@ struct rayHit {
 
 // http://iquilezles.org/www/articles/distfunctions/distfunctions.htm
 float d2Sphere(in vec3 pos, in vec3 sphereCenter, in float radius) {
-	//float displacement = sin(5.0 * pos.x) * sin(5.0 * pos.y) * sin(5.0 * pos.z) * 0.25;
 	return length(pos - sphereCenter) - radius/* + displacement*/;
 }
 
@@ -109,7 +75,6 @@ vec4 Blend(in float a, in float b, in vec3 colA, in vec3 colB, in float k) {
 	float h = clamp(0.5+0.5*(b-a)/k, 0.0, 1.0);
 	float blendDst = mix(b, a, h) - k*h*(1.0-h);
 	vec3 blendCol = mix(colB, colA, h);
-
 	return vec4(blendCol, blendDst);
 }
 
@@ -117,40 +82,20 @@ vec4 Combine(in float dstA, in float dstB, in vec3 colourA, in vec3 colourB, in 
 	float dst = dstA;
 	vec3 colour = colourA;
 
-	if (operation == 0) {
-		if (dstB < dstA) {
-			dst = dstB;
-			colour = colourB;
-		}
-	}
-	// Blend
-	else if (operation == 1) {
+	if (operation == 1) { // Blend
 		vec4 blend = Blend(dstA, dstB, colourA, colourB, blendStrength);
 		dst = blend.w;
 		colour = blend.xyz;
 	}
-	// Cut
-	else if (operation == 2) {
-		// max(a,-b)
-		if (-dstB > dst) {
-			dst = -dstB;
-			colour = colourB;
-		}
-	}
-	// Mask
-	else if (operation == 3) {
-		// max(a,b)
-		if (dstB > dst) {
-			dst = dstB;
-			colour = colourB;
-		}
-	}
+	else if (operation == 0) { if ( dstB < dstA) { dst =  dstB; colour = colourB; } } // Normal (min(a,  b))
+	else if (operation == 2) { if (-dstB > dst)  { dst = -dstB; colour = colourB; } } // Cut    (max(a, -b))
+	else if (operation == 3) { if ( dstB > dst)  { dst =  dstB; colour = colourB; } } // Mask   (max(a,  b))
 
 	return vec4(colour, dst);
 }
 
 vec3 checkerboard(in vec3 pos) {
-	pos += vec3(4.0);
+	pos += vec3(4.0); // there is a off by one error around y=0 || x=0, so i just move these outside the shape
 	if (((int(pos.x) + int(pos.y) + int(pos.z)) % 2) == 0) {
 		return vec3(0.5);
 	} else {
@@ -158,7 +103,7 @@ vec3 checkerboard(in vec3 pos) {
 	}
 }
 
-vec4 d2Group(in vec3 pos, in int i) {
+void d2Group(in vec3 pos, in int i) {
 	float d2a, d2b;
 	vec3 aClr, bClr;
 
@@ -181,12 +126,8 @@ vec4 d2Group(in vec3 pos, in int i) {
 	else if (bShapeType(i) == 2) { bClr = bShapeClr(i); d2b = d2Sphere  (pos, bShapePos(i), bShapeRadius(i)); }
 	else if (bShapeType(i) == 3) { bClr = bShapeClr(i); d2b = d2Cylinder(pos, bShapePos(i), bShapeScale(i), bShapeRadius(i)); }
 
-	vec4 g = Combine(d2a, d2b, aClr, bClr, grpOpType(i), grpK(i));
-
 	// save the dist for later groups that contain this group.
-	d2Groups[i] = g;
-
-	return g;
+	d2Groups[i] = Combine(d2a, d2b, aClr, bClr, grpOpType(i), grpK(i));
 }
 
 // distance to nearest object
@@ -195,12 +136,11 @@ vec4 mapWorld(in vec3 pos) {
 	vec3  localClr = vec3(0.0);
 
 	for (int i = 0; i < groupNum; i++) {
-		vec4 grp = d2Group(pos, i);
-		if (i == groupNum - 1) {
-			localClr = grp.xyz;
-			localDist = grp.w;
-		}
+		d2Group(pos, i); // calculate all groups
 	}
+
+	localClr = d2Groups[groupNum - 1].xyz;
+	localDist = d2Groups[groupNum - 1].w;
 
 	// Check floor
 	float dist = d2Cube(pos, vec3(0.0, -1.0, 0.0), vec3(4.0, 2.0, 4.0), 0.0);

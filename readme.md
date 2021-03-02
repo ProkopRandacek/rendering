@@ -8,15 +8,16 @@ Current rendering capabilities:
 - [Constructive solid geometry](https://en.wikipedia.org/wiki/Constructive_solid_geometry)
 - Sphere, Cube and Cylinder rendering
 - Transforming between shapes over time
-- Multiple different object in scene
-- Modify camera position, FOV, direction
-- Checkerboard floor on y=0
+- WASD + mouse controls
+- Checkerboard floor
 - Very simple soft shadows
-- Render real-time (60 fps) or export each frame as image (~15 fps on my pc)  
+- Works realtime
 
 TODO:
 - Add more shapes
 - Shape transformation control from C (add as a Operation)
+- Reflections
+- [Better lighting](https://en.wikipedia.org/wiki/Computer_graphics_lighting)
 - Read scene configuration from file
 - Bounding box for complicated groups far away from the ray
 - Relative position for shapes in subgroups?
