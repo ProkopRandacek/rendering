@@ -3,7 +3,7 @@
 #include <string.h>
 
 
-#define FILE_READING_BUFFER_SIZE 8192
+#define FILE_READING_BUFFER_SIZE 16384
 
 void writeBMP(const char* filename, char* pixels, int w, int h) {
 	unsigned int header[14];

@@ -47,9 +47,9 @@ void createObjects() {
 	const int groupNum = 4;
 
 	// primitive shapes
-	Primitive cylA = prmv(CYLINDER, (void*) cyl(v3(5.0f, 1.0f, 5.0f), v3(5.0f, 3.0f, 5.0f), v3(0.0f, 1.0f, 0.0f), 0.5f));
+	Primitive cylA = prmv(CYLINDER, (void*) cyl(v3(5.0f, 1.0f, 5.0f), v3(5.0f, 3.0f, 5.0f), v3(1.0f, 0.0f, 0.0f), 0.5f));
 	Primitive cylB = prmv(CYLINDER, (void*) cyl(v3(4.0f, 2.0f, 5.0f), v3(6.0f, 2.0f, 5.0f), v3(0.0f, 1.0f, 0.0f), 0.5f));
-	Primitive cylC = prmv(CYLINDER, (void*) cyl(v3(5.0f, 2.0f, 4.0f), v3(5.0f, 2.0f, 6.0f), v3(0.0f, 1.0f, 0.0f), 0.5f));
+	Primitive cylC = prmv(CYLINDER, (void*) cyl(v3(5.0f, 2.0f, 4.0f), v3(5.0f, 2.0f, 6.0f), v3(0.0f, 0.0f, 1.0f), 0.5f));
 
 	Primitive cubeA = prmv(CUBE,   (void*) cube(v3(5.0f, 2.0f, 5.0f), v3(1.0f, 0.0f, 1.0f), v3f(0.8f)));
 	Primitive sphA  = prmv(SPHERE, (void*)  sph(v3(5.0f, 2.0f, 5.0f), v3(0.0f, 0.0f, 1.0f), 1.1f));
@@ -58,25 +58,26 @@ void createObjects() {
 	// group cylA and cylB together
 	ShapeGroup  sgAB = group(cylA, cylB, NORMAL, 1.0f);
 	// wrap the AB group into a primitive
-	Primitive     AB = prmv(GROUP, (void*) (intptr_t) 0); // 0 is the position of sgAB in groups array. Its a "pointer" for glsl.
+	Primitive     AB = prmv(GROUP, (void*) (intptr_t) 1); // 0 is the position of sgAB in groups array. Its a "pointer" for glsl.
 	// group AB group and cylC together
-	ShapeGroup sgABC = group(AB, cylC, NORMAL, 1.0f);
+	ShapeGroup sgABC = group(cylC, AB, NORMAL, 1.0f);
 	// wrap the ABC group into a primitive
-	Primitive    ABC = prmv(GROUP, (void*) (intptr_t) 1);
+	Primitive    ABC = prmv(GROUP, (void*) (intptr_t) 2);
+
 
 
 	// group the cube and sphere together
 	ShapeGroup sgCS = group(sphA, cubeA, MASK, 1.0f);
 	// wrap the CS group into a primitive
-	Primitive    CS = prmv(GROUP, (void*) (intptr_t) 2);
+	Primitive    CS = prmv(GROUP, (void*) (intptr_t) 0);
 
 
-	ShapeGroup sgROOT = group(ABC, CS, CUT, 1.0f);
+	ShapeGroup sgROOT = group(CS, ABC, CUT, 1.0f);
 
 	ShapeGroup groups[groupNum];
-	groups[0] = sgAB;
-	groups[1] = sgABC;
-	groups[2] = sgCS;
+	groups[0] = sgCS;
+	groups[1] = sgAB;
+	groups[2] = sgABC;
 	groups[3] = sgROOT;
 
 	float f[groupSize * groupNum];

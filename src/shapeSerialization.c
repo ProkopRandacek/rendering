@@ -36,14 +36,14 @@ void groups2floats(float* f, int num, ShapeGroup* groups) {
 		else if (groups[i].a.type == SPHERE)   { sphere2floats(&f[i * groupSize],   (Sphere*) groups[i].a.shape); }
 		else if (groups[i].a.type == CYLINDER) {    cyl2floats(&f[i * groupSize], (Cylinder*) groups[i].a.shape); }
 		else if (groups[i].a.type == GROUP) {
-			f[i * groupSize + 1] = (float) (intptr_t) groups[i].a.shape; // a "pointer" to where this node is
+			f[i * groupSize + cylinderSize * 0 + 1] = (float) (intptr_t) groups[i].a.shape; // a "pointer" to where this node is
 		}
 
 		if      (groups[i].b.type == CUBE)     {   cube2floats(&f[i * groupSize + cylinderSize],     (Cube*) groups[i].b.shape); }
 		else if (groups[i].b.type == SPHERE)   { sphere2floats(&f[i * groupSize + cylinderSize],   (Sphere*) groups[i].b.shape); }
 		else if (groups[i].b.type == CYLINDER) {    cyl2floats(&f[i * groupSize + cylinderSize], (Cylinder*) groups[i].b.shape); }
-		else if (groups[i].a.type == GROUP) {
-			f[i * groupSize + 1] = (float) (intptr_t) groups[i].b.shape; // a "pointer" to where this node is
+		else if (groups[i].b.type == GROUP) {
+			f[i * groupSize + cylinderSize * 1 + 1] = (float) (intptr_t) groups[i].b.shape; // a "pointer" to where this node is
 		}
 
 
