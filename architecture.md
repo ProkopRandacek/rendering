@@ -28,36 +28,27 @@ main.c                                      - Code initialization, main render l
  |
  +-> input.c                                - Input handling
 ```
-## Scene objects
 
-### Camera
+## Shapes
 
-Has position and 4 edge rays that define the edge of rendered image.  
-Use constructor in `camera.c` to calculate edge rays from one direction vector and screen width & height
+Are defined in `shapes.h`. When serializing into a float array, following rules apply for all shapes:
 
-### Light source
+- Max length of a shape is 10 floats.
+- Floats on positions:
+  - 0 1 2 are position (or starting position of a shape, for example cylinder)
+  - 3 4 5 are color
+  - 9 is radius (radius of a circle || radius of a smooth edge of a cube)
 
-Has only position
+Shape specific rules:
+### Sphere
 
-### Shapes
-
-#### Sphere
-
-7 floats;  
-1 2 3 = XYZ coordinates  
-4 5 6 = RGB color  
-7 = Radius  
+6 7 8 are not used.
 
 #### Cube
 
-9 floats;  
-1 2 3 = XYZ coordinates  
-4 5 6 = RGB color  
-7 8 9 = XYZ scale  
+7 8 9 is XYZ scale  
 
 #### Cylinder
-10 floats
-1 2 3 = XYZ center of the bottom of the cylinder
-4 5 6 = RGB color
-7 8 9 = XYZ center of the top of the cylinder
-10 = radius
+
+1 2 3 is XYZ center of the bottom of the cylinder
+7 8 9 is XYZ center of the top of the cylinder

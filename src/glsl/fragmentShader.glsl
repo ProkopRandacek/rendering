@@ -1,7 +1,4 @@
-#version 330 core
 // vim: noai:ts=4:
-out vec4 outColor;
-
 uniform float time;
 uniform vec3 lightPos;
 uniform ivec2 resolution;
@@ -46,31 +43,6 @@ struct rayHit {
 	int steps;
 };
 
-// http://iquilezles.org/www/articles/distfunctions/distfunctions.htm
-float d2Sphere(in vec3 pos, in vec3 sphereCenter, in float radius) {
-	return length(pos - sphereCenter) - radius/* + displacement*/;
-}
-
-float d2Cube(in vec3 pos, in vec3 cpos, in vec3 b, in float r) {
-	vec3 p = pos - cpos;
-	vec3 q = abs(p) - b;
-	return length(max(q,0.0)) + min(max(q.x,max(q.y,q.z)),0.0) - r;
-}
-
-// Cylinder from a to b with radius r
-float d2Cylinder(in vec3 p, in vec3 a, in vec3 b, in float r) {
-	vec3  ba = b - a;
-	vec3  pa = p - a;
-	float baba = dot(ba, ba);
-	float paba = dot(pa, ba);
-	float x = length(pa*baba-ba*paba) - r*baba;
-	float y = abs(paba-baba*0.5)-baba*0.5;
-	float x2 = x*x;
-	float y2 = y*y*baba;
-	float d = (max(x, y)<0.0)?-min(x2, y2):(((x>0.0)?x2:0.0)+((y>0.0)?y2:0.0));
-	return sign(d)*sqrt(abs(d))/baba;
-}
-
 vec4 Blend(in float a, in float b, in vec3 colA, in vec3 colB, in float k) {
 	float h = clamp(0.5+0.5*(b-a)/k, 0.0, 1.0);
 	float blendDst = mix(b, a, h) - k*h*(1.0-h);
@@ -96,7 +68,7 @@ vec4 Combine(in float dstA, in float dstB, in vec3 colourA, in vec3 colourB, in 
 
 vec3 checkerboard(in vec3 pos) {
 	pos += vec3(4.0); // there is a off by one error around y=0 || x=0, so i just move these outside the shape
-	if (((int(pos.x) + int(pos.y) + int(pos.z)) % 2) == 0) {
+	if (((int(pos.x) + int(pos.y) + int(pos.z)) % 2) == 0.0) {
 		return vec3(0.5);
 	} else {
 		return vec3(0.7);
@@ -146,7 +118,6 @@ vec4 mapWorld(in vec3 pos) {
 	float dist = d2Cube(pos, vec3(0.0, -1.0, 0.0), vec3(4.0, 2.0, 4.0), 0.0);
 	vec4 combined = Combine(localDist, dist, localClr, checkerboard(pos), 0, 0.0);
 	localClr = combined.xyz;
-	//localClr = checkerboard(pos);
 	localDist = combined.w;
 
 	return vec4(localClr, localDist);

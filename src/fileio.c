@@ -41,7 +41,7 @@ char* readFile(char* filename) {
 	FILE* fp = fopen(filename, "r");
 
 	if (fp == NULL) {
-		printf("Error opening file\n");
+		printf("Error opening file \"%s\"\n", filename);
 		exit(1);
 	}
 
