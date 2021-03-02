@@ -2,9 +2,10 @@
 
 ![normal demo](https://randacek.dev/p/demo.png)  
 ![blending demo](https://randacek.dev/p/blending.png)  
-![Cool glow](https://randacek.dev/p/glow.png)  
+![CSG demo](https://randacek.dev/p/csg.png)  
 
 Current rendering capabilities:  
+- [Constructive solid geometry](https://en.wikipedia.org/wiki/Constructive_solid_geometry)
 - Sphere, Cube and Cylinder rendering
 - Transforming between shapes over time
 - Multiple different object in scene

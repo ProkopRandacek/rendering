@@ -47,9 +47,9 @@ void createObjects() {
 	const int groupNum = 4;
 
 	// primitive shapes
-	Primitive cylA = prmv(CYLINDER, (void*) cyl(v3(5.0f, 1.0f, 5.0f), v3(5.0f, 3.0f, 5.0f), v3(1.0f, 0.0f, 0.0f), 0.5f));
+	Primitive cylA = prmv(CYLINDER, (void*) cyl(v3(5.0f, 1.0f, 5.0f), v3(5.0f, 3.0f, 5.0f), v3(0.0f, 1.0f, 0.0f), 0.5f));
 	Primitive cylB = prmv(CYLINDER, (void*) cyl(v3(4.0f, 2.0f, 5.0f), v3(6.0f, 2.0f, 5.0f), v3(0.0f, 1.0f, 0.0f), 0.5f));
-	Primitive cylC = prmv(CYLINDER, (void*) cyl(v3(5.0f, 2.0f, 4.0f), v3(5.0f, 2.0f, 6.0f), v3(0.0f, 0.0f, 1.0f), 0.5f));
+	Primitive cylC = prmv(CYLINDER, (void*) cyl(v3(5.0f, 2.0f, 4.0f), v3(5.0f, 2.0f, 6.0f), v3(0.0f, 1.0f, 0.0f), 0.5f));
 
 	Primitive cubeA = prmv(CUBE,   (void*) cube(v3(5.0f, 2.0f, 5.0f), v3(1.0f, 0.0f, 1.0f), v3f(0.8f)));
 	Primitive sphA  = prmv(SPHERE, (void*)  sph(v3(5.0f, 2.0f, 5.0f), v3(0.0f, 0.0f, 1.0f), 1.1f));

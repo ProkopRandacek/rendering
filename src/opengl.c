@@ -5,8 +5,8 @@
 #include "opengl.h"
 
 
-const int w = 1000;
-const int h = 1000;
+int w = 1000;
+int h = 1000;
 
 GL* gl;
 char* pixels;
@@ -88,12 +88,11 @@ void screenshot() {
 
 	glReadPixels(0, 0, w, h, GL_RGB, GL_UNSIGNED_BYTE, pixels);
 
-	if (frameCount < 2) return;
-	if (frameCount > 300) exit(0);
-
 	char fname[15];
-	sprintf(fname, "out/%04d", frameCount);
+	sprintf(fname, "%04d", frameCount);
 	strcat(fname, ".bmp");
+
+	printf("taking a screenshot \"%s\", %dx%d\n", fname, w, h);
 
 	writeBMP(fname, pixels, w, h);
 }

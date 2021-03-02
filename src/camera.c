@@ -6,6 +6,8 @@
 
 float lastAngle, lastH, lastW;
 
+extern int w, h; // these are from opengl.c. I need to change these for the screenshots to be the right size
+
 Camera cmr(Vector3 pos, Vector3 dir, float angle, float h, float w) {
 	lastAngle = angle;
 	lastH = h;
@@ -70,9 +72,13 @@ void updateCamPos(Camera* cam, Vector3 offset) {
 	cam->pos.y += offset.y;
 }
 
-void setWH(float w, float h) {
-	lastH = h;
-	lastW = w;
+void setWH(float iw, float ih) {
+	lastH = ih;
+	lastW = iw;
+	printf("%.2f, %.2f\n", iw, ih);
+	w = (int) (iw * 1000.0f);
+	h = (int) (ih * 1000.0f);
+	printf("%d, %d\n", w, h);
 }
 
 Camera updateCamDir(Vector3 pos, Vector3 dir) { return cmr(pos, dir, lastAngle, lastH, lastW); }
