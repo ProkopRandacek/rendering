@@ -15,8 +15,12 @@ Current rendering capabilities:
 - Render real-time (60 fps) or export each frame as image (~15 fps on my pc)  
 
 TODO:
+- Add more shapes
+- Shape transformation control from C (add as a Operation)
+- Read scene configuration from file
+- Bounding box for complicated groups far away from the ray
+- Relative position for shapes in subgroups?
 - Shape rotating
-- Shape transformation control from C (rn hardcoded in GLSL)
 - `#import`s seems to be messy
 - Split fragment shader into multiple parts
 

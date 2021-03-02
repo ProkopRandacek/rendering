@@ -151,7 +151,8 @@ vec4 Combine(in float dstA, in float dstB, in vec3 colourA, in vec3 colourB, in 
 }
 
 vec3 checkerboard(in vec3 pos) {
-	if (((int(pos.x) + int(pos.z)) % 2) == 0) {
+	pos += vec3(4.0);
+	if (((int(pos.x) + int(pos.y) + int(pos.z)) % 2) == 0) {
 		return vec3(0.5);
 	} else {
 		return vec3(0.7);
@@ -203,9 +204,10 @@ vec4 mapWorld(in vec3 pos) {
 	}
 
 	// Check floor
-	float dist = d2Cube(pos, vec3(0.0), vec3(10.0, 0.1, 10.0));
+	float dist = d2Cube(pos, vec3(0.0, -1.0, 0.0), vec3(4.0, 2.0, 4.0));
 	vec4 combined = Combine(localDist, dist, localClr, checkerboard(pos), 0, 0.0);
 	localClr = combined.xyz;
+	//localClr = checkerboard(pos);
 	localDist = combined.w;
 
 	return vec4(localClr, localDist);
