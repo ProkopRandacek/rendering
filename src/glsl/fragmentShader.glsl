@@ -85,11 +85,10 @@ float d2Sphere(in vec3 pos, in vec3 sphereCenter, in float radius) {
 	return length(pos - sphereCenter) - radius/* + displacement*/;
 }
 
-float d2Cube(in vec3 pos, in vec3 cubeCenter, in vec3 scale) {
-	vec3 o = abs(pos - cubeCenter) - scale;
-	float ud = length(max(o, 0));
-	float n = max(max(min(o.x, 0), min(o.y, 0)), min(o.z, 0));
-	return ud + n;
+float d2Cube(in vec3 pos, in vec3 cpos, in vec3 b, in float r) {
+	vec3 p = pos - cpos;
+	vec3 q = abs(p) - b;
+	return length(max(q,0.0)) + min(max(q.x,max(q.y,q.z)),0.0) - r;
 }
 
 // Cylinder from a to b with radius r
@@ -169,7 +168,7 @@ vec4 d2Group(in vec3 pos, in int i) {
 		d2a = s.w;
 		aClr = s.rgb;
 	} // else its a regular shape
-	else if (aShapeType(i) == 1) { aClr = aShapeClr(i); d2a = d2Cube    (pos, aShapePos(i), aShapeScale(i)); }
+	else if (aShapeType(i) == 1) { aClr = aShapeClr(i); d2a = d2Cube    (pos, aShapePos(i), aShapeScale(i), aShapeRadius(i)); }
 	else if (aShapeType(i) == 2) { aClr = aShapeClr(i); d2a = d2Sphere  (pos, aShapePos(i), aShapeRadius(i)); }
 	else if (aShapeType(i) == 3) { aClr = aShapeClr(i); d2a = d2Cylinder(pos, aShapePos(i), aShapeScale(i), aShapeRadius(i)); }
 	// Shape B
@@ -178,7 +177,7 @@ vec4 d2Group(in vec3 pos, in int i) {
 		d2b = s.w;
 		bClr = s.rgb;
 	} // else its a regular shape
-	else if (bShapeType(i) == 1) { bClr = bShapeClr(i); d2b = d2Cube    (pos, bShapePos(i), bShapeScale(i)); }
+	else if (bShapeType(i) == 1) { bClr = bShapeClr(i); d2b = d2Cube    (pos, bShapePos(i), bShapeScale(i), bShapeRadius(i)); }
 	else if (bShapeType(i) == 2) { bClr = bShapeClr(i); d2b = d2Sphere  (pos, bShapePos(i), bShapeRadius(i)); }
 	else if (bShapeType(i) == 3) { bClr = bShapeClr(i); d2b = d2Cylinder(pos, bShapePos(i), bShapeScale(i), bShapeRadius(i)); }
 
@@ -197,14 +196,14 @@ vec4 mapWorld(in vec3 pos) {
 
 	for (int i = 0; i < groupNum; i++) {
 		vec4 grp = d2Group(pos, i);
-		//vec4 combined = Combine(localDist, grp.w, localClr, grp.xyz, 0, 0.0);
-		//vec4 combined = grp;
-		localClr = grp.xyz;
-		localDist = grp.w;
+		if (i == groupNum - 1) {
+			localClr = grp.xyz;
+			localDist = grp.w;
+		}
 	}
 
 	// Check floor
-	float dist = d2Cube(pos, vec3(0.0, -1.0, 0.0), vec3(4.0, 2.0, 4.0));
+	float dist = d2Cube(pos, vec3(0.0, -1.0, 0.0), vec3(4.0, 2.0, 4.0), 0.0);
 	vec4 combined = Combine(localDist, dist, localClr, checkerboard(pos), 0, 0.0);
 	localClr = combined.xyz;
 	//localClr = checkerboard(pos);

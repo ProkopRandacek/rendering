@@ -5,13 +5,12 @@
 #include "shapeSerialization.h"
 
 
-extern int groupSize, cylinderSize;
+extern int groupSize, shapeSize;
 
 void sphere2floats(float* f, Sphere* sphere) {
 	f[0] = sphere->pos.x; f[1] = sphere->pos.y; f[2] = sphere->pos.z;
 	f[3] = sphere->clr.x; f[4] = sphere->clr.y; f[5] = sphere->clr.z;
 	f[6] = 0.0f;          f[7] = 0.0f;          f[8] = 0.0f;
-
 	f[9] = sphere->radius;
 }
 
@@ -19,8 +18,7 @@ void cube2floats(float* f, Cube* cube) {
 	f[0] = cube->pos.x;   f[1] = cube->pos.y;   f[2] = cube->pos.z;
 	f[3] = cube->clr.x;   f[4] = cube->clr.y;   f[5] = cube->clr.z;
 	f[6] = cube->scale.x; f[7] = cube->scale.y; f[8] = cube->scale.z;
-
-	f[9] = 0.0f;
+	f[9] = cube->roundEdge;
 }
 
 void cyl2floats(float* f, Cylinder* cyl) {
@@ -36,21 +34,20 @@ void groups2floats(float* f, int num, ShapeGroup* groups) {
 		else if (groups[i].a.type == SPHERE)   { sphere2floats(&f[i * groupSize],   (Sphere*) groups[i].a.shape); }
 		else if (groups[i].a.type == CYLINDER) {    cyl2floats(&f[i * groupSize], (Cylinder*) groups[i].a.shape); }
 		else if (groups[i].a.type == GROUP) {
-			f[i * groupSize + cylinderSize * 0 + 1] = (float) (intptr_t) groups[i].a.shape; // a "pointer" to where this node is
+			f[i * groupSize + shapeSize * 0 + 1] = (float) (intptr_t) groups[i].a.shape; // a "pointer" to where this node is
 		}
 
-		if      (groups[i].b.type == CUBE)     {   cube2floats(&f[i * groupSize + cylinderSize],     (Cube*) groups[i].b.shape); }
-		else if (groups[i].b.type == SPHERE)   { sphere2floats(&f[i * groupSize + cylinderSize],   (Sphere*) groups[i].b.shape); }
-		else if (groups[i].b.type == CYLINDER) {    cyl2floats(&f[i * groupSize + cylinderSize], (Cylinder*) groups[i].b.shape); }
+		if      (groups[i].b.type == CUBE)     {   cube2floats(&f[i * groupSize + shapeSize],     (Cube*) groups[i].b.shape); }
+		else if (groups[i].b.type == SPHERE)   { sphere2floats(&f[i * groupSize + shapeSize],   (Sphere*) groups[i].b.shape); }
+		else if (groups[i].b.type == CYLINDER) {    cyl2floats(&f[i * groupSize + shapeSize], (Cylinder*) groups[i].b.shape); }
 		else if (groups[i].b.type == GROUP) {
-			f[i * groupSize + cylinderSize * 1 + 1] = (float) (intptr_t) groups[i].b.shape; // a "pointer" to where this node is
+			f[i * groupSize + shapeSize * 1 + 1] = (float) (intptr_t) groups[i].b.shape; // a "pointer" to where this node is
 		}
 
-
-		f[i * groupSize + cylinderSize * 2 + 0] = (float) groups[i].a.type;
-		f[i * groupSize + cylinderSize * 2 + 1] = (float) groups[i].b.type;
-		f[i * groupSize + cylinderSize * 2 + 2] = (float) groups[i].op;
-		f[i * groupSize + cylinderSize * 2 + 3] = (float) groups[i].k;
+		f[i * groupSize + shapeSize * 2 + 0] = (float) groups[i].a.type;
+		f[i * groupSize + shapeSize * 2 + 1] = (float) groups[i].b.type;
+		f[i * groupSize + shapeSize * 2 + 2] = (float) groups[i].op;
+		f[i * groupSize + shapeSize * 2 + 3] = (float) groups[i].k;
 	}
 }
 

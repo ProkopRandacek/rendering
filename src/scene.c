@@ -8,12 +8,8 @@
 
 
 extern GL* gl;
-extern const int floatPerSph, floatPerCube;
 
-const int sphereNum = 2;
-const int cubeNum = 4;
-
-extern const int sphereSize, cubeSize, groupSize;
+extern const int groupSize;
 
 // these are global so other object can be created relative to them
 Camera cam;
@@ -51,8 +47,14 @@ void createObjects() {
 	Primitive cylB = prmv(CYLINDER, (void*) cyl(v3(4.0f, 2.0f, 5.0f), v3(6.0f, 2.0f, 5.0f), v3(0.0f, 1.0f, 0.0f), 0.5f));
 	Primitive cylC = prmv(CYLINDER, (void*) cyl(v3(5.0f, 2.0f, 4.0f), v3(5.0f, 2.0f, 6.0f), v3(0.0f, 1.0f, 0.0f), 0.5f));
 
-	Primitive cubeA = prmv(CUBE,   (void*) cube(v3(5.0f, 2.0f, 5.0f), v3(1.0f, 0.0f, 1.0f), v3f(0.8f)));
+	Primitive cubeA = prmv(CUBE,   (void*) cube(v3(5.0f, 2.0f, 5.0f), v3(1.0f, 0.0f, 1.0f), v3f(0.8f), 0.0f));
 	Primitive sphA  = prmv(SPHERE, (void*)  sph(v3(5.0f, 2.0f, 5.0f), v3(0.0f, 0.0f, 1.0f), 1.1f));
+
+
+	// group the cube and sphere together
+	ShapeGroup sgCS = group(sphA, cubeA, MASK, 1.0f);
+	// wrap the CS group into a primitive
+	Primitive    CS = prmv(GROUP, (void*) (intptr_t) 0);
 
 
 	// group cylA and cylB together
@@ -63,13 +65,6 @@ void createObjects() {
 	ShapeGroup sgABC = group(cylC, AB, NORMAL, 1.0f);
 	// wrap the ABC group into a primitive
 	Primitive    ABC = prmv(GROUP, (void*) (intptr_t) 2);
-
-
-
-	// group the cube and sphere together
-	ShapeGroup sgCS = group(sphA, cubeA, MASK, 1.0f);
-	// wrap the CS group into a primitive
-	Primitive    CS = prmv(GROUP, (void*) (intptr_t) 0);
 
 
 	ShapeGroup sgROOT = group(CS, ABC, CUT, 1.0f);

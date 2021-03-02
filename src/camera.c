@@ -75,10 +75,8 @@ void updateCamPos(Camera* cam, Vector3 offset) {
 void setWH(float iw, float ih) {
 	lastH = ih;
 	lastW = iw;
-	printf("%.2f, %.2f\n", iw, ih);
 	w = (int) (iw * 1000.0f);
 	h = (int) (ih * 1000.0f);
-	printf("%d, %d\n", w, h);
 }
 
 Camera updateCamDir(Vector3 pos, Vector3 dir) { return cmr(pos, dir, lastAngle, lastH, lastW); }

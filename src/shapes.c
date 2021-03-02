@@ -4,13 +4,9 @@
 #include "shapes.h"
 
 
-extern const int sphereNum, cubeNum;
-
-const int sphereSize = 7;
-const int cubeSize = 9;
-const int cylinderSize = 10;
+const int shapeSize = 10; // max number of floats per shape
 // group  = 2 shapes + 2 shapeTypes + operationType + k
-const int groupSize = (cylinderSize * 2) + 2 + 1 + 1;
+const int groupSize = (shapeSize * 2) + 2 + 1 + 1;
 
 Sphere* sph(Vector3 pos, Vector3 clr, float radius) {
 	Sphere* s = malloc(sizeof(Sphere));
@@ -20,11 +16,12 @@ Sphere* sph(Vector3 pos, Vector3 clr, float radius) {
 	return s;
 }
 
-Cube* cube(Vector3 pos, Vector3 clr, Vector3 scale) {
+Cube* cube(Vector3 pos, Vector3 clr, Vector3 scale, float roundEdge) {
 	Cube* c = malloc(sizeof(Cube));
 	c->pos = pos;
 	c->clr = clr;
 	c->scale = scale;
+	c->roundEdge = roundEdge;
 	return c;
 }
 
