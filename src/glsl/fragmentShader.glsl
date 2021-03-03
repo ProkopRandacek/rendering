@@ -1,4 +1,4 @@
-// vim: noai:ts=4:
+// vim: tabstop=8 softtabstop=8 shiftwidth=8 noexpandtab
 const int STEPSNUM = 1024;
 const float COLLISION_THRESHOLD = 0.001;
 const float MAX_TRACE_DIST = 30.0;

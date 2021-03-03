@@ -21,12 +21,91 @@ typedef struct Cube {
 	float roundEdge;
 } Cube;
 
+typedef struct BoxFrame {
+	Vector3 pos;
+	Vector3 clr;
+	Vector3 scale;
+	float width;
+} BoxFrame;
+
+typedef struct Torus {
+	Vector3 pos;
+	Vector3 clr;
+	float innerR;
+	float outerR;
+} Torus;
+
+typedef struct CTorus {
+	Vector3 pos;
+	Vector3 clr;
+	float scX; // TODO investigate what the values do
+	float scY;
+	float ra;
+	float rb;
+} CTorus;
+
+typedef struct Link {
+	Vector3 pos;
+	Vector3 clr;
+	float lenght;
+	float innerR;
+	float outerR;
+} Link;
+
+typedef struct Plane {
+	Vector3 pos;
+	Vector3 clr;
+	Vector3 n;
+	float h; // TODO whats h
+} Plane;
+
+typedef struct HexPrism {
+	Vector3 pos;
+	Vector3 clr;
+	float height;
+} HexPrism;
+
+typedef struct TriPrism {
+	Vector3 pos;
+	Vector3 clr;
+	float height;
+} TriPrism;
+
+typedef struct Capsule { // Like cylinder but round
+	Vector3 start;
+	Vector3 end;
+	Vector3 clr;
+	float radius;
+} Capsule;
+
 typedef struct Cylinder {
 	Vector3 start;
 	Vector3 end;
 	Vector3 clr;
 	float radius;
 } Cylinder;
+
+typedef struct RoundCone {
+	Vector3 start;
+	Vector3 end;
+	float startR;
+	float endR;
+} RoundCone;
+
+typedef struct Pyramid {
+	Vector3 pos;
+	float h;
+} Pyramid;
+
+typedef struct Triangle {
+	Vector3 a, b, c;
+	Vector3 clr;
+} Triangle;
+
+typedef struct Quad {
+	Vector3 a, b, c, d;
+	Vector3 clr;
+} Quad;
 
 
 typedef struct Primitive {
