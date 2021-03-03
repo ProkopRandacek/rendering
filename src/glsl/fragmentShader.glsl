@@ -1,3 +1,4 @@
+// vim: noai:ts=4:
 const int STEPSNUM = 1024;
 const float COLLISION_THRESHOLD = 0.001;
 const float MAX_TRACE_DIST = 30.0;
@@ -7,7 +8,6 @@ const int shapeSize = 10;
 const int groupSize = (shapeSize * 2) + 4;
 const int groupNum = 6;
 
-// vim: noai:ts=4:
 uniform float time;
 uniform vec3 lightPos;
 uniform ivec2 resolution;
@@ -53,7 +53,7 @@ vec4 Blend(in float a, in float b, in vec3 colA, in vec3 colB, in float k) {
 vec4 Average(in float a, in float b, in vec3 colA, in vec3 colB, in float k) {
 	float i = 1.0 - k;
 	float c = (a * i) + (b * k);
-	vec3 colC = vec3(0.5, 0.5, 1.0);
+	vec3 colC = colA * i + colB * k;
 	return vec4(colC, c);
 }
 
@@ -120,10 +120,10 @@ vec4 mapWorld(in vec3 pos) {
 	localDist = d2Groups[groupNum - 1].w;
 
 	// Check floor
-	/*float dist = d2Cube(pos, vec3(0.0, -1.0, 0.0), vec3(4.0, 2.0, 4.0), 0.0);
+	float dist = d2Cube(pos, vec3(0.0, -1.0, 0.0), vec3(4.0, 2.0, 4.0), 0.0);
 	vec4 combined = Combine(localDist, dist, localClr, checkerboard(pos), 0, 0.0);
 	localClr = combined.xyz;
-	localDist = combined.w;*/
+	localDist = combined.w;
 
 	return vec4(localClr, localDist);
 }

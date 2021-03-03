@@ -3,7 +3,7 @@ typedef enum ShapeType {
 } ShapeType;
 
 typedef enum OperationType {
-	NORMAL, BLENDING, CUT, MASK, AVERAGE
+	NORMAL, BLEND, CUT, MASK, AVERAGE
 } OperationType;
 
 

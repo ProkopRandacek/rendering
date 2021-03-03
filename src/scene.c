@@ -18,7 +18,7 @@ void createScene() {
 	createCamera(0.0f);
 	sendCamera();
 	createLight(0.0f);
-	createObjects();
+	createObjects(0.0f);
 }
 
 void createCamera(float time) {
@@ -39,19 +39,19 @@ void createLight(float time) {
 	shdSetVec3Array(gl->s, "lightPos", 1, lsPos);
 }
 
-void createObjects() {
+void createObjects(float time) {
 	const int groupNum = 6;
 
 	// primitive shapes
-	Primitive cylA = prmv(CYLINDER, (void*) cyl(v3(2.0f, 1.0f, 2.0f), v3(2.0f, 3.0f, 2.0f), v3(0.0f, 1.0f, 0.0f), 0.5f));
-	Primitive cylB = prmv(CYLINDER, (void*) cyl(v3(1.0f, 2.0f, 2.0f), v3(3.0f, 2.0f, 2.0f), v3(0.0f, 1.0f, 0.0f), 0.5f));
-	Primitive cylC = prmv(CYLINDER, (void*) cyl(v3(2.0f, 2.0f, 1.0f), v3(2.0f, 2.0f, 3.0f), v3(0.0f, 1.0f, 0.0f), 0.5f));
+	Primitive cylA = prmv(CYLINDER, (void*) cyl(v3( 0.0f, 1.0f,  0.0f), v3(0.0f, 3.0f, 0.0f), v3(0.0f, 1.0f, 0.0f), 0.5f));
+	Primitive cylB = prmv(CYLINDER, (void*) cyl(v3(-1.0f, 2.0f,  0.0f), v3(1.0f, 2.0f, 0.0f), v3(0.0f, 1.0f, 0.0f), 0.5f));
+	Primitive cylC = prmv(CYLINDER, (void*) cyl(v3( 0.0f, 2.0f, -1.0f), v3(0.0f, 2.0f, 1.0f), v3(0.0f, 1.0f, 0.0f), 0.5f));
 
-	Primitive cubeA = prmv(CUBE,   (void*) cube(v3(2.0f, 2.0f, 2.0f), v3(1.0f, 0.0f, 1.0f), v3f(0.8f), 0.0f));
-	Primitive sphA  = prmv(SPHERE, (void*)  sph(v3(2.0f, 2.0f, 2.0f), v3(0.0f, 0.0f, 1.0f), 1.1f));
+	Primitive cubeA = prmv(CUBE,   (void*) cube(v3(0.0f, 2.0f, 0.0f), v3(1.0f, 0.0f, 1.0f), v3f(0.8f), 0.0f));
+	Primitive sphA  = prmv(SPHERE, (void*)  sph(v3(0.0f, 2.0f, 0.0f), v3(0.0f, 0.0f, 1.0f), 1.1f));
 
-	Primitive avg1  = prmv(SPHERE, (void*)  sph(v3(0.0f, 2.0f, 0.0f), v3(0.0f, 0.0f, 1.0f), 1.0f));
-	Primitive avg2  = prmv(CUBE,   (void*) cube(v3(0.0f, 2.0f, 0.0f), v3(0.0f, 0.0f, 1.0f), v3f(1.0f), 0.0f));
+	Primitive avg1  = prmv(SPHERE, (void*)  sph(v3(0.0f, 2.0f, 0.0f), v3(0.0f, 0.0f, 1.0f), 1.1f));
+	Primitive avg2  = prmv(CUBE,   (void*) cube(v3(-cos(time), 2.0f, 0.0f), v3(0.0f, 0.0f, 1.0f), v3f(1.0f), 0.0f));
 
 
 	// group the cube and sphere together
@@ -73,10 +73,10 @@ void createObjects() {
 	ShapeGroup sgSHAPE = group(CS, ABC, CUT, 1.0f);
 	Primitive SHAPE = prmv(GROUP, (void*) (intptr_t) 3);
 
-	ShapeGroup sgAVG = group(avg1, avg2, AVERAGE, 0.5f);
+	ShapeGroup sgAVG = group(avg1, avg2, AVERAGE, 0.0f);
 	Primitive AVG = prmv(GROUP, (void*) (intptr_t) 4);
 
-	ShapeGroup sgROOT = group(AVG, SHAPE, NORMAL, 1.0f);
+	ShapeGroup sgROOT = group(AVG, SHAPE, AVERAGE, sin(time) * 0.5 + 0.5);
 
 	ShapeGroup groups[groupNum];
 	groups[0] = sgCS;
@@ -102,4 +102,6 @@ void updateScene(float time) {
 	// recreate all object that are supposed to be moving
 	sendCamera();
 	createLight(time);
+	//shdSetFloat(gl->s, "time", time);
+	createObjects(time);
 }
