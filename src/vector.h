@@ -1,3 +1,4 @@
+// vim: filetype=c
 typedef struct Vector3s {
 	float x, y, z;
 } Vector3;

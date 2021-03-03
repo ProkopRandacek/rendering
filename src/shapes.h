@@ -1,3 +1,4 @@
+// vim: filetype=c
 typedef enum ShapeType {
 	GROUP, CUBE, SPHERE, CYLINDER
 } ShapeType;

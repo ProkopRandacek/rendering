@@ -1,3 +1,4 @@
+// vim: filetype=c
 #include "vector.h"
 
 

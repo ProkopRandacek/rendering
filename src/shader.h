@@ -1,3 +1,4 @@
+// vim: filetype=c
 typedef struct {
 	unsigned int ID;
 } shader;
