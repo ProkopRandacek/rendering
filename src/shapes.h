@@ -47,7 +47,7 @@ typedef struct CTorus {
 typedef struct Link {
 	Vector3 pos;
 	Vector3 clr;
-	float lenght;
+	float length;
 	float innerR;
 	float outerR;
 } Link;
@@ -88,12 +88,14 @@ typedef struct Cylinder {
 typedef struct RoundCone {
 	Vector3 start;
 	Vector3 end;
+	Vector3 clr;
 	float startR;
 	float endR;
 } RoundCone;
 
 typedef struct Pyramid {
 	Vector3 pos;
+	Vector3 clr;
 	float h;
 } Pyramid;
 
