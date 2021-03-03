@@ -3,7 +3,7 @@ const int STEPSNUM = 1024;
 const float COLLISION_THRESHOLD = 0.001;
 const float MAX_TRACE_DIST = 30.0;
 
-const int shapeSize = 10;
+const int shapeSize = 15;
 // 2 shapes + 2 shapeTypes + operationType + k
 const int groupSize = (shapeSize * 2) + 4;
 const int groupNum = 6;

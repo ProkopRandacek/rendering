@@ -33,16 +33,22 @@ main.c                                      - Code initialization, main render l
 
 Are defined in `shapes.h`. When serializing into a float array, following rules apply for all shapes:
 
-- Max length of a shape is 10 floats.
-- Floats on positions:
-  - 0 1 2 are position (or starting position of a shape, for example cylinder)
-  - 3 4 5 are color
-  - 9 is radius (radius of a circle || radius of a smooth edge of a cube)
+- Max length of a shape is 15 floats.
+Floats on positions:
+```
+0  1  2  is position
+3  4  5  is color
+6  7  8  is second position (when shape is from-to) or scale
+9        is (inner) radius (radius of a circle or radius of a smooth edge of a cube) or height
+10       is (outer) radius
+10 11 12 
+13 14 15 
+```
 
 Shape specific rules:
 ### Sphere
 
-6 7 8 are not used.
+6 - 15 are not used.
 
 #### Cube
 

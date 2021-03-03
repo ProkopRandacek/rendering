@@ -7,25 +7,103 @@
 
 extern int groupSize, shapeSize;
 
-void sphere2floats(float* f, Sphere* sphere) {
-	f[0] = sphere->pos.x; f[1] = sphere->pos.y; f[2] = sphere->pos.z;
-	f[3] = sphere->clr.x; f[4] = sphere->clr.y; f[5] = sphere->clr.z;
-	f[6] = 0.0f;          f[7] = 0.0f;          f[8] = 0.0f;
-	f[9] = sphere->radius;
+void sphere2floats(float* f, Sphere* s) {
+	f[0 ] = s->pos.x;  f[1 ] = s->pos.y; f[2 ] = s->pos.z;
+	f[3 ] = s->clr.x;  f[4 ] = s->clr.y; f[5 ] = s->clr.z;
+	f[6 ] = 0.0f;      f[7 ] = 0.0f;     f[8 ] = 0.0f;
+	f[9 ] = s->radius; f[10] = 0.0f;     f[11] = 0.0f;
+	f[12] = 0.0f;      f[13] = 0.0f;     f[14] = 0.0f;
+	f[15] = 0.0f;
 }
 
-void cube2floats(float* f, Cube* cube) {
-	f[0] = cube->pos.x;   f[1] = cube->pos.y;   f[2] = cube->pos.z;
-	f[3] = cube->clr.x;   f[4] = cube->clr.y;   f[5] = cube->clr.z;
-	f[6] = cube->scale.x; f[7] = cube->scale.y; f[8] = cube->scale.z;
-	f[9] = cube->roundEdge;
+void cube2floats(float* f, Cube* s) {
+	f[0 ] = s->pos.x;     f[1 ] = s->pos.y;   f[2 ] = s->pos.z;
+	f[3 ] = s->clr.x;     f[4 ] = s->clr.y;   f[5 ] = s->clr.z;
+	f[6 ] = s->scale.x;   f[7 ] = s->scale.y; f[8 ] = s->scale.z;
+	f[9 ] = s->roundEdge; f[10] = 0.0f;       f[11] = 0.0f;
+	f[12] = 0.0f;         f[13] = 0.0f;       f[14] = 0.0f;
+	f[15] = 0.0f;
 }
 
-void cyl2floats(float* f, Cylinder* cyl) {
-	f[0] = cyl->start.x; f[1] = cyl->start.y; f[2] = cyl->start.z;
-	f[3] = cyl->clr.x;   f[4] = cyl->clr.y;   f[5] = cyl->clr.z;
-	f[6] = cyl->end.x;   f[7] = cyl->end.y;   f[8] = cyl->end.z;
-	f[9] = cyl->radius;
+void boxFrame2floats(float* f, BoxFrame* s) {
+	f[0 ] = s->pos.x;   f[1 ] = s->pos.y;   f[2 ] = s->pos.z;
+	f[3 ] = s->clr.x;   f[4 ] = s->clr.y;   f[5 ] = s->clr.z;
+	f[6 ] = s->scale.x; f[7 ] = s->scale.y; f[8 ] = s->scale.z;
+	f[9 ] = s->width;   f[10] = 0.0f;       f[11] = 0.0f;
+	f[12] = 0.0f;       f[13] = 0.0f;       f[14] = 0.0f;
+	f[15] = 0.0f;
+}
+
+void torus2floats(float* f, Torus* s) {
+	f[0 ] = s->pos.x;  f[1 ] = s->pos.y;   f[2 ] = s->pos.z;
+	f[3 ] = s->clr.x;  f[4 ] = s->clr.y;   f[5 ] = s->clr.z;
+	f[6 ] = 0.0f;      f[7 ] = 0.0f;       f[8 ] = 0.0f;
+	f[9 ] = s->innerR; f[10] = s->outerR;  f[11] = 0.0f;
+	f[12] = 0.0f;      f[13] = 0.0f;       f[14] = 0.0f;
+	f[15] = 0.0f;
+}
+
+void ctorus2floats(float* f, CTorus* s) {
+	f[0 ] = s->pos.x; f[1 ] = s->pos.y; f[2 ] = s->pos.z;
+	f[3 ] = s->clr.x; f[4 ] = s->clr.y; f[5 ] = s->clr.z;
+	f[6 ] = 0.0f;     f[7 ] = 0.0f;     f[8 ] = 0.0f;
+	f[9 ] = s->scX;   f[10] = s->scY;   f[11] = s->ra;
+	f[12] = s->rb;    f[13] = 0.0f;     f[14] = 0.0f;
+	f[15] = 0.0f;
+}
+
+void link2floats(float* f, Link* s) {
+	f[0 ] = s->pos.x;  f[1 ] = s->pos.y;  f[2 ] = s->pos.z;
+	f[3 ] = s->clr.x;  f[4 ] = s->clr.y;  f[5 ] = s->clr.z;
+	f[6 ] = 0.0f;      f[7 ] = 0.0f;      f[8 ] = 0.0f;
+	f[9 ] = s->innerR; f[10] = s->outerR; f[11] = s->length;
+	f[12] = 0.0f;      f[13] = 0.0f;      f[14] = 0.0f;
+	f[15] = 0.0f;
+}
+
+void plane2floats(float* f, Plane* s) {
+	f[0 ] = s->pos.x; f[1 ] = s->pos.y; f[2 ] = s->pos.z;
+	f[3 ] = s->clr.x; f[4 ] = s->clr.y; f[5 ] = s->clr.z;
+	f[6 ] = s->n.x;   f[7 ] = s->n.y;   f[8 ] = s->n.z;
+	f[9 ] = s->h;     f[10] = 0.0f;     f[11] = 0.0f;
+	f[12] = 0.0f;     f[13] = 0.0f;     f[14] = 0.0f;
+	f[15] = 0.0f;
+}
+
+void hexprism2floats(float* f, HexPrism* s) {
+	f[0 ] = s->pos.x;  f[1 ] = s->pos.y; f[2 ] = s->pos.z;
+	f[3 ] = s->clr.x;  f[4 ] = s->clr.y; f[5 ] = s->clr.z;
+	f[6 ] = 0.0f;      f[7 ] = 0.0f;     f[8 ] = 0.0f;
+	f[9 ] = s->height; f[10] = 0.0f;     f[11] = 0.0f;
+	f[12] = 0.0f;      f[13] = 0.0f;     f[14] = 0.0f;
+	f[15] = 0.0f;
+}
+
+void triprism2floats(float* f, TriPrism* s) {
+	f[0 ] = s->pos.x;  f[1 ] = s->pos.y; f[2 ] = s->pos.z;
+	f[3 ] = s->clr.x;  f[4 ] = s->clr.y; f[5 ] = s->clr.z;
+	f[6 ] = 0.0f;      f[7 ] = 0.0f;     f[8 ] = 0.0f;
+	f[9 ] = s->height; f[10] = 0.0f;     f[11] = 0.0f;
+	f[12] = 0.0f;      f[13] = 0.0f;     f[14] = 0.0f;
+	f[15] = 0.0f;
+}
+
+void caps2floats(float* f, Capsule* s) {
+	f[0 ] = s->start.x; f[1 ] = s->start.y; f[2 ] = s->start.z;
+	f[3 ] = s->clr.x;   f[4 ] = s->clr.y;   f[5 ] = s->clr.z;
+	f[6 ] = s->end.x;   f[7 ] = s->end.y;   f[8 ] = s->end.z;
+	f[9 ] = s->radius;  f[10] = 0.0f;       f[11] = 0.0f;
+	f[12] = 0.0f;       f[13] = 0.0f;       f[14] = 0.0f;
+	f[15] = 0.0f;
+}
+
+void cyl2floats(float* f, Cylinder* s) {
+	f[0 ] = s->start.x; f[1 ] = s->start.y; f[2 ] = s->start.z;
+	f[3 ] = s->clr.x;   f[4 ] = s->clr.y;   f[5 ] = s->clr.z;
+	f[6 ] = s->end.x;   f[7 ] = s->end.y;   f[8 ] = s->end.z;
+	f[9 ] = s->radius;  f[10] = 0.0f;       f[11] = 0.0f;
+	f[12] = 0.0f;       f[13] = 0.0f;       f[14] = 0.0f;
+	f[15] = 0.0f;
 }
 
 void groups2floats(float* f, int num, ShapeGroup* groups) {

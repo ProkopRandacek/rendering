@@ -4,7 +4,7 @@
 #include "shapes.h"
 
 
-const int shapeSize = 10; // max number of floats per shape
+const int shapeSize = 15; // max number of floats per shape
 // group  = 2 shapes + 2 shapeTypes + operationType + k
 const int groupSize = (shapeSize * 2) + 2 + 1 + 1;
 
