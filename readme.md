@@ -6,7 +6,7 @@
 
 Current rendering capabilities:  
 - [Constructive solid geometry](https://en.wikipedia.org/wiki/Constructive_solid_geometry)
-- Sphere, Cube and Cylinder rendering
+- Sphere, Cube, Box Frame, Torus, Capped Torus, Link, Plane, Hexagonal Prism, Triangular Prism, Capsule, Round Cone, Pyramid and Cylinder rendering
 - Transforming between shapes over time
 - WASD + mouse controls
 - Checkerboard floor
@@ -14,7 +14,6 @@ Current rendering capabilities:
 - Works realtime
 
 TODO:
-- Add more shapes
 - Reflections
 - [Better lighting](https://en.wikipedia.org/wiki/Computer_graphics_lighting)
 - Read scene configuration from file

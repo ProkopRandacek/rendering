@@ -22,20 +22,9 @@ shader shd(char* vertPath, char* fragPath) {
 		exit(1);
 	}
 
-	// fake fragment shader to check for errors and print error messages with correct line numbers
-/*	const char* fakeShdSource = readFile("./fragmentShader.glsl");
-	unsigned int fakeShd = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fakeShd, 1, &fakeShdSource, NULL);
-	glCompileShader(fakeShd);
-	glGetShaderiv(fakeShd, GL_COMPILE_STATUS, &success);
-	if (!success) {
-		glGetShaderInfoLog(fakeShd, 512, NULL, infoLog);
-		printf("Error while compiling fake shader\n%s\n", infoLog);
-		exit(1);
-	}*/
-
 	// real fragment shader. Errors can be only in SDFs.glsl
-	const char* fragShdSource = collectFragShd();
+	char* tmp = collectFragShd();
+	const char* fragShdSource = tmp;
 	unsigned int fragShd = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragShd, 1, &fragShdSource, NULL);
 	glCompileShader(fragShd);
@@ -58,13 +47,14 @@ shader shd(char* vertPath, char* fragPath) {
 	}
 	glDeleteShader(vertShd);
 	glDeleteShader(fragShd);
+	free(tmp);
 	return s;
 }
 
 char* collectFragShd() {
 	char* SDFs = readFile("./SDFs.glsl");
 	char* main  = readFile("./fragmentShader.glsl");
-	char* full = malloc(sizeof(char) * 16384);
+	char* full = malloc(sizeof(char) * 16384 * 2);
 
 	strcpy(full, SDFs);
 	strcat(full, "\n");

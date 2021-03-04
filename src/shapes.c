@@ -54,7 +54,7 @@ CTorus* ctor(Vector3 pos, Vector3 clr, float scX, float scY, float ra, float rb)
 	return t;
 }
 
-Link* link(Vector3 pos, Vector3 clr, float innerR, float outerR, float length) {
+Link* lik(Vector3 pos, Vector3 clr, float innerR, float outerR, float length) {
 	Link* l = malloc(sizeof(Link));
 	l->pos = pos;
 	l->clr = clr;
@@ -73,19 +73,21 @@ Plane* pln(Vector3 pos, Vector3 clr, Vector3 n, float h) {
 	return p;
 }
 
-HexPrism* xprism(Vector3 pos, Vector3 clr, float h) {
+HexPrism* xprism(Vector3 pos, Vector3 clr, float h, float r) {
 	HexPrism* x = malloc(sizeof(HexPrism));
 	x->pos = pos;
 	x->clr = clr;
 	x->height = h;
+	x->radius = r;
 	return x;
 }
 
-TriPrism* tprism(Vector3 pos, Vector3 clr, float h) {
+TriPrism* tprism(Vector3 pos, Vector3 clr, float h, float r) {
 	TriPrism* t = malloc(sizeof(TriPrism));
 	t->pos = pos;
 	t->clr = clr;
 	t->height = h;
+	t->radius = r;
 	return t;
 }
 

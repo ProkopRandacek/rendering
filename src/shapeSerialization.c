@@ -71,20 +71,20 @@ void plane2floats(float* f, Plane* s) {
 }
 
 void hexprism2floats(float* f, HexPrism* s) {
-	f[0 ] = s->pos.x;  f[1 ] = s->pos.y; f[2 ] = s->pos.z;
-	f[3 ] = s->clr.x;  f[4 ] = s->clr.y; f[5 ] = s->clr.z;
-	f[6 ] = 0.0f;      f[7 ] = 0.0f;     f[8 ] = 0.0f;
-	f[9 ] = s->height; f[10] = 0.0f;     f[11] = 0.0f;
-	f[12] = 0.0f;      f[13] = 0.0f;     f[14] = 0.0f;
+	f[0 ] = s->pos.x;  f[1 ] = s->pos.y;  f[2 ] = s->pos.z;
+	f[3 ] = s->clr.x;  f[4 ] = s->clr.y;  f[5 ] = s->clr.z;
+	f[6 ] = 0.0f;      f[7 ] = 0.0f;      f[8 ] = 0.0f;
+	f[9 ] = s->height; f[10] = s->radius; f[11] = 0.0f;
+	f[12] = 0.0f;      f[13] = 0.0f;      f[14] = 0.0f;
 	f[15] = 0.0f;
 }
 
 void triprism2floats(float* f, TriPrism* s) {
-	f[0 ] = s->pos.x;  f[1 ] = s->pos.y; f[2 ] = s->pos.z;
-	f[3 ] = s->clr.x;  f[4 ] = s->clr.y; f[5 ] = s->clr.z;
-	f[6 ] = 0.0f;      f[7 ] = 0.0f;     f[8 ] = 0.0f;
-	f[9 ] = s->height; f[10] = 0.0f;     f[11] = 0.0f;
-	f[12] = 0.0f;      f[13] = 0.0f;     f[14] = 0.0f;
+	f[0 ] = s->pos.x;  f[1 ] = s->pos.y;  f[2 ] = s->pos.z;
+	f[3 ] = s->clr.x;  f[4 ] = s->clr.y;  f[5 ] = s->clr.z;
+	f[6 ] = 0.0f;      f[7 ] = 0.0f;      f[8 ] = 0.0f;
+	f[9 ] = s->height; f[10] = s->radius; f[11] = 0.0f;
+	f[12] = 0.0f;      f[13] = 0.0f;      f[14] = 0.0f;
 	f[15] = 0.0f;
 }
 

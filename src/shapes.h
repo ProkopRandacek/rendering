@@ -1,6 +1,6 @@
 // vim: filetype=c
 typedef enum ShapeType {
-	GROUP, CUBE, SPHERE, CYLINDER
+	GROUP, CUBE, SPHERE, CYLINDER, BOXFRAME, TORUS, CTORUS, LINK, PLANE, HEXPRISM, TRIPRISM, CAPSULE, ROUNDCONE, PYRAMID, TRIANGLE, QUAD
 } ShapeType;
 
 typedef enum OperationType {
@@ -63,12 +63,14 @@ typedef struct HexPrism {
 	Vector3 pos;
 	Vector3 clr;
 	float height;
+	float radius;
 } HexPrism;
 
 typedef struct TriPrism {
 	Vector3 pos;
 	Vector3 clr;
 	float height;
+	float radius;
 } TriPrism;
 
 typedef struct Capsule { // Like cylinder but round
@@ -122,9 +124,21 @@ typedef struct ShapeGroup {
 	float k; // modifier for blending operation.
 } ShapeGroup;
 
+Primitive prmv(ShapeType type, void* shape);
+ShapeGroup group(Primitive a, Primitive b, OperationType op, float k);
 
 Sphere* sph(Vector3 pos, Vector3 clr, float radius);
 Cube* cube(Vector3 pos, Vector3 clr, Vector3 scale, float roundEdge);
+BoxFrame* frame(Vector3 pos, Vector3 clr, Vector3 scale, float width);
+Torus* tor(Vector3 pos, Vector3 clr, float innerR, float outerR);
+CTorus* ctor(Vector3 pos, Vector3 clr, float scX, float scY, float ra, float rb);
+Link* lik(Vector3 pos, Vector3 clr, float innerR, float outerR, float length);
+Plane* pln(Vector3 pos, Vector3 clr, Vector3 n, float h);
+HexPrism* xprism(Vector3 pos, Vector3 clr, float h, float r);
+TriPrism* tprism(Vector3 pos, Vector3 clr, float h, float r);
+Capsule* caps(Vector3 start, Vector3 end, Vector3 clr, float r);
 Cylinder* cyl(Vector3 start, Vector3 stop, Vector3 clr, float r);
-Primitive prmv(ShapeType type, void* shape);
-ShapeGroup group(Primitive a, Primitive b, OperationType op, float k);
+RoundCone* rcone(Vector3 start, Vector3 end, Vector3 clr, float startR, float endR);
+Pyramid* pyr(Vector3 pos, Vector3 clr, float h);
+Triangle* tri(Vector3 a, Vector3 b, Vector3 c, Vector3 clr);
+Quad* quad(Vector3 a, Vector3 b, Vector3 c, Vector3 d, Vector3 clr);
