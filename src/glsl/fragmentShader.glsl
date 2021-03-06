@@ -6,7 +6,7 @@ const float MAX_TRACE_DIST = 30.0;
 const int shapeSize = 15;
 // 2 shapes + 2 shapeTypes + operationType + k
 const int groupSize = (shapeSize * 2) + 4;
-const int groupNum = 6;
+const int groupNum = 3;
 
 uniform float time;
 uniform vec3 lightPos;
@@ -101,16 +101,16 @@ void d2Group(in vec3 pos, in int i) {
 	else if (aShapeType(i) == 1 ) { aClr = aShapeClr(i); d2a = d2Cube     (pos, aShapePos(i), aShapeScale(i), aShapeRadius(i)); } // cube
 	else if (aShapeType(i) == 2 ) { aClr = aShapeClr(i); d2a = d2Sphere   (pos, aShapePos(i), aShapeRadius(i)); }                 // sphere
 	else if (aShapeType(i) == 3 ) { aClr = aShapeClr(i); d2a = d2Cylinder (pos, aShapePos(i), aShapeScale(i), aShapeRadius(i)); } // cylinder
-	else if (aShapeType(i) == 3 ) { aClr = aShapeClr(i); d2a = d2BoxFrame (pos, aShapePos(i), aShapeScale(i), aShapeRadius(i)); } // box frame
-	else if (aShapeType(i) == 4 ) { aClr = aShapeClr(i); d2a = d2Torus    (pos, aShapePos(i), aShapeRVec(i)); } // torus
-	else if (aShapeType(i) == 5 ) { aClr = aShapeClr(i); d2a = d2CTorus   (pos, aShapePos(i), aShapeRVec(i), aShapeFloat(i, 11), aShapeFloat(i, 12)); } // ctorus
-	else if (aShapeType(i) == 6 ) { aClr = aShapeClr(i); d2a = d2Link     (pos, aShapePos(i), aShapeFloat(i, 11), aShapeFloat(i, 9), aShapeFloat(i, 10)); } // link
-	else if (aShapeType(i) == 7 ) { aClr = aShapeClr(i); d2a = d2Plane    (pos, aShapePos(i), aShapeScale(i), aShapeRadius(i)); } // plane
-	else if (aShapeType(i) == 8 ) { aClr = aShapeClr(i); d2a = d2HexPrism (pos, aShapePos(i), aShapeRVec(i)); } // hexprism
-	else if (aShapeType(i) == 9 ) { aClr = aShapeClr(i); d2a = d2TriPrism (pos, aShapePos(i), aShapeRVec(i)); } // triprism
-	else if (aShapeType(i) == 10) { aClr = aShapeClr(i); d2a = d2Capsule  (pos, aShapePos(i), aShapeScale(i), aShapeRadius(i)); } // capsule
-	else if (aShapeType(i) == 11) { aClr = aShapeClr(i); d2a = d2RoundCone(pos, aShapePos(i), aShapeScale(i), aShapeFloat(i, 9), aShapeFloat(i, 10)); } // round cone
-	else if (aShapeType(i) == 12) { aClr = aShapeClr(i); d2a = d2Pyramid  (pos, aShapePos(i), aShapeRadius(i)); } // pyramid
+	else if (aShapeType(i) == 4 ) { aClr = aShapeClr(i); d2a = d2BoxFrame (pos, aShapePos(i), aShapeScale(i), aShapeRadius(i)); } // box frame
+	else if (aShapeType(i) == 5 ) { aClr = aShapeClr(i); d2a = d2Torus    (pos, aShapePos(i), aShapeRVec(i)); } // torus
+	else if (aShapeType(i) == 6 ) { aClr = aShapeClr(i); d2a = d2CTorus   (pos, aShapePos(i), aShapeRVec(i), aShapeFloat(i, 11), aShapeFloat(i, 12)); } // ctorus
+	else if (aShapeType(i) == 7 ) { aClr = aShapeClr(i); d2a = d2Link     (pos, aShapePos(i), aShapeFloat(i, 11), aShapeFloat(i, 9), aShapeFloat(i, 10)); } // link
+	else if (aShapeType(i) == 8 ) { aClr = aShapeClr(i); d2a = d2Plane    (pos, aShapePos(i), aShapeScale(i), aShapeRadius(i)); } // plane
+	else if (aShapeType(i) == 9 ) { aClr = aShapeClr(i); d2a = d2HexPrism (pos, aShapePos(i), aShapeRVec(i)); } // hexprism
+	else if (aShapeType(i) == 10) { aClr = aShapeClr(i); d2a = d2TriPrism (pos, aShapePos(i), aShapeRVec(i)); } // triprism
+	else if (aShapeType(i) == 11) { aClr = aShapeClr(i); d2a = d2Capsule  (pos, aShapePos(i), aShapeScale(i), aShapeRadius(i)); } // capsule
+	else if (aShapeType(i) == 12) { aClr = aShapeClr(i); d2a = d2CCone    (pos, aShapePos(i), aShapeScale(i), aShapeFloat(i, 9), aShapeFloat(i, 10)); } // round cone
+	else if (aShapeType(i) == 13) { aClr = aShapeClr(i); d2a = d2Pyramid  (pos, aShapePos(i), aShapeRadius(i)); } // pyramid
 	// Shape B
 	if (bShapeType(i) == 0) { // B is a subgroup
 		vec4 s = d2Groups[bNodeIndex(i)];
@@ -119,16 +119,16 @@ void d2Group(in vec3 pos, in int i) {
 	else if (bShapeType(i) == 1 ) { bClr = bShapeClr(i); d2b = d2Cube     (pos, bShapePos(i), bShapeScale(i), bShapeRadius(i)); }
 	else if (bShapeType(i) == 2 ) { bClr = bShapeClr(i); d2b = d2Sphere   (pos, bShapePos(i), bShapeRadius(i)); }
 	else if (bShapeType(i) == 3 ) { bClr = bShapeClr(i); d2b = d2Cylinder (pos, bShapePos(i), bShapeScale(i), bShapeRadius(i)); }
-	else if (bShapeType(i) == 3 ) { bClr = bShapeClr(i); d2b = d2BoxFrame (pos, bShapePos(i), bShapeScale(i), bShapeRadius(i)); } // box frame
-	else if (bShapeType(i) == 4 ) { bClr = bShapeClr(i); d2b = d2Torus    (pos, bShapePos(i), bShapeRVec(i)); } // torus
-	else if (bShapeType(i) == 5 ) { bClr = bShapeClr(i); d2b = d2CTorus   (pos, bShapePos(i), bShapeRVec(i), bShapeFloat(i, 11), bShapeFloat(i, 12)); } // ctorus
-	else if (bShapeType(i) == 6 ) { bClr = bShapeClr(i); d2b = d2Link     (pos, bShapePos(i), bShapeFloat(i, 11), bShapeFloat(i, 9), bShapeFloat(i, 10)); } // link
-	else if (bShapeType(i) == 7 ) { bClr = bShapeClr(i); d2b = d2Plane    (pos, bShapePos(i), bShapeScale(i), bShapeRadius(i)); } // plane
-	else if (bShapeType(i) == 8 ) { bClr = bShapeClr(i); d2b = d2HexPrism (pos, bShapePos(i), bShapeRVec(i)); } // hexprism
-	else if (bShapeType(i) == 9 ) { bClr = bShapeClr(i); d2b = d2TriPrism (pos, bShapePos(i), bShapeRVec(i)); } // triprism
-	else if (bShapeType(i) == 10) { bClr = bShapeClr(i); d2b = d2Capsule  (pos, bShapePos(i), bShapeScale(i), bShapeRadius(i)); } // capsule
-	else if (bShapeType(i) == 11) { bClr = bShapeClr(i); d2b = d2RoundCone(pos, bShapePos(i), bShapeScale(i), bShapeFloat(i, 9), bShapeFloat(i, 10)); } // round cone
-	else if (bShapeType(i) == 12) { bClr = bShapeClr(i); d2b = d2Pyramid  (pos, bShapePos(i), bShapeRadius(i)); } // pyramid
+	else if (bShapeType(i) == 4 ) { bClr = bShapeClr(i); d2b = d2BoxFrame (pos, bShapePos(i), bShapeScale(i), bShapeRadius(i)); } // box frame
+	else if (bShapeType(i) == 5 ) { bClr = bShapeClr(i); d2b = d2Torus    (pos, bShapePos(i), bShapeRVec(i)); } // torus
+	else if (bShapeType(i) == 6 ) { bClr = bShapeClr(i); d2b = d2CTorus   (pos, bShapePos(i), bShapeRVec(i), bShapeFloat(i, 11), bShapeFloat(i, 12)); } // ctorus
+	else if (bShapeType(i) == 7 ) { bClr = bShapeClr(i); d2b = d2Link     (pos, bShapePos(i), bShapeFloat(i, 11), bShapeFloat(i, 9), bShapeFloat(i, 10)); } // link
+	else if (bShapeType(i) == 8 ) { bClr = bShapeClr(i); d2b = d2Plane    (pos, bShapePos(i), bShapeScale(i), bShapeRadius(i)); } // plane
+	else if (bShapeType(i) == 9 ) { bClr = bShapeClr(i); d2b = d2HexPrism (pos, bShapePos(i), bShapeRVec(i)); } // hexprism
+	else if (bShapeType(i) == 10) { bClr = bShapeClr(i); d2b = d2TriPrism (pos, bShapePos(i), bShapeRVec(i)); } // triprism
+	else if (bShapeType(i) == 11) { bClr = bShapeClr(i); d2b = d2Capsule  (pos, bShapePos(i), bShapeScale(i), bShapeRadius(i)); } // capsule
+	else if (bShapeType(i) == 12) { bClr = bShapeClr(i); d2b = d2CCone    (pos, bShapePos(i), bShapeScale(i), bShapeFloat(i, 9), bShapeFloat(i, 10)); } // capped cone
+	else if (bShapeType(i) == 13) { bClr = bShapeClr(i); d2b = d2Pyramid  (pos, bShapePos(i), bShapeRadius(i)); } // pyramid
 
 	// save the dist for later groups that contain this group.
 	d2Groups[i] = Combine(d2a, d2b, aClr, bClr, grpOpType(i), grpK(i));
@@ -202,4 +202,3 @@ void main() {
 }
 
 
-// end

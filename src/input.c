@@ -5,6 +5,7 @@
 #include "input.h"
 #include "camera.h"
 #include "opengl.h"
+#include "time.h"
 
 
 extern GL* gl;
@@ -22,6 +23,8 @@ const float moveSpeed = 5.0f;
 const float mouseSens = 0.12f;
 
 void updateInput() {
+	//clock_t start = clock();
+
 	double xpos, ypos;
 
 	// wasd
@@ -48,6 +51,9 @@ void updateInput() {
 		cos(y) * cos(x)
 	));
 	cam = updateCamDir(cam.pos, dir);
+
+	//clock_t end = clock();
+	//printf("updateInput() took %.2f ms\n", ((float)(end - start) / CLOCKS_PER_SEC * 1000.0f));
 }
 
 void onKey(GLFWwindow* window, int key, int scancode, int action, int mods) {

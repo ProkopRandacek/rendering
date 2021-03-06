@@ -34,12 +34,12 @@ BoxFrame* frame(Vector3 pos, Vector3 clr, Vector3 scale, float width) {
 	return f;
 }
 
-Torus* tor(Vector3 pos, Vector3 clr, float innerR, float outerR) {
+Torus* tor(Vector3 pos, Vector3 clr, float radius, float fatness) {
 	Torus* t = malloc(sizeof(Torus));
 	t->pos = pos;
 	t->clr = clr;
-	t->innerR = innerR;
-	t->outerR = outerR;
+	t->radius = radius;
+	t->fatness = fatness;
 	return t;
 }
 
@@ -109,8 +109,8 @@ Cylinder* cyl(Vector3 start, Vector3 end, Vector3 clr, float r) {
 	return c;
 }
 
-RoundCone* rcone(Vector3 start, Vector3 end, Vector3 clr, float startR, float endR) {
-	RoundCone* r = malloc(sizeof(RoundCone));
+CCone* ccone(Vector3 start, Vector3 end, Vector3 clr, float startR, float endR) {
+	CCone* r = malloc(sizeof(CCone));
 	r->start = start;
 	r->end = end;
 	r->clr = clr;

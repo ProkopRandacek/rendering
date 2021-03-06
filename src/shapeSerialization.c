@@ -38,7 +38,7 @@ void torus2floats(float* f, Torus* s) {
 	f[0 ] = s->pos.x;  f[1 ] = s->pos.y;   f[2 ] = s->pos.z;
 	f[3 ] = s->clr.x;  f[4 ] = s->clr.y;   f[5 ] = s->clr.z;
 	f[6 ] = 0.0f;      f[7 ] = 0.0f;       f[8 ] = 0.0f;
-	f[9 ] = s->innerR; f[10] = s->outerR;  f[11] = 0.0f;
+	f[9 ] = s->radius; f[10] = s->fatness; f[11] = 0.0f;
 	f[12] = 0.0f;      f[13] = 0.0f;       f[14] = 0.0f;
 	f[15] = 0.0f;
 }
@@ -106,11 +106,23 @@ void cyl2floats(float* f, Cylinder* s) {
 	f[15] = 0.0f;
 }
 
+void ccone2floats(float* f, CCone*s) {
+	f[0 ] = s->start.x; f[1 ] = s->start.y; f[2 ] = s->start.z;
+	f[3 ] = s->clr.x;   f[4 ] = s->clr.y;   f[5 ] = s->clr.z;
+	f[6 ] = s->end.x;   f[7 ] = s->end.y;   f[8 ] = s->end.z;
+	f[9 ] = s->startR;  f[10] = s->endR;    f[11] = 0.0f;
+	f[12] = 0.0f;       f[13] = 0.0f;       f[14] = 0.0f;
+	f[15] = 0.0f;
+}
+
+
 void groups2floats(float* f, int num, ShapeGroup* groups) {
 	for (int i = 0; i < num; i++) {
 		if      (groups[i].a.type == CUBE)     {   cube2floats(&f[i * groupSize],     (Cube*) groups[i].a.shape); }
 		else if (groups[i].a.type == SPHERE)   { sphere2floats(&f[i * groupSize],   (Sphere*) groups[i].a.shape); }
 		else if (groups[i].a.type == CYLINDER) {    cyl2floats(&f[i * groupSize], (Cylinder*) groups[i].a.shape); }
+		else if (groups[i].a.type == TORUS)    {  torus2floats(&f[i * groupSize],    (Torus*) groups[i].a.shape); }
+		else if (groups[i].a.type == CCONE)    {  ccone2floats(&f[i * groupSize],    (CCone*) groups[i].a.shape); }
 		else if (groups[i].a.type == GROUP) {
 			f[i * groupSize + shapeSize * 0 + 1] = (float) (intptr_t) groups[i].a.shape; // a "pointer" to where this node is
 		}
@@ -118,6 +130,8 @@ void groups2floats(float* f, int num, ShapeGroup* groups) {
 		if      (groups[i].b.type == CUBE)     {   cube2floats(&f[i * groupSize + shapeSize],     (Cube*) groups[i].b.shape); }
 		else if (groups[i].b.type == SPHERE)   { sphere2floats(&f[i * groupSize + shapeSize],   (Sphere*) groups[i].b.shape); }
 		else if (groups[i].b.type == CYLINDER) {    cyl2floats(&f[i * groupSize + shapeSize], (Cylinder*) groups[i].b.shape); }
+		else if (groups[i].b.type == TORUS)    {  torus2floats(&f[i * groupSize + shapeSize],    (Torus*) groups[i].b.shape); }
+		else if (groups[i].b.type == CCONE)    {  ccone2floats(&f[i * groupSize + shapeSize],    (CCone*) groups[i].b.shape); }
 		else if (groups[i].b.type == GROUP) {
 			f[i * groupSize + shapeSize * 1 + 1] = (float) (intptr_t) groups[i].b.shape; // a "pointer" to where this node is
 		}

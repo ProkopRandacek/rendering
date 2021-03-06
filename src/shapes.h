@@ -1,6 +1,6 @@
 // vim: filetype=c
 typedef enum ShapeType {
-	GROUP, CUBE, SPHERE, CYLINDER, BOXFRAME, TORUS, CTORUS, LINK, PLANE, HEXPRISM, TRIPRISM, CAPSULE, ROUNDCONE, PYRAMID, TRIANGLE, QUAD
+	GROUP, CUBE, SPHERE, CYLINDER, BOXFRAME, TORUS, CTORUS, LINK, PLANE, HEXPRISM, TRIPRISM, CAPSULE, CCONE, PYRAMID, TRIANGLE, QUAD
 } ShapeType;
 
 typedef enum OperationType {
@@ -31,8 +31,8 @@ typedef struct BoxFrame {
 typedef struct Torus {
 	Vector3 pos;
 	Vector3 clr;
-	float innerR;
-	float outerR;
+	float radius;
+	float fatness;
 } Torus;
 
 typedef struct CTorus {
@@ -87,13 +87,13 @@ typedef struct Cylinder {
 	float radius;
 } Cylinder;
 
-typedef struct RoundCone {
+typedef struct CCone {
 	Vector3 start;
 	Vector3 end;
 	Vector3 clr;
 	float startR;
 	float endR;
-} RoundCone;
+} CCone;
 
 typedef struct Pyramid {
 	Vector3 pos;
@@ -138,7 +138,7 @@ HexPrism* xprism(Vector3 pos, Vector3 clr, float h, float r);
 TriPrism* tprism(Vector3 pos, Vector3 clr, float h, float r);
 Capsule* caps(Vector3 start, Vector3 end, Vector3 clr, float r);
 Cylinder* cyl(Vector3 start, Vector3 stop, Vector3 clr, float r);
-RoundCone* rcone(Vector3 start, Vector3 end, Vector3 clr, float startR, float endR);
+CCone* ccone(Vector3 start, Vector3 end, Vector3 clr, float startR, float endR);
 Pyramid* pyr(Vector3 pos, Vector3 clr, float h);
 Triangle* tri(Vector3 a, Vector3 b, Vector3 c, Vector3 clr);
 Quad* quad(Vector3 a, Vector3 b, Vector3 c, Vector3 d, Vector3 clr);

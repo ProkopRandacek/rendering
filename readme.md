@@ -6,7 +6,7 @@
 
 Current rendering capabilities:  
 - [Constructive solid geometry](https://en.wikipedia.org/wiki/Constructive_solid_geometry)
-- Sphere, Cube, Box Frame, Torus, Capped Torus, Link, Plane, Hexagonal Prism, Triangular Prism, Capsule, Round Cone, Pyramid and Cylinder rendering
+- Sphere, Cube, Torus, Capped Cone and Cylinder rendering (many more in testing)
 - Transforming between shapes over time
 - WASD + mouse controls
 - Checkerboard floor
@@ -19,6 +19,7 @@ TODO:
 - Read scene configuration from file
 - Bounding box for complicated groups far away from the ray
 - Relative position for shapes in subgroups?
+- Compile for windows somehow?
 - Shape rotating
 - `#import`s seems to be messy
 - Split fragment shader into multiple parts

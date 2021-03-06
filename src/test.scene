@@ -1,0 +1,7 @@
+#PRIMITIVES 3
+//      position     color        radius
+SPHERE  0.0 2.0 0.0  0.9 0.9 0.9  0.3
+//                                inner radius outer radius
+TORUS   0.0 1.6 0.0  0.9 0.9 0.9  0.2          0.4
+//      from         to           color
+RCONE   0.0 0.2 0.0  0.0 1.6 0.0  0.9 0.9 0.9 0.9 0.3

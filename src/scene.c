@@ -5,6 +5,7 @@
 #include "opengl.h"
 #include "scene.h"
 #include "shapeSerialization.h"
+#include "time.h"
 
 
 extern GL* gl;
@@ -15,10 +16,15 @@ extern const int groupSize;
 Camera cam;
 
 void createScene() {
+	//clock_t start = clock();
+
 	createCamera(0.0f);
 	sendCamera();
 	createLight(0.0f);
 	createObjects(0.0f);
+
+	//clock_t end = clock();
+	//printf("createScrene() took %.2f ms\n", ((float)(end - start) / CLOCKS_PER_SEC * 1000.0f));
 }
 
 void createCamera(float time) {
@@ -40,68 +46,46 @@ void createLight(float time) {
 }
 
 void createObjects(float time) {
-	const int groupNum = 6;
+	const int groupNum = 3;
+	ShapeGroup groups[groupNum];
 
 	// primitive shapes
-	Primitive cylA = prmv(CYLINDER, (void*) cyl(v3( 0.0f, 1.0f,  0.0f), v3(0.0f, 3.0f, 0.0f), v3(0.0f, 1.0f, 0.0f), 0.5f));
-	Primitive cylB = prmv(CYLINDER, (void*) cyl(v3(-1.0f, 2.0f,  0.0f), v3(1.0f, 2.0f, 0.0f), v3(0.0f, 1.0f, 0.0f), 0.5f));
-	Primitive cylC = prmv(CYLINDER, (void*) cyl(v3( 0.0f, 2.0f, -1.0f), v3(0.0f, 2.0f, 1.0f), v3(0.0f, 1.0f, 0.0f), 0.5f));
+	Primitive head = prmv(SPHERE, (void*) sph  (v3(0.5f, 2.1f, 0.5f), v3(0.9f, 0.9f, 0.9f), 0.3f));
+	Primitive ring = prmv(TORUS,  (void*) tor  (v3(0.5f, 1.9f, 0.5f), v3(0.9f, 0.9f, 0.9f), 0.25f, 0.09f));
+	Primitive body = prmv(CCONE,  (void*) ccone(v3(0.5f, 2.2f, 0.5f), v3(0.5f, 1.3f, 0.5f), v3(0.9f, 0.9f, 0.9f), 0.17f, 0.3f));
+	Primitive base = prmv(CCONE,  (void*) ccone(v3(0.5f, 1.3f, 0.5f), v3(0.5f, 1.0f, 0.5f), v3(0.9f, 0.9f, 0.9f), 0.4f, 0.4f));
 
-	Primitive cubeA = prmv(CUBE,   (void*) cube(v3(0.0f, 2.0f, 0.0f), v3(1.0f, 0.0f, 1.0f), v3f(0.8f), 0.0f));
-	Primitive sphA  = prmv(SPHERE, (void*)  sph(v3(0.0f, 2.0f, 0.0f), v3(0.0f, 0.0f, 1.0f), 1.1f));
+	ShapeGroup sgTop = group(head, ring, NORMAL, 0.5f);
+	Primitive    Top = prmv(GROUP, (void*) (intptr_t) 0);
 
-	Primitive avg1  = prmv(SPHERE, (void*)  sph(v3(0.0f, 2.0f, 0.0f), v3(0.0f, 0.0f, 1.0f), 1.1f));
-	Primitive avg2  = prmv(CUBE,   (void*) cube(v3(-cos(time), 2.0f, 0.0f), v3(0.0f, 0.0f, 1.0f), v3f(1.0f), 0.0f));
+	ShapeGroup sgBottom = group(body, base, BLEND, 0.2f);
+	Primitive    Bottom = prmv(GROUP, (void*) (intptr_t) 1);
 
+	ShapeGroup sgROOT = group(Top, Bottom, NORMAL, 0.5f);
 
-	// group the cube and sphere together
-	ShapeGroup sgCS = group(sphA, cubeA, MASK, 1.0f);
-	// wrap the CS group into a primitive
-	Primitive    CS = prmv(GROUP, (void*) (intptr_t) 0);
-
-
-	// group cylA and cylB together
-	ShapeGroup  sgAB = group(cylA, cylB, NORMAL, 1.0f);
-	// wrap the AB group into a primitive
-	Primitive     AB = prmv(GROUP, (void*) (intptr_t) 1); // 0 is the position of sgAB in groups array. Its a "pointer" for glsl.
-	// group AB group and cylC together
-	ShapeGroup sgABC = group(cylC, AB, NORMAL, 1.0f);
-	// wrap the ABC group into a primitive
-	Primitive    ABC = prmv(GROUP, (void*) (intptr_t) 2);
-
-
-	ShapeGroup sgSHAPE = group(CS, ABC, CUT, 1.0f);
-	Primitive SHAPE = prmv(GROUP, (void*) (intptr_t) 3);
-
-	ShapeGroup sgAVG = group(avg1, avg2, AVERAGE, 0.0f);
-	Primitive AVG = prmv(GROUP, (void*) (intptr_t) 4);
-
-	ShapeGroup sgROOT = group(AVG, SHAPE, AVERAGE, sin(time) * 0.5 + 0.5);
-
-	ShapeGroup groups[groupNum];
-	groups[0] = sgCS;
-	groups[1] = sgAB;
-	groups[2] = sgABC;
-	groups[3] = sgSHAPE;
-	groups[4] = sgAVG;
-	groups[5] = sgROOT;
+	groups[0] = sgTop;
+	groups[1] = sgBottom;
+	groups[2] = sgROOT;
 
 	float f[groupSize * groupNum];
 	groups2floats(f, groupNum, groups);
 
 	shdSetFloatArray(gl->s, "rawGroups", groupSize * groupNum, f);
 
-	free( cylA.shape);
-	free( cylB.shape);
-	free( cylC.shape);
-	free(cubeA.shape);
-	free( sphA.shape);
+	free(head.shape);
+	free(ring.shape);
+	free(body.shape);
 }
 
 void updateScene(float time) {
+	//clock_t start = clock();
+
 	// recreate all object that are supposed to be moving
 	sendCamera();
 	createLight(time);
 	//shdSetFloat(gl->s, "time", time);
-	createObjects(time);
+	//createObjects(time);
+
+	//clock_t end = clock();
+	//printf("updateScene() took %.2f ms\n", ((float)(end - start) / CLOCKS_PER_SEC * 1000.0f));
 }
