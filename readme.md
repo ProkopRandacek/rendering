@@ -6,7 +6,7 @@
 
 Current rendering capabilities:  
 - [Constructive solid geometry](https://en.wikipedia.org/wiki/Constructive_solid_geometry)
-- Sphere, Cube, Torus, Capped Cone and Cylinder rendering (many more in testing)
+- Sphere, Cube, Torus, Capped Cone and Cylinder rendering ([many more in testing](./src/shapes.h))
 - Transforming between shapes over time
 - WASD + mouse controls
 - Checkerboard floor
@@ -14,11 +14,11 @@ Current rendering capabilities:
 - Works realtime
 
 TODO:
+- Read scene configuration from file
+- Relative position for shapes in subgroups?
 - Reflections
 - [Better lighting](https://en.wikipedia.org/wiki/Computer_graphics_lighting)
-- Read scene configuration from file
 - Bounding box for complicated groups far away from the ray
-- Relative position for shapes in subgroups?
 - Compile for windows somehow?
 - Shape rotating
 - `#import`s seems to be messy
