@@ -7,7 +7,6 @@ const int shapeSize = 15;
 // 2 shapes + 2 shapeTypes + operationType + k
 const int groupSize = (shapeSize * 2) + 4;
 const int groupNum = 3;
-
 uniform float time;
 uniform vec3 lightPos;
 uniform ivec2 resolution;
@@ -175,7 +174,12 @@ rayHit rayMarch(in vec3 rayOrigin, in vec3 rayDir) {
 		if (safeDist < COLLISION_THRESHOLD) { // collision
 			vec3 surfaceClr = hit.rgb;
 
-			return rayHit(currentPos, surfaceClr, i, true);
+			vec3 normal = calculateNormal(currentPos);
+			vec3 dir2ls = normalize(lightPos - currentPos);
+
+			float shadow = max(0.0, dot(normal, dir2ls)) * 0.9;
+
+			return rayHit(currentPos, surfaceClr * shadow, i, true);
 		}
 		distTraveled += safeDist;
 		if (safeDist > MAX_TRACE_DIST) { // too far
@@ -206,10 +210,9 @@ void main() {
 
 	rayHit shadow = rayMarch(hit.hitPos + smolNormal, dir2ls);
 
-	if (shadow.hit) { finalClr = vec3(0.2); }
+	if (shadow.hit) { finalClr -= vec3(0.2); }
 
 	// output color
 	vec3 clr = finalClr;
 	outColor = vec4(clr, 1.0);
 }
-
