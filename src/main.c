@@ -4,9 +4,8 @@
 #include <math.h>
 #include <unistd.h>
 
+#include "debug.h"
 #include "main.h"
-
-#include "time.h"
 
 
 extern GL* gl;
@@ -15,7 +14,8 @@ float deltaTime = 0.0f;
 
 int main() {
 	printf("\n\n====================================\n\n\n");
-	clock_t initS = clock();
+	startTime(); // debug
+
 	initOGL();
 
 	glfwSetErrorCallback(onError);
@@ -27,25 +27,17 @@ int main() {
 
 	glfwSetInputMode(gl->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	clock_t initE = clock();
-	printf("init took %.2f ms\n", ((float)(initE - initS) / CLOCKS_PER_SEC * 1000.0f));
-
-	printf("Initialization successful\nStarting main loop\n");
+	dprint("INIT DONE");
 
 	float lastTime = 0.0f;
 
 	while (!glfwWindowShouldClose(gl->window)) {
-		//clock_t start = clock();
-
 		updateInput();
 		updateScene(glfwGetTime());
 		renderOGL();
 
 		deltaTime = glfwGetTime() - lastTime;
 		lastTime = glfwGetTime();
-
-		//clock_t end = clock();
-		//printf("\nmain loop took %.2f ms\n", ((float)(end - start) / CLOCKS_PER_SEC * 1000.0f));
 	}
 
 	exitOGL();

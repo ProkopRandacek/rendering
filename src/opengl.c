@@ -3,6 +3,9 @@
 #include <string.h>
 
 #include "opengl.h"
+#include "debug.h"
+
+#include "time.h"
 
 
 int w = 1000;
@@ -13,6 +16,7 @@ char* pixels;
 unsigned int frameCount = 0;
 
 void initOGL() {
+	dprint("GL START");
 	gl = malloc(sizeof(GL));
 	pixels = malloc(w * h * 3);
 
@@ -21,6 +25,7 @@ void initOGL() {
 		printf("glfw init failed\n");
 		exit(1);
 	}
+	dprint("GL - glfw init");
 
 	// create window
 	gl->window = glfwCreateWindow(w, h, "Title", NULL, NULL);
@@ -29,10 +34,15 @@ void initOGL() {
 		printf("window creation failed\n");
 		exit(1);
 	}
+
+	dprint("GL - window init");
+
 	glViewport(10, 10, w, h);
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
 	glfwMakeContextCurrent(gl->window);
+
+	dprint("GL - window setup");
 
 	glewExperimental = GL_TRUE;
 	glewInit();
@@ -67,11 +77,17 @@ void initOGL() {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
+	dprint("GL - buffers done");
+
 	// create shader
 	gl->s = shd("./vertexShader.glsl", "./fragmentShader.glsl");
 	shdUse(&gl->s);
 
+	dprint("GL - shaders done");
+
 	glBindVertexArray(gl->VAO);
+
+	dprint("GL DONE");
 }
 
 void renderOGL() {

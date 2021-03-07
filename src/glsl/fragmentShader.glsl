@@ -1,6 +1,6 @@
 // vim: tabstop=8 softtabstop=8 shiftwidth=8 noexpandtab
 const int STEPSNUM = 1024;
-const float COLLISION_THRESHOLD = 0.001;
+const float COLLISION_THRESHOLD = 0.0001;
 const float MAX_TRACE_DIST = 30.0;
 
 const int shapeSize = 15;
@@ -155,7 +155,7 @@ vec4 mapWorld(in vec3 pos) {
 
 // calculate normal from given point on a surface
 vec3 calculateNormal(in vec3 p) {
-	const vec3 smol = vec3(0.0001, 0.0, 0.0);
+	const vec3 smol = vec3(0.001, 0.0, 0.0);
 	float x = mapWorld(p + smol.xyy).w - mapWorld(p - smol.xyy).w;
 	float y = mapWorld(p + smol.yxy).w - mapWorld(p - smol.yxy).w;
 	float z = mapWorld(p + smol.yyx).w - mapWorld(p - smol.yyx).w;
@@ -183,11 +183,11 @@ rayHit rayMarch(in vec3 rayOrigin, in vec3 rayDir) {
 		}
 		distTraveled += safeDist;
 		if (safeDist > MAX_TRACE_DIST) { // too far
-			return rayHit(vec3(0.0), vec3(0.0), i, false); // run out of trace_dist or stepsnum
+			return rayHit(vec3(0.0), vec3(0.1), i, false); // run out of trace_dist or stepsnum
 		}
 	}
 
-	return rayHit(vec3(0.0), vec3(0.0), STEPSNUM, false); // run out of trace_dist or stepsnum
+	return rayHit(vec3(0.0), vec3(0.1), STEPSNUM, false); // run out of trace_dist or stepsnum
 }
 
 void main() {
@@ -204,15 +204,19 @@ void main() {
 	finalClr = hit.surfaceClr;
 
 	// cast shadow ray
-	vec3 dir2ls = normalize(lightPos - hit.hitPos);
-	vec3 shadowClr = hit.surfaceClr;
-	vec3 smolNormal = calculateNormal(hit.hitPos) * 0.01; // use 0.0001 for cool glitch
+	vec3 smolNormal = calculateNormal(hit.hitPos) * COLLISION_THRESHOLD * 10; // use 0.0001 for cool glitch
 
-	rayHit shadow = rayMarch(hit.hitPos + smolNormal, dir2ls);
+	// move outside collision threshold
+	vec3 moved = hit.hitPos + smolNormal;
 
-	if (shadow.hit) { finalClr -= vec3(0.2); }
+	vec3 dir2ls = normalize(lightPos - moved);
+
+	rayHit shadow = rayMarch(moved, dir2ls);
+
+	// weird glitches around shade border FIXME
+	//if (!shadow.hit) { finalClr += vec3(0.1); }
 
 	// output color
-	vec3 clr = finalClr;
-	outColor = vec4(clr, 1.0);
+	outColor = vec4(finalClr, 1.0);
 }
+
