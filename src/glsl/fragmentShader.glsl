@@ -202,7 +202,7 @@ void main() {
 	// cast shadow ray
 	vec3 dir2ls = normalize(lightPos - hit.hitPos);
 	vec3 shadowClr = hit.surfaceClr;
-	vec3 smolNormal = calculateNormal(hit.hitPos) * 0.0001;
+	vec3 smolNormal = calculateNormal(hit.hitPos) * 0.01; // use 0.0001 for cool glitch
 
 	rayHit shadow = rayMarch(hit.hitPos + smolNormal, dir2ls);
 

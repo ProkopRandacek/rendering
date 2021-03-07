@@ -10,7 +10,7 @@ Current rendering capabilities:
 - Transforming between shapes over time
 - WASD + mouse controls
 - Checkerboard floor
-- Very simple soft shadows
+- Sharp shadows
 - Works realtime
 
 TODO:
