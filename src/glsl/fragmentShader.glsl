@@ -46,6 +46,7 @@ struct rayHit {
 	vec3 hitPos;
 	vec3 surfaceClr;
 	int steps;
+	bool hit;
 };
 
 vec4 Blend(in float a, in float b, in vec3 colA, in vec3 colB, in float k) {
@@ -174,31 +175,41 @@ rayHit rayMarch(in vec3 rayOrigin, in vec3 rayDir) {
 		if (safeDist < COLLISION_THRESHOLD) { // collision
 			vec3 surfaceClr = hit.rgb;
 
-			vec3 normal = calculateNormal(currentPos);
-			vec3 dir2ls = normalize(lightPos - currentPos);
-
-			float shadow = max(0.0, dot(normal, dir2ls));
-
-			return rayHit(currentPos, shadow * surfaceClr, i);
+			return rayHit(currentPos, surfaceClr, i, true);
 		}
 		distTraveled += safeDist;
 		if (safeDist > MAX_TRACE_DIST) { // too far
-			return rayHit(vec3(0.0), vec3(1.0), i);// run out of trace_dist or stepsnum
+			return rayHit(vec3(0.0), vec3(0.0), i, false); // run out of trace_dist or stepsnum
 		}
 	}
 
-	return rayHit(vec3(0.0), vec3(1.0), STEPSNUM);// run out of trace_dist or stepsnum
+	return rayHit(vec3(0.0), vec3(0.0), STEPSNUM, false); // run out of trace_dist or stepsnum
 }
 
 void main() {
+	// calculate ray direction
 	vec2 uv = gl_FragCoord.xy / resolution.xy;
 	vec3 lPoint = mix(cam[4], cam[2], uv.y);
 	vec3 rPoint = mix(cam[3], cam[1], uv.y);
 	vec3 point  = mix(rPoint, lPoint, uv.x);
 	vec3 dir = normalize(point - cam[0]);
+
+	// cast ray
+	vec3 finalClr;
 	rayHit hit = rayMarch(cam[0], dir);
-	vec3 clr = hit.surfaceClr;
+	finalClr = hit.surfaceClr;
+
+	// cast shadow ray
+	vec3 dir2ls = normalize(lightPos - hit.hitPos);
+	vec3 shadowClr = hit.surfaceClr;
+	vec3 smolNormal = calculateNormal(hit.hitPos) * 0.0001;
+
+	rayHit shadow = rayMarch(hit.hitPos + smolNormal, dir2ls);
+
+	if (shadow.hit) { finalClr = vec3(0.2); }
+
+	// output color
+	vec3 clr = finalClr;
 	outColor = vec4(clr, 1.0);
 }
-
 

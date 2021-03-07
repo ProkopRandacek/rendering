@@ -18,6 +18,7 @@ TODO:
 - Relative position for shapes in subgroups?
 - Reflections
 - [Better lighting](https://en.wikipedia.org/wiki/Computer_graphics_lighting)
+- (Soft) shadows
 - Bounding box for complicated groups far away from the ray
 - Compile for windows somehow?
 - Shape rotating

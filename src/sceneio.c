@@ -8,6 +8,12 @@ regex_t intRegex;
 int regexStatus;
 char msgbuf[100];
 
+/*int isShape(const char* word) {
+	return (word == "SPHERE" ||
+		word == "TORUS" ||
+		word == "CCONE");
+}
+
 void readScene() {
 	const char* filename = "test.scene";
 
@@ -34,6 +40,7 @@ void readScene() {
 	char word[wmaxlen];
 	char c;
 	unsigned int wlen = 0;
+	char activeKey = ' ';
 
 	while ((c = fgetc(fp)) != EOF) { // read file byte by byte until EOF
 		if (wlen >= wmaxlen) { printf("error parsing file \"%s\"\n the word \"%s...\" is too long\n", filename, word); exit(1); }
@@ -49,8 +56,10 @@ void readScene() {
 						printf("- %0.2f\n", atof(word));
 					} else if (!intR) { // its int
 						printf("- %d\n", atoi(word));
-					} else if (floatR == REG_NOMATCH || intR == REG_NOMATCH) { // keyword
+					} else if (floatR == REG_NOMATCH || intR == REG_NOMATCH) { // or keyword
 						printf("%s\n", word);
+						if (word == "#PRIMITIVES") { activeKey = 'P'; }
+						else if (isShape(word))    { activeKey = 'S'; }
 					} else {
 						regerror(regexStatus, &floatRegex, msgbuf, sizeof(msgbuf));
 						fprintf(stderr, "Regex match failed: %s\n", msgbuf);
@@ -71,6 +80,4 @@ void readScene() {
 	fclose(fp);
 }
 
-/*void main() {
-	readScene();
-}*/
+//void main() { readScene(); } // */

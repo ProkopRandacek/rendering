@@ -40,7 +40,7 @@ void sendCamera() {
 }
 
 void createLight(float time) {
-	float lsPos[] = {cam.pos.x, cam.pos.y, cam.pos.z};
+	float lsPos[] = {5.0f, 5.0f, 5.0f};
 
 	shdSetVec3Array(gl->s, "lightPos", 1, lsPos);
 }
@@ -61,7 +61,7 @@ void createObjects(float time) {
 	ShapeGroup sgBottom = group(body, base, BLEND, 0.2f);
 	Primitive    Bottom = prmv(GROUP, (void*) (intptr_t) 1);
 
-	ShapeGroup sgROOT = group(Top, Bottom, NORMAL, 0.5f);
+	ShapeGroup sgROOT = group(Top, Bottom, BLEND, 0.02f);
 
 	groups[0] = sgTop;
 	groups[1] = sgBottom;
