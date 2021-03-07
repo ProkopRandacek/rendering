@@ -214,7 +214,9 @@ void main() {
 	rayHit shadow = rayMarch(moved, dir2ls);
 
 	// weird glitches around shade border FIXME
-	//if (!shadow.hit) { finalClr += vec3(0.1); }
+	//if (!shadow.hit) { finalClr *= vec3(1.1); }
+	// also uncommenting this line makes the compilation 60 times slower
+	// and there are 15 seconds of main loop that are just black screen >.<
 
 	// output color
 	outColor = vec4(finalClr, 1.0);
