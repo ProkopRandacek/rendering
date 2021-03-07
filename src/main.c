@@ -31,6 +31,8 @@ int main() {
 
 	float lastTime = 0.0f;
 
+	dprint("starting main loop");
+
 	while (!glfwWindowShouldClose(gl->window)) {
 		updateInput();
 		updateScene(glfwGetTime());
@@ -40,7 +42,9 @@ int main() {
 		lastTime = glfwGetTime();
 	}
 
+	dprint("exiting GL");
 	exitOGL();
+	dprint("return 0;");
 	return 0;
 }
 

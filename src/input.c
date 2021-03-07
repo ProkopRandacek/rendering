@@ -58,21 +58,21 @@ void updateInput() {
 
 void onKey(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	//printf("%d, %d\n", scancode, action);
-	if (scancode == 24 && action == 1) exit(0); // exit on `q` press
+	if (scancode == 24 && action == 1) glfwSetWindowShouldClose(gl->window, GL_TRUE);
 
-	else if (scancode == 25 && action == 1) { wDown = 1; }
-	else if (scancode == 38 && action == 1) { aDown = 1; }
-	else if (scancode == 39 && action == 1) { sDown = 1; }
-	else if (scancode == 40 && action == 1) { dDown = 1; }
-	else if (scancode == 50 && action == 1) { shiftDown = 1; }
-	else if (scancode == 65 && action == 1) { spaceDown = 1; }
+	else if (scancode == 25 && action == 1) wDown = 1;
+	else if (scancode == 38 && action == 1) aDown = 1;
+	else if (scancode == 39 && action == 1) sDown = 1;
+	else if (scancode == 40 && action == 1) dDown = 1;
+	else if (scancode == 50 && action == 1) shiftDown = 1;
+	else if (scancode == 65 && action == 1) spaceDown = 1;
 
-	else if (scancode == 25 && action == 0) { wDown = 0; }
-	else if (scancode == 38 && action == 0) { aDown = 0; }
-	else if (scancode == 39 && action == 0) { sDown = 0; }
-	else if (scancode == 40 && action == 0) { dDown = 0; }
-	else if (scancode == 50 && action == 0) { shiftDown = 0; }
-	else if (scancode == 65 && action == 0) { spaceDown = 0; }
+	else if (scancode == 25 && action == 0) wDown = 0;
+	else if (scancode == 38 && action == 0) aDown = 0;
+	else if (scancode == 39 && action == 0) sDown = 0;
+	else if (scancode == 40 && action == 0) dDown = 0;
+	else if (scancode == 50 && action == 0) shiftDown = 0;
+	else if (scancode == 65 && action == 0) spaceDown = 0;
 
-	else if (scancode == 33 && action == 1) { screenshot(); }
+	else if (scancode == 33 && action == 1) screenshot();
 }
