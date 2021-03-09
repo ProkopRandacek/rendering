@@ -1,5 +1,4 @@
 build
 .idea
-shader_minifier.exe
 src/frag.h
 src/vert.h

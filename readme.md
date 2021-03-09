@@ -46,7 +46,6 @@ Compiled birary can be found [here](https://randacek.dev/p/build.7z); [checksums
 ### Build deps:
 - make
 - mono (for running the shader minifier)
-- [laurentlb's Shader_Minifier](https://github.com/laurentlb/Shader_Minifier/releases/download/1.1.6/shader_minifier.exe) exe in repo root
 - dos2unix tool
 - gcc  
 (`yay -S gcc dos2unix make mono --needed`)
