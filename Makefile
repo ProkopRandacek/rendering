@@ -1,6 +1,6 @@
 build: clean shaders
 	mkdir build -p
-	gcc -L/usr/lib/libGLEW.so -Wall -Os -o build/rendering src/*.c -lglfw -lGL -lm -lGLEW
+	gcc -L/usr/lib/libGLEW.so -Wall -o build/rendering src/*.c -lglfw -lGL -lm -lGLEW
 
 run: clean build
 	cd build/; ./rendering

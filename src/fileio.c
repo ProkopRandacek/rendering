@@ -2,9 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
-#define FILE_READING_BUFFER_SIZE 16384
-
 void writeBMP(const char* filename, char* pixels, int w, int h) {
 	unsigned int header[14];
 	int i, j;
@@ -25,7 +22,7 @@ void writeBMP(const char* filename, char* pixels, int w, int h) {
 	for (i = 0; i < h; i++) {
 		for (j = 0; j < w; j++) {
 			int index = w * i + j;
-			unsigned char R = pixels[index * 3];
+			unsigned char R = pixels[index * 3 + 0];
 			unsigned char G = pixels[index * 3 + 1];
 			unsigned char B = pixels[index * 3 + 2];
 			fwrite(&B, 1, 1, fp);
@@ -35,28 +32,4 @@ void writeBMP(const char* filename, char* pixels, int w, int h) {
 		fwrite(pad, w % 4, 1, fp);
 	}
 	fclose(fp);
-}
-
-char* readFile(char* filename) {
-	FILE* fp = fopen(filename, "r");
-
-	if (fp == NULL) {
-		printf("Error opening file \"%s\"\n", filename);
-		exit(1);
-	}
-
-	char c, buffer[FILE_READING_BUFFER_SIZE];
-	unsigned int len = 0;
-
-	while ((c = fgetc(fp)) != EOF) { // read file byte by byte until EOF
-		buffer[len] = c;
-		len++;
-	}
-	fclose(fp);
-
-	char* data = malloc(sizeof(char) * len); // allocate right ammount of memory and copy the content there
-	memcpy(data, buffer, len);
-	data[len] = 0;
-
-	return data;
 }

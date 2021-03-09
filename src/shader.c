@@ -4,11 +4,10 @@
 #include <GL/glew.h>
 
 #include "shader.h"
-#include "fileio.h"
 #include "debug.h"
 
-#include "vert.h"
-#include "frag.h"
+#include "vert.h" // generated on build. contain the shader source code string.
+#include "frag.h" // -//-
 
 
 shader shd(char* vertPath, char* fragPath) {
@@ -41,33 +40,19 @@ shader shd(char* vertPath, char* fragPath) {
 
 	s.ID = glCreateProgram();
 	glAttachShader(s.ID, vertShd);
-	dprint("GL - SHADER - vertex shader attached");
 	glAttachShader(s.ID, fragShd);
-	dprint("GL - SHADER - fragment shader attached");
 	glLinkProgram(s.ID);
-	dprint("GL - SHADER - shaders linked");
 	glGetProgramiv(s.ID, GL_LINK_STATUS, &success);
 	if (!success) {
 		glGetProgramInfoLog(s.ID, 512, NULL, infoLog);
 		printf("Error while linking shaders\n%s\n", infoLog);
 		exit(1);
 	}
+	dprint("GL - SHADER - shaders linked");
 
 	glDeleteShader(vertShd);
 	glDeleteShader(fragShd);
 	return s;
-}
-
-char* collectFragShd() {
-	char* SDFs = readFile("./SDFs.glsl");
-	char* main  = readFile("./fragmentShader.glsl");
-	char* full = malloc(sizeof(char) * 16384 * 2);
-
-	strcpy(full, SDFs);
-	strcat(full, "\n");
-	strcat(full, main);
-
-	return full;
 }
 
 void shdUse(shader* s) {
