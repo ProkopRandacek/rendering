@@ -41,11 +41,15 @@ Compiled birary can be found [here](https://randacek.dev/p/build.7z); [checksums
 ### Runtime deps:
 - glfw3
 - glew  
-(`yay -S glew glfw-x11 --needed`)
+(Arch `yay -S glew glfw-x11 --needed`)  
+(Fedora: `dnf install glew-devel glfw-devel`)  
+(Ubuntu: `apt install libglew-dev libglfw3`)  
 
 ### Build deps:
 - make
 - mono (for running the shader minifier)
 - dos2unix tool
 - gcc  
-(`yay -S gcc dos2unix make mono --needed`)
+(Arch: `yay -S gcc dos2unix make mono --needed`)  
+(Fedora: `dnf install make mono-devel gcc`)  
+(Ubuntu: `apt install make mono-runtime gcc`)  
