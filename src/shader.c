@@ -5,13 +5,17 @@
 
 #include "shader.h"
 #include "fileio.h"
+#include "debug.h"
+
+#include "vert.h"
+#include "frag.h"
 
 
 shader shd(char* vertPath, char* fragPath) {
 	shader s;
 	int success;
-	char infoLog[512];
-	const char* vertShdSource = readFile("./vertexShader.glsl");
+	char infoLog[2048];
+	const char* vertShdSource = vertFull_glsl;
 	unsigned int vertShd = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertShd, 1, &vertShdSource, NULL);
 	glCompileShader(vertShd);
@@ -21,10 +25,9 @@ shader shd(char* vertPath, char* fragPath) {
 		printf("Error while compiling vertex shader\n%s\n", infoLog);
 		exit(1);
 	}
+	dprint("GL - SHADER - fragment shader compiled");
 
-	// real fragment shader. Errors can be only in SDFs.glsl
-	char* tmp = collectFragShd();
-	const char* fragShdSource = tmp;
+	const char* fragShdSource = fragFull_glsl;
 	unsigned int fragShd = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragShd, 1, &fragShdSource, NULL);
 	glCompileShader(fragShd);
@@ -34,20 +37,24 @@ shader shd(char* vertPath, char* fragPath) {
 		printf("Error while compiling fragment shader\n%s\n", infoLog);
 		exit(1);
 	}
+	dprint("GL - SHADER - vertex shader compiled");
 
 	s.ID = glCreateProgram();
 	glAttachShader(s.ID, vertShd);
+	dprint("GL - SHADER - vertex shader attached");
 	glAttachShader(s.ID, fragShd);
+	dprint("GL - SHADER - fragment shader attached");
 	glLinkProgram(s.ID);
+	dprint("GL - SHADER - shaders linked");
 	glGetProgramiv(s.ID, GL_LINK_STATUS, &success);
 	if (!success) {
 		glGetProgramInfoLog(s.ID, 512, NULL, infoLog);
 		printf("Error while linking shaders\n%s\n", infoLog);
 		exit(1);
 	}
+
 	glDeleteShader(vertShd);
 	glDeleteShader(fragShd);
-	free(tmp);
 	return s;
 }
 

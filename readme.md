@@ -14,12 +14,14 @@ Current rendering capabilities:
 - Works realtime
 
 TODO:
+- Optimalizions
+  - Bounding box for complicated groups far away from the ray !importnat
+  - Lower resolutions (done) and then upscale (todo)
 - Read scene configuration from file
 - Relative position for shapes in subgroups?
 - Reflections
 - [Better lighting](https://en.wikipedia.org/wiki/Computer_graphics_lighting)
 - (Soft) shadows
-- Bounding box for complicated groups far away from the ray
 - Compile for windows somehow?
 - Shape rotating
 - `#import`s seems to be messy
@@ -32,13 +34,19 @@ see [`archtecture.md`](architecture.md) for explanation what every file does.
 [Move demo](https://randacek.dev/p/move_demo.mp4) - (WASD & Mouse movement, Multiple object in scene)  
 
 ## Build:
-`make run` or just `make` to build the binary (in `./build/`; `*.glsl` files from `./build/` need to be in the `$PWD` folder when executing the program for them to be found)  
+`make` to (re)build the binary or `make run` to (re)build the binary and run it. Shader files are now included in the binary.
   
 Compiled birary can be found [here](https://randacek.dev/p/build.7z); [checksums](https://randacek.dev/p/build.7z.checksum) (you still need glfw3 and glew)
 
-### Deps:
-- make
+### Runtime deps:
 - glfw3
 - glew  
-
 (`yay -S glew glfw-x11 --needed`)
+
+### Build deps:
+- make
+- mono (for running the shader minifier)
+- [laurentlb's Shader_Minifier](https://github.com/laurentlb/Shader_Minifier/releases/download/1.1.6/shader_minifier.exe) exe in repo root
+- dos2unix tool
+- gcc  
+(`yay -S gcc dos2unix make mono --needed`)

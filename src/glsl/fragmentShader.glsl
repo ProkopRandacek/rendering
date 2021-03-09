@@ -2,6 +2,7 @@
 const int STEPSNUM = 1024;
 const float COLLISION_THRESHOLD = 0.0001;
 const float MAX_TRACE_DIST = 30.0;
+const int PIXEL_GAP = 0; // 0 = no gap; 10 = render only every 10th pixel
 
 const int shapeSize = 15;
 // 2 shapes + 2 shapeTypes + operationType + k
@@ -193,6 +194,12 @@ rayHit rayMarch(in vec3 rayOrigin, in vec3 rayDir) {
 void main() {
 	// calculate ray direction
 	vec2 uv = gl_FragCoord.xy / resolution.xy;
+
+	if ((int(gl_FragCoord.x) + int(gl_FragCoord.y)) % (PIXEL_GAP + 1) != 0) {
+		outColor = vec4(0.0);
+		return;
+	}
+
 	vec3 lPoint = mix(cam[4], cam[2], uv.y);
 	vec3 rPoint = mix(cam[3], cam[1], uv.y);
 	vec3 point  = mix(rPoint, lPoint, uv.x);
@@ -205,20 +212,15 @@ void main() {
 
 	// cast shadow ray
 	vec3 smolNormal = calculateNormal(hit.hitPos) * COLLISION_THRESHOLD * 10; // use 0.0001 for cool glitch
-
 	// move outside collision threshold
 	vec3 moved = hit.hitPos + smolNormal;
-
 	vec3 dir2ls = normalize(lightPos - moved);
 
-	rayHit shadow = rayMarch(moved, dir2ls);
+	//rayHit shadow = rayMarch(moved, dir2ls);
 
 	// weird glitches around shade border FIXME
 	//if (!shadow.hit) { finalClr *= vec3(1.1); }
-	// also uncommenting this line makes the compilation 60 times slower
-	// and there are 15 seconds of main loop that are just black screen >.<
 
 	// output color
 	outColor = vec4(finalClr, 1.0);
 }
-
