@@ -12,8 +12,6 @@ shaders: clean
 	mono shader_minifier.exe fragFull.glsl --preserve-externals -o src/frag.h
 	mono shader_minifier.exe vertFull.glsl --preserve-externals -o src/vert.h
 	rm fragFull.glsl vertFull.glsl -f
-	dos2unix -q src/frag.h
-	dos2unix -q src/vert.h
 
 clean:
 	rm build/ -rf
