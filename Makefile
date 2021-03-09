@@ -7,8 +7,6 @@ run: clean build
 
 shaders: clean
 	mkdir build -p
-	#the url does not work
-	#if test -f "shader_minifier.exe"; then curl https://github.com/laurentlb/Shader_Minifier/releases/download/1.1.6/shader_minifier.exe -o shader_minifier.exe; fi
 	cat src/glsl/SDFs.glsl src/glsl/fragmentShader.glsl > fragFull.glsl
 	cat src/glsl/vertexShader.glsl                      > vertFull.glsl
 	mono shader_minifier.exe fragFull.glsl --preserve-externals -o src/frag.h
