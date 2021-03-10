@@ -16,15 +16,10 @@ extern const int groupSize;
 Camera cam;
 
 void createScene() {
-	//clock_t start = clock();
-
-	createCamera(0.0f);
+	createCamera();
 	sendCamera();
-	createLight(0.0f);
-	createObjects(0.0f);
-
-	//clock_t end = clock();
-	//printf("createScrene() took %.2f ms\n", ((float)(end - start) / CLOCKS_PER_SEC * 1000.0f));
+	createLight();
+	createObjects();
 }
 
 void createCamera() {
@@ -50,10 +45,10 @@ void createObjects() {
 	ShapeGroup groups[groupNum];
 
 	// primitive shapes
-	Primitive head = prmv(SPHERE, (void*) sph  (v3(0.5f, 2.1f, 0.5f), v3(0.9f, 0.9f, 0.9f), 0.3f));
-	Primitive ring = prmv(TORUS,  (void*) tor  (v3(0.5f, 1.9f, 0.5f), v3(0.9f, 0.9f, 0.9f), 0.25f, 0.09f));
-	Primitive body = prmv(CCONE,  (void*) ccone(v3(0.5f, 2.2f, 0.5f), v3(0.5f, 1.3f, 0.5f), v3(0.9f, 0.9f, 0.9f), 0.17f, 0.3f));
-	Primitive base = prmv(CCONE,  (void*) ccone(v3(0.5f, 1.3f, 0.5f), v3(0.5f, 1.0f, 0.5f), v3(0.9f, 0.9f, 0.9f), 0.4f, 0.4f));
+	Primitive head = prmv(SPHERE, (void*) sph  (v3(0.5f, 2.1f, 0.5f), v3(0.9f, 0.0f, 0.9f), 0.3f));
+	Primitive ring = prmv(TORUS,  (void*) tor  (v3(0.5f, 1.9f, 0.5f), v3(0.9f, 0.0f, 0.9f), 0.25f, 0.09f));
+	Primitive body = prmv(CCONE,  (void*) ccone(v3(0.5f, 2.2f, 0.5f), v3(0.5f, 1.3f, 0.5f), v3(0.9f, 0.0f, 0.9f), 0.17f, 0.3f));
+	Primitive base = prmv(CCONE,  (void*) ccone(v3(0.5f, 1.3f, 0.5f), v3(0.5f, 1.0f, 0.5f), v3(0.9f, 0.0f, 0.9f), 0.4f, 0.4f));
 
 	ShapeGroup sgTop = group(head, ring, NORMAL, 0.5f);
 	Primitive    Top = prmv(GROUP, (void*) (intptr_t) 0);
@@ -77,15 +72,8 @@ void createObjects() {
 	free(body.shape);
 }
 
-void updateScene(float time) {
-	//clock_t start = clock();
-
+void updateScene() {
 	// recreate all object that are supposed to be moving
 	sendCamera();
-	createLight(time);
-	//shdSetFloat(gl->s, "time", time);
-	//createObjects(time);
-
-	//clock_t end = clock();
-	//printf("updateScene() took %.2f ms\n", ((float)(end - start) / CLOCKS_PER_SEC * 1000.0f));
+	createLight();
 }

@@ -35,7 +35,7 @@ int main() {
 
 	while (!glfwWindowShouldClose(gl->window)) {
 		updateInput();
-		updateScene(glfwGetTime());
+		updateScene();
 		renderOGL();
 
 		deltaTime = glfwGetTime() - lastTime;

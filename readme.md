@@ -6,6 +6,7 @@
 
 Current rendering capabilities:  
 - [Constructive solid geometry](https://en.wikipedia.org/wiki/Constructive_solid_geometry)
+- Soft shadows
 - Sphere, Cube, Torus, Capped Cone and Cylinder rendering ([many more in testing](./src/shapes.h))
 - Transforming between shapes over time
 - WASD + mouse controls
@@ -21,11 +22,9 @@ TODO:
 - Relative position for shapes in subgroups?
 - Reflections
 - [Better lighting](https://en.wikipedia.org/wiki/Computer_graphics_lighting)
-- (Soft) shadows
 - Compile for windows somehow?
 - Shape rotating
 - `#import`s seems to be messy
-- Split fragment shader into multiple parts
 
 see [`archtecture.md`](architecture.md) for explanation what every file does.  
 

@@ -1,4 +1,3 @@
-#version 330 core
 out vec4 outColor;
 
 // Signed Distance Functions
@@ -42,9 +41,3 @@ float d2Quad     (vec3 p, vec3 a, vec3 b, vec3 c, vec3 d ) { vec3 ba=b-a;vec3 pa
 float opSmoothUnion       (float d1, float d2, float k) { float h = clamp( 0.5 + 0.5*(d2-d1)/k, 0.0, 1.0 ); return mix( d2,  d1, h ) - k*h*(1.0-h); }
 float opSmoothSubtraction (float d1, float d2, float k) { float h = clamp( 0.5 - 0.5*(d2+d1)/k, 0.0, 1.0 ); return mix( d2, -d1, h ) + k*h*(1.0-h); }
 float opSmoothIntersection(float d1, float d2, float k) { float h = clamp( 0.5 - 0.5*(d2-d1)/k, 0.0, 1.0 ); return mix( d2,  d1, h ) + k*h*(1.0-h); }
-
-
-
-// Errors are usually in fragmentShader.glsl but since I am inserting this code at the start of a fragmentShader.glsl and
-// *then* compiling, the line number are wrong. When this file is exactly 50 lines long, I can at least do a simple subtraction
-// to get the real line number in fragmentShader.glsl
