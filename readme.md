@@ -46,6 +46,7 @@ Compiled birary can be found [here](https://randacek.dev/p/build.7z); [checksums
 (Ubuntu: `apt install libglew-dev libglfw3`)  
 
 ### Build deps:
+- Runtime deps
 - make
 - mono (for running the shader minifier)
 - dos2unix tool

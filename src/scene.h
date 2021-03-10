@@ -5,7 +5,7 @@
 
 void createScene();
 void updateScene(float time);
-void createCamera(float time);
+void createCamera();
 void sendCamera();
-void createLight(float time);
-void createObjects(float time);
+void createLight();
+void createObjects();

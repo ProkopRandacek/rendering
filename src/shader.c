@@ -10,7 +10,7 @@
 #include "frag.h" // -//-
 
 
-shader shd(char* vertPath, char* fragPath) {
+shader shd() {
 	shader s;
 	int success;
 	char infoLog[2048];

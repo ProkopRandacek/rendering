@@ -27,7 +27,7 @@ void createScene() {
 	//printf("createScrene() took %.2f ms\n", ((float)(end - start) / CLOCKS_PER_SEC * 1000.0f));
 }
 
-void createCamera(float time) {
+void createCamera() {
 	Vector3 campos = v3(0.0f, 5.0f, -10.0f);
 	cam = cmr(campos, vNorm(vDir(campos, v3(0.0f, 5.0f, 0.0f))), 0.0f, 0.01f, 0.01f);
 }
@@ -39,13 +39,13 @@ void sendCamera() {
 	shdSetVec3Array(gl->s, "cam", 5 * 3, camFloats);
 }
 
-void createLight(float time) {
+void createLight() {
 	float lsPos[] = {5.0f, 5.0f, 5.0f};
 
 	shdSetVec3Array(gl->s, "lightPos", 1, lsPos);
 }
 
-void createObjects(float time) {
+void createObjects() {
 	const int groupNum = 3;
 	ShapeGroup groups[groupNum];
 

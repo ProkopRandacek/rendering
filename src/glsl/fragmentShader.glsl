@@ -195,15 +195,28 @@ void main() {
 	// calculate ray direction
 	vec2 uv = gl_FragCoord.xy / resolution.xy;
 
+	// skiping pixels
 	if ((int(gl_FragCoord.x) + int(gl_FragCoord.y)) % (PIXEL_GAP + 1) != 0) {
 		outColor = vec4(0.0);
 		return;
 	}
 
+	bool isometric = false;
+
+	vec3 startPos, dir;
 	vec3 lPoint = mix(cam[4], cam[2], uv.y);
 	vec3 rPoint = mix(cam[3], cam[1], uv.y);
 	vec3 point  = mix(rPoint, lPoint, uv.x);
-	vec3 dir = normalize(point - cam[0]);
+	if (isometric) {
+		vec3 lMid = mix(cam[4], cam[2], 0.5);
+		vec3 rMid = mix(cam[3], cam[1], 0.5);
+		vec3 mid  = mix(rPoint, lPoint, 0.5);
+		dir = normalize(mid);
+		startPos = point - mid;
+	} else {
+		dir = normalize(point - cam[0]);
+		startPos = cam[0];
+	}
 
 	// cast ray
 	vec3 finalClr;

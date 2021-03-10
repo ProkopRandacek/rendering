@@ -56,8 +56,14 @@ void updateInput() {
 	//printf("updateInput() took %.2f ms\n", ((float)(end - start) / CLOCKS_PER_SEC * 1000.0f));
 }
 
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+// ignore unused parameter warning for callback function
 void onKey(GLFWwindow* window, int key, int scancode, int action, int mods) {
-	//printf("%d, %d\n", scancode, action);
+	if (window != gl->window) return;
+	if (action == 2) return;
+
+	//printf("%d, %d, %d, %d\n", key, scancode, action, mods);
+
 	if (scancode == 24 && action == 1) glfwSetWindowShouldClose(gl->window, GL_TRUE);
 
 	else if (scancode == 25 && action == 1) wDown = 1;
@@ -76,3 +82,4 @@ void onKey(GLFWwindow* window, int key, int scancode, int action, int mods) {
 
 	else if (scancode == 33 && action == 1) screenshot();
 }
+#pragma GCC diagnostic ignored "-Wunused-parameter"
