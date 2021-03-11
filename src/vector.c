@@ -14,23 +14,23 @@ Vector3 v3(float x, float y, float z) {
 
 Vector3 v3f(float a) { return v3(a, a, a); }
 
-void vPrint(Vector3 v) { printf("%.2f %.2f %.2f", v.x, v.y, v.z); }
-float vMag(Vector3 a) { return sqrtf((a.x * a.x) + (a.y * a.y) + (a.z * a.z)); }
-float vDot(Vector3 a, Vector3 b) { return a.x * b.x + a.y * b.y; }
-float vDist(Vector3 a, Vector3 b) { return vMag(vDir(a, b)); }
-Vector3 vNorm(Vector3 a) { return vMultf(a, 1 / vMag(a)); }
-Vector3 vAdd(Vector3 a, Vector3 b) { return v3(a.x + b.x, a.y + b.y, a.z + b.z); }
-Vector3 vMult(Vector3 a, Vector3 b) { return v3(a.x * b.x, a.y * b.y, a.z * b.z); }
-Vector3 vMultf(Vector3 a, float b) { return v3(a.x * b, a.y * b, a.z * b); }
-Vector3 vDir(Vector3 a, Vector3 b) { return vAdd(b, vMultf(a, -1.0f)); }
-Vector3 vLerp(Vector3 a, Vector3 b, float c) { return vAdd(a, vMultf(vDir(a, b), c)); }
+void vPrint   (Vector3 v)                     { printf("%.2f %.2f %.2f", v.x, v.y, v.z); }
+float vMag    (Vector3 a)                     { return sqrtf((a.x * a.x) + (a.y * a.y) + (a.z * a.z)); }
+float vDot    (Vector3 a, Vector3 b)          { return a.x * b.x + a.y * b.y; }
+float vDist   (Vector3 a, Vector3 b)          { return vMag(vDir(a, b)); }
+Vector3 vNorm (Vector3 a)                     { return vMultf(a, 1 / vMag(a)); }
+Vector3 vAdd  (Vector3 a, Vector3 b)          { return v3(a.x + b.x, a.y + b.y, a.z + b.z); }
+Vector3 vMult (Vector3 a, Vector3 b)          { return v3(a.x * b.x, a.y * b.y, a.z * b.z); }
+Vector3 vMultf(Vector3 a,   float b)          { return v3(a.x * b, a.y * b, a.z * b); }
+Vector3 vDir  (Vector3 a, Vector3 b)          { return vAdd(b, vMultf(a, -1.0f)); }
+Vector3 vLerp (Vector3 a, Vector3 b, float c) { return vAdd(a, vMultf(vDir(a, b), c)); }
 
 // rotate on a circle, c is center, t is input for cos/sin, k controls whether to use sins or cosines to specific axis.
 Vector3 vRotate(Vector3 c, Vector3 sinK, Vector3 cosK, float t) {
 	return v3(
-		c.x + sin(t) * sinK.x + cos(t) * cosK.x,
-		c.y + sin(t) * sinK.y + cos(t) * cosK.y,
-		c.z + sin(t) * sinK.z + cos(t) * cosK.z
+		c.x + sinf(t) * sinK.x + cosf(t) * cosK.x,
+		c.y + sinf(t) * sinK.y + cosf(t) * cosK.y,
+		c.z + sinf(t) * sinK.z + cosf(t) * cosK.z
 	);
 }
 

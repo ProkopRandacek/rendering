@@ -154,10 +154,12 @@ Primitive prmv(ShapeType type, void* shape) {
 	return p;
 }
 
-ShapeGroup group(Primitive a, Primitive b, OperationType op, float k) {
+ShapeGroup group(ShapeType ta, int a, ShapeType tb, int b, OperationType op, float k) {
 	ShapeGroup sg;
 	sg.a = a;
 	sg.b = b;
+	sg.ta = ta;
+	sg.tb = tb;
 	sg.op = op;
 	sg.k = k;
 	return sg;

@@ -15,13 +15,13 @@ typedef struct GLs {
 } GL;
 
 // init GL stuff
-void initOGL();
+void initOGL(void);
 
 // render fragment shader basically
-void renderOGL();
+void renderOGL(void);
 
 // exit GL stuff
-void exitOGL();
+void exitOGL(void);
 
 // take a screenshot and write it to bmp file
-void screenshot();
+void screenshot(void);

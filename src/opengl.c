@@ -18,7 +18,7 @@ unsigned int frameCount = 0;
 void initOGL() {
 	dprint("GL START");
 	gl = malloc(sizeof(GL));
-	pixels = malloc(w * h * 3);
+	pixels = malloc((long unsigned int)(w * h * 3));
 
 	// glfw init
 	if (!glfwInit()) {
@@ -80,7 +80,7 @@ void initOGL() {
 	dprint("GL - buffers done");
 
 	// create shader
-	gl->s = shd("./vertexShader.glsl", "./fragmentShader.glsl");
+	gl->s = shd();
 	shdUse(&gl->s);
 
 	dprint("GL - shaders done");
@@ -91,7 +91,7 @@ void initOGL() {
 }
 
 void renderOGL() {
-	shdSetFloat(gl->s, "time", glfwGetTime());
+	shdSetFloat(gl->s, "time", (float)glfwGetTime());
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 	// swap buffers
@@ -110,7 +110,7 @@ void screenshot() {
 
 	printf("taking a screenshot \"%s\", %dx%d\n", fname, w, h);
 
-	writeBMP(fname, pixels, w, h);
+	writeBMP(fname, pixels, (unsigned int)w, (unsigned int)h);
 }
 
 void exitOGL() {

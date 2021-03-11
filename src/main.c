@@ -3,6 +3,7 @@
 #include <string.h>
 #include <math.h>
 #include <unistd.h>
+#include <signal.h>
 
 #include "debug.h"
 #include "main.h"
@@ -14,7 +15,7 @@ float deltaTime = 0.0f;
 
 int main() {
 	printf("\n\n====================================\n\n\n");
-	startTime(); // debug
+	startTime(); // debug init
 
 	initOGL();
 
@@ -38,8 +39,8 @@ int main() {
 		updateScene();
 		renderOGL();
 
-		deltaTime = glfwGetTime() - lastTime;
-		lastTime = glfwGetTime();
+		deltaTime = (float)glfwGetTime() - lastTime;
+		lastTime = (float)glfwGetTime();
 	}
 
 	dprint("exiting GL");
@@ -47,6 +48,9 @@ int main() {
 	dprint("return 0;");
 	return 0;
 }
+
+void stop() { glfwSetWindowShouldClose(gl->window, GL_TRUE); }
+void die() { exit(1); }
 
 // Callback funcs
 void onError(int error, const char* description) {
@@ -59,5 +63,5 @@ void resize(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 	shdSetIVec2(gl->s, "resolution", width, height);
 	float k = 1000.0f;
-	setWH(width / k, height / k);
+	setWH((float)width / k, (float)height / k);
 }

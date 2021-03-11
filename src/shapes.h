@@ -118,14 +118,16 @@ typedef struct Primitive {
 } Primitive;
 
 typedef struct ShapeGroup {
-	Primitive a;
-	Primitive b;
+	ShapeType ta;
+	ShapeType tb;
 	OperationType op;
-	float k; // modifier for blending operation.
+	float k; // modifier for operation.
+	int a;
+	int b;
 } ShapeGroup;
 
 Primitive prmv(ShapeType type, void* shape);
-ShapeGroup group(Primitive a, Primitive b, OperationType op, float k);
+ShapeGroup group(ShapeType ta, int a, ShapeType tb, int b, OperationType op, float k);
 
 Sphere* sph(Vector3 pos, Vector3 clr, float radius);
 Cube* cube(Vector3 pos, Vector3 clr, Vector3 scale, float roundEdge);

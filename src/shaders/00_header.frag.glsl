@@ -1,16 +1,16 @@
 #version 330 core
-const int shapeSize = 15;
-
-// 2 shapes + 2 shapeTypes + operationType + k
-const int groupSize = (shapeSize * 2) + 4;
-const int groupNum = 3;
-
 uniform float time;
 uniform vec3 lightPos;
 uniform ivec2 resolution;
 uniform vec3 cam[5];
 
-// this uniform contains all shape data
+const int shapeNum = 4;
+const int groupNum = 3;
+
+const int shapeSize = 15;
+const int groupSize = 4;
+
+uniform float rawShapes[shapeSize * shapeNum];
 uniform float rawGroups[groupNum * groupSize];
 vec4 d2Groups[groupNum * groupSize];
 

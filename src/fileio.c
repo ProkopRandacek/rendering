@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-void writeBMP(const char* filename, char* pixels, int w, int h) {
+void writeBMP(const char* filename, char* pixels, unsigned int w, unsigned int h) {
 	unsigned int header[14];
-	int i, j;
+	unsigned int i, j;
 	FILE* fp = fopen(filename, "wb");
 	unsigned char pad[3] = {0, 0, 0};
 	header[0] = 0x4d420000;
@@ -21,15 +21,15 @@ void writeBMP(const char* filename, char* pixels, int w, int h) {
 	fwrite((char*) header + 2, 1, 54, fp);
 	for (i = 0; i < h; i++) {
 		for (j = 0; j < w; j++) {
-			int index = w * i + j;
-			unsigned char R = pixels[index * 3 + 0];
-			unsigned char G = pixels[index * 3 + 1];
-			unsigned char B = pixels[index * 3 + 2];
+			unsigned int index = w * i + j;
+			unsigned char R = (unsigned char)pixels[index * 3 + 0];
+			unsigned char G = (unsigned char)pixels[index * 3 + 1];
+			unsigned char B = (unsigned char)pixels[index * 3 + 2];
 			fwrite(&B, 1, 1, fp);
 			fwrite(&G, 1, 1, fp);
 			fwrite(&R, 1, 1, fp);
 		}
-		fwrite(pad, w % 4, 1, fp);
+		fwrite(pad, (long unsigned int)(w % 4), 1, fp);
 	}
 	fclose(fp);
 }

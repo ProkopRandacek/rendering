@@ -1,4 +1,5 @@
-float t();
-void  ddisable();
-void  startTime();
-void  dprint(char* text);
+float t(void);
+void ddisable(void);
+void startTime(void);
+void dprint(const char* text);
+void eprint(const char* text);

@@ -40,7 +40,7 @@ Vector3 vMultf(Vector3 a, float b);
 // Return vector pointing from a to b
 Vector3 vDir(Vector3 a, Vector3 b);
 
-// Interpolate between a and b.
+// Linear interpolation between a and b.
 Vector3 vLerp(Vector3 a, Vector3 b, float t);
 
 // Rotate on a circle, c is center, t is input for cos/sin, k controls whether to use sins or cosines to specific axis.

@@ -40,13 +40,13 @@ void updateInput() {
 
 	// mouse
 	glfwGetCursorPos(gl->window, &xpos, &ypos);
-	float x = ((2.0f * xpos) / w - 1.0f) * -mouseSens;
-	float y = (1.0f - (2.0f * ypos) / h) * mouseSens;
+	float x = ((2.0f * (float)xpos) / (float)w - 1.0f) * -mouseSens;
+	float y = (1.0f - (2.0f *(float) ypos) /(float) h) * mouseSens;
 
 	Vector3 dir = vNorm(v3(
-		cos(y) * sin(x),
-		sin(y),
-		cos(y) * cos(x)
+		cosf(y) * sinf(x),
+		sinf(y),
+		cosf(y) * cosf(x)
 	));
 	cam = updateCamDir(cam.pos, dir);
 }

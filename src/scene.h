@@ -3,9 +3,9 @@
 #include "shapes.h"
 
 
-void createScene();
-void updateScene();
-void createCamera();
-void sendCamera();
-void createLight();
-void createObjects();
+void createScene(void);
+void updateScene(void);
+void createCamera(void);
+void sendCamera(void);
+void createLight(void);
+void createObjects(void);

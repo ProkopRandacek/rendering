@@ -8,17 +8,13 @@ float lastAngle, lastH, lastW;
 
 extern int w, h; // these are from opengl.c. I need to change these for the screenshots to be the right size
 
-Camera cmr(Vector3 pos, Vector3 dir, float angle, float h, float w) {
+Camera cmr(Vector3 pos, Vector3 dir, float angle, float he, float wi) {
 	lastAngle = angle;
-	lastH = h;
-	lastW = w;
+	lastH = he;
+	lastW = wi;
 
 	Camera cam;
 	cam.pos = pos;
-	if (dir.x == 0.0f && (dir.y == 1.0f || dir.y == -1.0f) && dir.z == 0.0f) {
-		dir.y += 0.0001f;
-		// ugly fix for division by zero. probably works
-	}
 
 	Vector3 sc = vAdd(pos, dir); // Screen center
 	// SIDE VIEW
@@ -32,7 +28,7 @@ Camera cmr(Vector3 pos, Vector3 dir, float angle, float h, float w) {
 
 	//float y = 1.0f / tan(angle); calculate angle TODO
 
-	Vector3 left = vMultf(vNorm(v3(-dir.z, angle, dir.x)), w);
+	Vector3 left = vMultf(vNorm(v3(-dir.z, angle, dir.x)), wi);
 	// CAMERA VIEW
 	// tl---------tr // top left, top right
 	// |           | // SC = Screen center point
@@ -42,7 +38,7 @@ Camera cmr(Vector3 pos, Vector3 dir, float angle, float h, float w) {
 	// |           |
 	// bl---------br // bottom left, bottom right
 
-	Vector3 up = vMultf(vNorm(vCross(left, dir)), h);
+	Vector3 up = vMultf(vNorm(vCross(left, dir)), he);
 	// tl----^----tr picture in camera space
 	// |     |     | // SC = Screen center point
 	// |     |     |

@@ -1,10 +1,13 @@
 #include <stdint.h>
+#include <stdio.h>
 
 #include "camera.h"
 #include "shapes.h"
-#include "shapeSerialization.h"
+#include "serialization.h"
+#include "debug.h"
+#include "opengl.h"
 
-
+extern GL gl;
 extern int groupSize, shapeSize;
 
 void sphere2floats(float* f, Sphere* s) {
@@ -118,28 +121,27 @@ void ccone2floats(float* f, CCone*s) {
 
 void groups2floats(float* f, int num, ShapeGroup* groups) {
 	for (int i = 0; i < num; i++) {
-		if      (groups[i].a.type == CUBE)     {   cube2floats(&f[i * groupSize],     (Cube*) groups[i].a.shape); }
-		else if (groups[i].a.type == SPHERE)   { sphere2floats(&f[i * groupSize],   (Sphere*) groups[i].a.shape); }
-		else if (groups[i].a.type == CYLINDER) {    cyl2floats(&f[i * groupSize], (Cylinder*) groups[i].a.shape); }
-		else if (groups[i].a.type == TORUS)    {  torus2floats(&f[i * groupSize],    (Torus*) groups[i].a.shape); }
-		else if (groups[i].a.type == CCONE)    {  ccone2floats(&f[i * groupSize],    (CCone*) groups[i].a.shape); }
-		else if (groups[i].a.type == GROUP) {
-			f[i * groupSize + shapeSize * 0 + 1] = (float) (intptr_t) groups[i].a.shape; // a "pointer" to where this node is
-		}
+		f[i * groupSize + 0] = (float) groups[i].ta;
+		f[i * groupSize + 0] = (float) groups[i].a;
+		f[i * groupSize + 1] = (float) groups[i].tb;
+		f[i * groupSize + 0] = (float) groups[i].a;
+		f[i * groupSize + 2] = (float) groups[i].op;
+		f[i * groupSize + 3] = (float) groups[i].k;
+	}
+}
 
-		if      (groups[i].b.type == CUBE)     {   cube2floats(&f[i * groupSize + shapeSize],     (Cube*) groups[i].b.shape); }
-		else if (groups[i].b.type == SPHERE)   { sphere2floats(&f[i * groupSize + shapeSize],   (Sphere*) groups[i].b.shape); }
-		else if (groups[i].b.type == CYLINDER) {    cyl2floats(&f[i * groupSize + shapeSize], (Cylinder*) groups[i].b.shape); }
-		else if (groups[i].b.type == TORUS)    {  torus2floats(&f[i * groupSize + shapeSize],    (Torus*) groups[i].b.shape); }
-		else if (groups[i].b.type == CCONE)    {  ccone2floats(&f[i * groupSize + shapeSize],    (CCone*) groups[i].b.shape); }
-		else if (groups[i].b.type == GROUP) {
-			f[i * groupSize + shapeSize * 1 + 1] = (float) (intptr_t) groups[i].b.shape; // a "pointer" to where this node is
+void shapes2floats(float *f, int num, Primitive* prmv) {
+	for (int i = 0; i < num; i++) {
+		if      (prmv[i].type == CUBE)     {   cube2floats(&f[i * shapeSize],     (Cube*) prmv[i].shape); }
+		else if (prmv[i].type == SPHERE)   { sphere2floats(&f[i * shapeSize],   (Sphere*) prmv[i].shape); }
+		else if (prmv[i].type == CYLINDER) {    cyl2floats(&f[i * shapeSize], (Cylinder*) prmv[i].shape); }
+		else if (prmv[i].type == TORUS)    {  torus2floats(&f[i * shapeSize],    (Torus*) prmv[i].shape); }
+		else if (prmv[i].type == CCONE)    {  ccone2floats(&f[i * shapeSize],    (CCone*) prmv[i].shape); }
+		else {
+			char errMsg[55];
+			sprintf(errMsg, "Unknown shape %d on index %d\nexiting\n", prmv[i].type, num);
+			eprint(errMsg);
 		}
-
-		f[i * groupSize + shapeSize * 2 + 0] = (float) groups[i].a.type;
-		f[i * groupSize + shapeSize * 2 + 1] = (float) groups[i].b.type;
-		f[i * groupSize + shapeSize * 2 + 2] = (float) groups[i].op;
-		f[i * groupSize + shapeSize * 2 + 3] = (float) groups[i].k;
 	}
 }
 

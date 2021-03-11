@@ -1,2 +1,2 @@
 // vim: filetype=c
-void updateInput();
+void updateInput(void);

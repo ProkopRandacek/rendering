@@ -2,7 +2,7 @@ const int STEPSNUM = 1024;
 const float COLLISION_THRESHOLD = 0.00001;
 const float MAX_TRACE_DIST = 100.0;
 
-const float SUN_SIZE = 3.0;
+const float SUN_SIZE = 0.2;
 const int PIXEL_GAP = 0; // 0 = no gap; 10 = render only every 10th pixel
 
 // 3D checkerboard pattern for coloring object. RN accesible only if hardcoded (like floor in mapWorld())
@@ -97,7 +97,7 @@ void main() {
 
 	if (hit.hit) { // only calculate shadows if hit a surface
 		// cast shadow ray
-		vec3 smolNormal = calculateNormal(hit.hitPos) * COLLISION_THRESHOLD * 10; // use 0.0001 for cool glitch
+		vec3 smolNormal = calculateNormal(hit.hitPos) * COLLISION_THRESHOLD * 100; // use 0.0001 for cool glitch
 		// move outside collision threshold
 		vec3 moved = hit.hitPos + smolNormal;
 		vec3 dir2ls = normalize(lightPos - moved);
