@@ -11,7 +11,6 @@ Current rendering capabilities:
 - Transforming between shapes over time
 - WASD + mouse controls
 - Checkerboard floor
-- //Sharp shadows // needs a bugfix
 - Works realtime
 
 TODO:
